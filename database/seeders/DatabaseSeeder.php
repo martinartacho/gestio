@@ -11,50 +11,110 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // ── Permisos ──────────────────────────────────────────────────────────
+        // ── Permisos ──────────────────────────────────────────────────────
         $permissions = [
+            // Usuaris
             'users.view', 'users.create', 'users.edit', 'users.delete',
+            // Rols
             'roles.view', 'roles.create', 'roles.edit', 'roles.delete',
+            // Temporades
+            'seasons.view', 'seasons.create', 'seasons.edit', 'seasons.delete',
+            // Categories
+            'categories.view', 'categories.create', 'categories.edit', 'categories.delete',
+            // Espais
+            'spaces.view', 'spaces.create', 'spaces.edit', 'spaces.delete',
+            // Franges horàries
+            'timeslots.view', 'timeslots.create', 'timeslots.edit', 'timeslots.delete',
+            // Professors
+            'teachers.view', 'teachers.create', 'teachers.edit', 'teachers.delete',
+            // Cursos
+            'courses.view', 'courses.create', 'courses.edit', 'courses.delete',
         ];
 
         foreach ($permissions as $perm) {
             Permission::firstOrCreate(['name' => $perm]);
         }
 
-        // ── Roles ─────────────────────────────────────────────────────────────
+        // ── Rols ─────────────────────────────────────────────────────────
+        // Admin: tot
         $admin = Role::firstOrCreate(['name' => 'admin']);
         $admin->syncPermissions(Permission::all());
 
+        // Manager de cursos: gestiona cursos, professors i veu el catàleg
+        $manager = Role::firstOrCreate(['name' => 'manager']);
+        $manager->syncPermissions([
+            'seasons.view',
+            'categories.view', 'categories.create', 'categories.edit',
+            'spaces.view',
+            'timeslots.view',
+            'teachers.view', 'teachers.create', 'teachers.edit',
+            'courses.view', 'courses.create', 'courses.edit',
+        ]);
+
+        // Secretaria: visualització de cursos i professors
+        $secretaria = Role::firstOrCreate(['name' => 'secretaria']);
+        $secretaria->syncPermissions([
+            'seasons.view',
+            'categories.view',
+            'spaces.view',
+            'timeslots.view',
+            'teachers.view',
+            'courses.view',
+        ]);
+
+        // Editor (mantenim per compatibilitat)
         $editor = Role::firstOrCreate(['name' => 'editor']);
-        $editor->syncPermissions(['users.view', 'users.create', 'users.edit']);
+        $editor->syncPermissions([
+            'users.view', 'users.create', 'users.edit',
+            'courses.view', 'courses.create', 'courses.edit',
+            'teachers.view',
+        ]);
 
+        // Viewer: només lectura
         $viewer = Role::firstOrCreate(['name' => 'viewer']);
-        $viewer->syncPermissions(['users.view']);
+        $viewer->syncPermissions([
+            'users.view', 'courses.view', 'teachers.view',
+        ]);
 
-        // ── Usuarios de prueba ────────────────────────────────────────────────
-        $adminPassword = env('SEEDER_ADMIN_PASSWORD', 'password');
-        $userPassword  = env('SEEDER_USER_PASSWORD', 'password');
+        // ── Usuaris de prova ──────────────────────────────────────────────
+        $adminPassword = env('SEEDER_ADMIN_PASSWORD')
+            ?? throw new \RuntimeException('SEEDER_ADMIN_PASSWORD no està definit al .env');
+        $userPassword = env('SEEDER_USER_PASSWORD')
+            ?? throw new \RuntimeException('SEEDER_USER_PASSWORD no està definit al .env');
 
         User::firstOrCreate(['email' => 'admin@app.com'], [
             'name' => 'Administrador', 'password' => bcrypt($adminPassword), 'active' => true,
-        ])->assignRole('admin');
+        ])->syncRoles(['admin']);
+
+        User::firstOrCreate(['email' => 'manager@app.com'], [
+            'name' => 'Manager Cursos', 'password' => bcrypt($userPassword), 'active' => true,
+        ])->syncRoles(['manager']);
+
+        User::firstOrCreate(['email' => 'secretaria@app.com'], [
+            'name' => 'Secretaria', 'password' => bcrypt($userPassword), 'active' => true,
+        ])->syncRoles(['secretaria']);
 
         User::firstOrCreate(['email' => 'editor@app.com'], [
-            'name' => 'Editor Ejemplo', 'password' => bcrypt($userPassword), 'active' => true,
-        ])->assignRole('editor');
+            'name' => 'Editor Exemple', 'password' => bcrypt($userPassword), 'active' => true,
+        ])->syncRoles(['editor']);
 
         User::firstOrCreate(['email' => 'viewer@app.com'], [
-            'name' => 'Viewer Ejemplo', 'password' => bcrypt($userPassword), 'active' => true,
-        ])->assignRole('viewer');
+            'name' => 'Viewer Exemple', 'password' => bcrypt($userPassword), 'active' => true,
+        ])->syncRoles(['viewer']);
 
-        $this->command->info('✅ Seeder completado.');
+        $this->command->info('✅ Usuaris i permisos creats.');
         $this->command->table(
-            ['Email', 'Rol', 'Contraseña', 'Acceso panel'],
+            ['Email', 'Rol', 'Contrasenya'],
             [
-                ['admin@app.com',  'admin',  $adminPassword, '✅ Sí'],
-                ['editor@app.com', 'editor', $userPassword,  '❌ No (sin rol admin)'],
-                ['viewer@app.com', 'viewer', $userPassword,  '❌ No (sin rol admin)'],
+                ['admin@app.com',      'admin',      $adminPassword],
+                ['manager@app.com',    'manager',    $userPassword],
+                ['secretaria@app.com', 'secretaria', $userPassword],
+                ['editor@app.com',     'editor',     $userPassword],
+                ['viewer@app.com',     'viewer',     $userPassword],
             ]
         );
+
+        // ── Dades del campus ──────────────────────────────────────────────
+        $this->call(CampusSeeder::class);
     }
 }
