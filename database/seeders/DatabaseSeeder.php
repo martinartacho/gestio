@@ -81,7 +81,7 @@ class DatabaseSeeder extends Seeder
         $tresoreria->syncPermissions([
             'seasons.view',
             'courses.view',
-            'teachers.view',
+            'teachers.view', 'teachers.edit', 
             'enrollments.view', 'enrollments.create', 'enrollments.edit', 'enrollments.delete',
             'payments.view', 'payments.create', 'payments.edit', 'payments.delete',
             'teacher_payments.view', 'teacher_payments.create', 'teacher_payments.edit', 'teacher_payments.delete',

@@ -273,6 +273,7 @@ return [
     'retention_pct'                => 'Retenció (%)',
     'retention_amount'             => 'Import retenció',
     'net_amount'                   => 'Import net',
+    'invoice'                      => 'Factura',
     'issues_invoice'               => 'Emiteix factura',
     'sent_at'                      => 'Data d\'enviament',
     'paid_at'                      => 'Data de pagament',

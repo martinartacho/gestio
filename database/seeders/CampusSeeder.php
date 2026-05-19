@@ -88,8 +88,8 @@ class CampusSeeder extends Seeder
         // ── Professors ────────────────────────────────────────────────────
         $teachersDefs = [
             [
-                'code' => 'ANNEST', 'first_name' => 'Anna',    'last_name' => 'Estapé',
-                'email' => 'anna.estape@campus.cat', 'phone' => '600 111 001',
+                'code' => 'ANNBER', 'first_name' => 'Anna',    'last_name' => 'Bernad',
+                'email' => 'anna.bernad@campus.cat', 'phone' => '600 111 001',
                 'specialization' => 'Salut i infermeria', 'status' => 'active',
                 'dni' => '40100001A', 'city' => 'Granollers', 'postal_code' => '08401',
                 'fiscal_situation' => 'autonom', 'needs_payment' => true,
