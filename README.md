@@ -19,14 +19,21 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 | Categories | Àrees temàtiques amb color identificador |
 | Espais | Aules i ubicacions amb capacitat |
 | Franges horàries | Horaris setmanals reutilitzables |
-| Professors | Fitxa amb codi, especialitat i estat |
-| Cursos | Gestió completa: codi, format, dates, sessions, preu |
+| Professors | Fitxa completa: dades personals, fiscals, bancàries (encriptades), RGPD |
+| Cursos | Gestió completa: codi, format, dates, sessions, preu, professors assignats |
 
 ### Calendari visual
-- Vista mensual de sessions de cursos per temporada
+- Vista mensual i setmanal de sessions per temporada
 - Clic sobre un event per veure el detall del curs
 - Drag & drop per reubicar dates (només admins)
 - Títol de l'event: `codi_curs / codi_professor`
+
+### Mòdul Tresoreria
+| Recurs | Descripció |
+|---|---|
+| Inscripcions | Alta d'alumnes a cursos, estat, domiciliació bancària, RGPD |
+| Pagaments alumnes | Registre de pagaments per inscripció (transferència, rebut, efectiu…) |
+| Liquidacions professors | Ordre de pagament per professor/curs/temporada amb sessions, import brut, retenció i net |
 
 ### Control d'accés
 | Rol | Permisos |
@@ -34,6 +41,7 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 | `admin` | Accés total + drag & drop al calendari |
 | `manager` | Gestió de cursos, professors i categories |
 | `secretaria` | Visualització de tot el catàleg |
+| `tresoreria` | Inscripcions, pagaments, liquidacions i fitxa fiscal de professors |
 | `editor` | Gestió d'usuaris i cursos |
 | `viewer` | Només lectura |
 
@@ -75,8 +83,19 @@ Accedeix al panel a `/admin`.
 | admin@app.com | admin |
 | manager@app.com | manager |
 | secretaria@app.com | secretaria |
+| tresoreria@app.com | tresoreria |
 | editor@app.com | editor |
 | viewer@app.com | viewer |
+
+## Dades de prova (CampusSeeder)
+
+El seeder genera dades realistes per a tres anys acadèmics relatius a la data d'avui:
+
+- **Any anterior** — cursos tancats, professors amb pagament confirmat
+- **Any actual** — quadrimestre de tardor tancat + quadrimestre de primavera actiu amb cursos en curs
+- **En preparació** — quadrimestre de tardor de l'any vinent en estat `planning`
+
+Cada quadrimestre inclou 7–9 cursos de categories diverses (salut, educació, tecnologia, arts…) amb professors reals amb dades fiscals i bancàries de prova.
 
 ## Desenvolupament
 
@@ -89,6 +108,12 @@ Per reiniciar la base de dades amb dades de prova:
 
 ```bash
 php artisan migrate:fresh --seed
+```
+
+Per executar els tests:
+
+```bash
+php artisan test
 ```
 
 ## Llicència
