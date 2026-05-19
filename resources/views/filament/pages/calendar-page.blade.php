@@ -17,9 +17,15 @@
             </x-filament::input.wrapper>
         </div>
 
-{{-- Placeholder exportació --}}
+{{-- Exportació WooCommerce --}}
         <div class="ml-auto">
-            <x-filament::button color="gray" size="sm" disabled>
+            <x-filament::button
+                tag="a"
+                :href="route('calendar.export.woocommerce', ['season' => $currentSeasonId])"
+                color="gray"
+                size="sm"
+                icon="heroicon-o-arrow-down-tray"
+            >
                 {{ __('site.export_wp') }}
             </x-filament::button>
         </div>
