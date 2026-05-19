@@ -5,22 +5,19 @@ namespace Tests\Feature\Filament;
 use App\Models\CampusSeason;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Role;
+use Tests\Support\InteractsWithFilamentAdmin;
 use Tests\TestCase;
 
 class SeasonResourceTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, InteractsWithFilamentAdmin;
 
     private User $admin;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-        $this->admin = User::factory()->create(['active' => true]);
-        $this->admin->assignRole('admin');
+        $this->admin = $this->createAdmin();
     }
 
     public function test_can_list_seasons(): void

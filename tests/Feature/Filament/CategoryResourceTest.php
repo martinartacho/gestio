@@ -5,22 +5,19 @@ namespace Tests\Feature\Filament;
 use App\Models\CampusCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Role;
+use Tests\Support\InteractsWithFilamentAdmin;
 use Tests\TestCase;
 
 class CategoryResourceTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, InteractsWithFilamentAdmin;
 
     private User $admin;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-        $this->admin = User::factory()->create(['active' => true]);
-        $this->admin->assignRole('admin');
+        $this->admin = $this->createAdmin();
     }
 
     public function test_can_list_categories(): void
@@ -59,9 +56,6 @@ class CategoryResourceTest extends TestCase
     {
         CampusCategory::factory()->create(['name' => 'Tecnologia', 'color' => 'blue']);
 
-        $this->assertDatabaseHas('campus_categories', [
-            'name'  => 'Tecnologia',
-            'color' => 'blue',
-        ]);
+        $this->assertDatabaseHas('campus_categories', ['name' => 'Tecnologia', 'color' => 'blue']);
     }
 }
