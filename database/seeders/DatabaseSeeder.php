@@ -29,6 +29,12 @@ class DatabaseSeeder extends Seeder
             'teachers.view', 'teachers.create', 'teachers.edit', 'teachers.delete',
             // Cursos
             'courses.view', 'courses.create', 'courses.edit', 'courses.delete',
+            // Inscripcions
+            'enrollments.view', 'enrollments.create', 'enrollments.edit', 'enrollments.delete',
+            // Pagaments
+            'payments.view', 'payments.create', 'payments.edit', 'payments.delete',
+            // Liquidacions professors
+            'teacher_payments.view', 'teacher_payments.create', 'teacher_payments.edit', 'teacher_payments.delete',
         ];
 
         foreach ($permissions as $perm) {
@@ -70,6 +76,17 @@ class DatabaseSeeder extends Seeder
             'teachers.view',
         ]);
 
+        // Tresoreria: gestió econòmica (inscripcions, pagaments, liquidacions) + lectura de cursos/professors
+        $tresoreria = Role::firstOrCreate(['name' => 'tresoreria']);
+        $tresoreria->syncPermissions([
+            'seasons.view',
+            'courses.view',
+            'teachers.view',
+            'enrollments.view', 'enrollments.create', 'enrollments.edit', 'enrollments.delete',
+            'payments.view', 'payments.create', 'payments.edit', 'payments.delete',
+            'teacher_payments.view', 'teacher_payments.create', 'teacher_payments.edit', 'teacher_payments.delete',
+        ]);
+
         // Viewer: només lectura
         $viewer = Role::firstOrCreate(['name' => 'viewer']);
         $viewer->syncPermissions([
@@ -98,6 +115,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'Editor Exemple', 'password' => bcrypt($userPassword), 'active' => true,
         ])->syncRoles(['editor']);
 
+        User::firstOrCreate(['email' => 'tresoreria@app.com'], [
+            'name' => 'Tresoreria', 'password' => bcrypt($userPassword), 'active' => true,
+        ])->syncRoles(['tresoreria']);
+
         User::firstOrCreate(['email' => 'viewer@app.com'], [
             'name' => 'Viewer Exemple', 'password' => bcrypt($userPassword), 'active' => true,
         ])->syncRoles(['viewer']);
@@ -109,6 +130,7 @@ class DatabaseSeeder extends Seeder
                 ['admin@app.com',      'admin',      $adminPassword],
                 ['manager@app.com',    'manager',    $userPassword],
                 ['secretaria@app.com', 'secretaria', $userPassword],
+                ['tresoreria@app.com', 'tresoreria', $userPassword],
                 ['editor@app.com',     'editor',     $userPassword],
                 ['viewer@app.com',     'viewer',     $userPassword],
             ]
