@@ -94,10 +94,10 @@ class CampusSeeder extends Seeder
 
         // ── Professors ────────────────────────────────────────────────────
         $teachers = [
-            ['first_name' => 'Anna',   'last_name' => 'Estapé',   'specialization' => 'Salut i infermeria'],
-            ['first_name' => 'Marta',  'last_name' => 'Soler',    'specialization' => 'Educació i pedagogia'],
-            ['first_name' => 'Laura',  'last_name' => 'Martínez', 'specialization' => 'Ciències socials'],
-            ['first_name' => 'Joan',   'last_name' => 'Segura',   'specialization' => 'Noves tecnologies'],
+            ['first_name' => 'Anna',   'last_name' => 'Estapé',   'code' => 'ANNEST', 'specialization' => 'Salut i infermeria'],
+            ['first_name' => 'Marta',  'last_name' => 'Soler',    'code' => 'MARSOL', 'specialization' => 'Educació i pedagogia'],
+            ['first_name' => 'Laura',  'last_name' => 'Martínez', 'code' => 'LAUMAR', 'specialization' => 'Ciències socials'],
+            ['first_name' => 'Joan',   'last_name' => 'Segura',   'code' => 'JOASEG', 'specialization' => 'Noves tecnologies'],
         ];
 
         foreach ($teachers as $data) {

@@ -14,6 +14,7 @@ return new class extends Migration
                   ->nullable()
                   ->constrained('users')
                   ->onDelete('set null');                    // futur accés al panel
+            $table->string('code', 20)->nullable()->unique();
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->nullable();
