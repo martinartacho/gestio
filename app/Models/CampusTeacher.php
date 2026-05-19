@@ -14,6 +14,7 @@ class CampusTeacher extends Model
 
     protected $fillable = [
         'user_id',
+        'code',
         'first_name',
         'last_name',
         'email',

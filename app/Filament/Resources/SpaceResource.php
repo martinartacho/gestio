@@ -23,6 +23,12 @@ class SpaceResource extends Resource
     public static function getModelLabel(): string       { return __('site.space'); }
     public static function getPluralModelLabel(): string { return __('site.spaces'); }
 
+    public static function canAccess(): bool                                          { return auth()->user()?->hasPermissionTo('spaces.view')   ?? false; }
+    public static function canCreate(): bool                                          { return auth()->user()?->hasPermissionTo('spaces.create') ?? false; }
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool      { return auth()->user()?->hasPermissionTo('spaces.edit')   ?? false; }
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('spaces.delete') ?? false; }
+    public static function canDeleteAny(): bool                                       { return auth()->user()?->hasPermissionTo('spaces.delete') ?? false; }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([

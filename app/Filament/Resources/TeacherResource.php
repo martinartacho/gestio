@@ -23,10 +23,23 @@ class TeacherResource extends Resource
     public static function getModelLabel(): string       { return __('site.teacher'); }
     public static function getPluralModelLabel(): string { return __('site.teachers'); }
 
+    public static function canAccess(): bool                                          { return auth()->user()?->hasPermissionTo('teachers.view')   ?? false; }
+    public static function canCreate(): bool                                          { return auth()->user()?->hasPermissionTo('teachers.create') ?? false; }
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool      { return auth()->user()?->hasPermissionTo('teachers.edit')   ?? false; }
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('teachers.delete') ?? false; }
+    public static function canDeleteAny(): bool                                       { return auth()->user()?->hasPermissionTo('teachers.delete') ?? false; }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             Section::make(__('site.teacher_personal'))->columns(2)->schema([
+                TextInput::make('code')
+                    ->label(__('site.teacher_code'))
+                    ->maxLength(20)
+                    ->unique(ignoreRecord: true)
+                    ->placeholder('ex: JM, ABC')
+                    ->columnSpan(1),
+
                 TextInput::make('first_name')
                     ->label(__('site.teacher_firstname'))
                     ->required()->maxLength(100),
@@ -65,6 +78,12 @@ class TeacherResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('code')
+                    ->label(__('site.teacher_code'))
+                    ->searchable()->sortable()
+                    ->badge()->color('gray')
+                    ->placeholder('—'),
+
                 Tables\Columns\TextColumn::make('full_name')
                     ->label(__('site.teacher'))
                     ->searchable(['first_name', 'last_name'])
