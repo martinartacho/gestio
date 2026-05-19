@@ -65,10 +65,11 @@ class TeacherResourceTest extends TestCase
 
         $this->assertDatabaseHas('campus_teachers', [
             'id'          => $teacher->id,
-            'dni'         => '12345678A',
             'city'        => 'Barcelona',
             'postal_code' => '08001',
         ]);
+
+        $this->assertSame('12345678A', $teacher->fresh()->dni);
     }
 
     public function test_inactive_teacher_has_correct_status(): void

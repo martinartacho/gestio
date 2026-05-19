@@ -217,12 +217,15 @@ class CampusSeeder extends Seeder
         );
 
         // ── Cursos per temporada ──────────────────────────────────────────
-        // Helper: crea curs i associa professor
-        $mkCourse = function (array $data, CampusTeacher $teacher) {
+        // Helper: crea curs, associa professor principal i opcionalment assistent
+        $mkCourse = function (array $data, CampusTeacher $teacher, ?CampusTeacher $assistant = null) {
             $slug = $data['slug'];
             unset($data['slug']);
             $course = CampusCourse::firstOrCreate(['slug' => $slug], $data);
             $course->teachers()->syncWithoutDetaching([$teacher->id => ['role' => 'main']]);
+            if ($assistant) {
+                $course->teachers()->syncWithoutDetaching([$assistant->id => ['role' => 'assistant']]);
+            }
             return $course;
         };
 
@@ -317,7 +320,7 @@ class CampusSeeder extends Seeder
             'sessions' => 10, 'max_students' => 25, 'price' => 20.00, 'format' => 'presencial',
             'status' => 'closed', 'start_date' => '2025-10-06', 'end_date' => '2025-12-08',
             'description' => 'Atenció integral al pacient al final de la vida.',
-        ], $tAnna);
+        ], $tAnna, $tNuria);
 
         $mkCourse([
             'slug' => 'edu-td25', 'code' => 'EDU-TD25', 'title' => 'Inclusió a l\'Aula',
@@ -326,7 +329,7 @@ class CampusSeeder extends Seeder
             'sessions' => 8, 'max_students' => 20, 'price' => 18.00, 'format' => 'presencial',
             'status' => 'closed', 'start_date' => '2025-10-08', 'end_date' => '2025-11-26',
             'description' => 'Estratègies per a una educació inclusiva i diversa.',
-        ], $tMarta);
+        ], $tMarta, $tLaura);
 
         $mkCourse([
             'slug' => 'tec-td25', 'code' => 'TEC-TD25', 'title' => 'Introducció a la Intel·ligència Artificial',
@@ -373,7 +376,7 @@ class CampusSeeder extends Seeder
             'status' => 'active', 'start_date' => '2026-02-16', 'end_date' => '2026-04-27',
             'calendar_notes' => '16/2, 23/2, 2/3, 9/3, 16/3, 23/3, 30/3, 20/4, 27/4',
             'description' => 'Curs de pediatria per a professionals de la salut.',
-        ], $tAnna);
+        ], $tAnna, $tNuria);
 
         $mkCourse([
             'slug' => 'edu-pr26', 'code' => 'EDU-PR26', 'title' => 'TDAH i Neurodiversitat',
@@ -383,7 +386,7 @@ class CampusSeeder extends Seeder
             'status' => 'active', 'start_date' => '2026-02-18', 'end_date' => '2026-04-08',
             'calendar_notes' => '18/2, 4/3, 18/3, 25/3, 1/4, 8/4',
             'description' => 'Estratègies per a la gestió del TDAH i la neurodiversitat.',
-        ], $tMarta);
+        ], $tMarta, $tLaura);
 
         $mkCourse([
             'slug' => 'cie-pr26', 'code' => 'CIE-PR26', 'title' => 'Intel·ligència Emocional',
@@ -393,7 +396,7 @@ class CampusSeeder extends Seeder
             'status' => 'active', 'start_date' => '2026-02-19', 'end_date' => '2026-04-09',
             'calendar_notes' => '19/2, 26/2, 5/3, 12/3, 19/3, 26/3, 2/4, 9/4',
             'description' => 'Eines pràctiques per al benestar emocional.',
-        ], $tLaura);
+        ], $tLaura, $tMarta);
 
         // Curs pare híbrid + 2 fills (presencial + online)
         $pare = CampusCourse::firstOrCreate(['slug' => 'mon-digital-pare'], [
@@ -411,7 +414,7 @@ class CampusSeeder extends Seeder
             'status' => 'active', 'start_date' => '2026-02-20', 'end_date' => '2026-04-24',
             'calendar_notes' => '20/2, 27/2, 6/3, 13/3, 20/3, 27/3, 17/4, 24/4',
             'requirements' => 'Portàtil amb bateria',
-        ], $tJoan);
+        ], $tJoan, $tClaudia);
         $mkCourse([
             'slug' => 'mon-digital-ol26', 'code' => 'MON-DIG-OL', 'title' => 'Món Digital – Online',
             'parent_id' => $pare->id,
@@ -460,7 +463,7 @@ class CampusSeeder extends Seeder
             'sessions' => 8, 'max_students' => 20, 'price' => 22.00, 'format' => 'presencial',
             'status' => 'planning', 'start_date' => '2026-10-05', 'end_date' => '2026-11-23',
             'description' => 'Eines per gestionar l\'estrès i enfortir la resiliència.',
-        ], $tAnna);
+        ], $tAnna, $tNuria);
 
         $mkCourse([
             'slug' => 'tec-td26', 'code' => 'TEC-TD26', 'title' => 'Ciberseguretat Bàsica',
@@ -478,7 +481,7 @@ class CampusSeeder extends Seeder
             'sessions' => 8, 'max_students' => 16, 'price' => 25.00, 'format' => 'presencial',
             'status' => 'planning', 'start_date' => '2026-10-07', 'end_date' => '2026-11-25',
             'description' => 'Programació i robòtica per a docents d\'infantil i primària.',
-        ], $tMarta);
+        ], $tMarta, $tJoan);
 
         $mkCourse([
             'slug' => 'med-td26', 'code' => 'MED-TD26', 'title' => 'Energia Solar i Autoconsum',

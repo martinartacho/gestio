@@ -29,6 +29,7 @@ class CampusTeacher extends Model
     protected $casts = [
         'areas'                  => 'array',
         'metadata'               => 'array',
+        'dni'                    => 'encrypted',
         'bank_iban'              => 'encrypted',
         'bank_holder'            => 'encrypted',
         'fiscal_id'              => 'encrypted',

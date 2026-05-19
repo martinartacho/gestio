@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('bio')->nullable();
 
             // Dades personals ampliades
-            $table->string('dni', 20)->nullable();
+            $table->text('dni')->nullable();             // encriptat al model
             $table->string('address')->nullable();
             $table->string('postal_code', 10)->nullable();
             $table->string('city')->nullable();
