@@ -13,18 +13,23 @@ class CampusTeacherFactory extends Factory
         $lastName  = $this->faker->lastName();
 
         return [
-            'user_id'        => null,
-            'code'           => strtoupper(
+            'user_id'              => null,
+            'code'                 => strtoupper(
                 substr(Str::ascii($firstName), 0, 3) .
                 substr(Str::ascii($lastName),  0, 3)
             ),
-            'first_name'     => $firstName,
-            'last_name'      => $lastName,
-            'email'          => $this->faker->unique()->safeEmail(),
-            'phone'          => $this->faker->phoneNumber(),
-            'specialization' => $this->faker->words(3, true),
-            'bio'            => null,
-            'status'         => 'active',
+            'first_name'           => $firstName,
+            'last_name'            => $lastName,
+            'email'                => $this->faker->unique()->safeEmail(),
+            'phone'                => $this->faker->phoneNumber(),
+            'specialization'       => $this->faker->words(3, true),
+            'bio'                  => null,
+            'status'               => 'active',
+            'needs_payment'        => true,
+            'data_consent'         => false,
+            'fiscal_responsibility' => false,
+            'ceded_confirmation'   => false,
+            'payment_status'       => 'pending',
         ];
     }
 

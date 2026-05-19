@@ -8,7 +8,7 @@ class CampusSeasonFactory extends Factory
 {
     public function definition(): array
     {
-        $year = $this->faker->numberBetween(2025, 2030);
+        $year = $this->faker->unique()->numberBetween(1900, 2900);
         $quad = $this->faker->randomElement([1, 2]);
         $name = ($quad === 1 ? 'Tardor' : 'Primavera') . " {$year}";
 
