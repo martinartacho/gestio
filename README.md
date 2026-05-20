@@ -16,15 +16,15 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 ### Gestió del campus
 | Mòdul | Descripció |
 |---|---|
-| Temporades | Anys acadèmics i quadrimestres |
+| Temporades | Anys acadèmics i quadrimestres amb dates d'inscripció |
 | Categories | Àrees temàtiques amb color identificador |
 | Espais | Aules i ubicacions amb capacitat |
 | Franges horàries | Horaris setmanals reutilitzables |
-| Professors | Fitxa amb codi, especialitat i estat |
-| Cursos | Gestió completa: codi, format, dates, sessions, preu |
+| Professors | Fitxa completa: dades personals, fiscals, bancàries (encriptades), RGPD |
+| Cursos | Gestió completa: codi, format, dates, sessions, preu, professors assignats |
 
 ### Calendari visual
-- Vista mensual de sessions de cursos per temporada
+- Vista mensual i setmanal de sessions per temporada
 - Clic sobre un event per veure el detall del curs
 - Drag & drop per reubicar dates (només admins)
 - Títol de l'event: `codi_curs / codi_professor`
@@ -32,8 +32,8 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 ### Mòdul Alumnat (portal públic)
 | Recurs | Descripció |
 |---|---|
-| Catàleg públic | `/cursos` — llista de cursos actius i públics de la temporada activa |
-| Detall de curs | `/cursos/{slug}` — fitxa completa amb botó d'inscripció |
+| Catàleg públic | `/cursos` — llista de cursos actius i públics, filtrable per temporada |
+| Detall de curs | `/cursos/{slug}` — fitxa completa amb botó d'inscripció o estat (finalitzat/properament) |
 | Portal alumne | `/portal/meus-cursos` — llista d'inscripcions amb estat |
 | Registre i login | `/portal/registre` i `/portal/login` — auth independent (guard `student`) |
 | Pagament Stripe | Checkout Session amb confirmació via webhook |
@@ -44,12 +44,20 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 2. Webhook `checkout.session.completed` → `campus_enrollments.status = paid`
 3. Pivot `campus_course_student` s'actualitza amb l'alumne confirmat
 
+### Mòdul Tresoreria
+| Recurs | Descripció |
+|---|---|
+| Inscripcions | Alta d'alumnes a cursos, estat, domiciliació bancària, RGPD |
+| Pagaments alumnes | Registre de pagaments per inscripció (transferència, rebut, efectiu…) |
+| Liquidacions professors | Ordre de pagament per professor/curs/temporada amb sessions, import brut, retenció i net |
+
 ### Control d'accés
 | Rol | Permisos |
 |---|---|
 | `admin` | Accés total + drag & drop al calendari |
 | `manager` | Gestió de cursos, professors i categories |
 | `secretaria` | Visualització de tot el catàleg |
+| `tresoreria` | Inscripcions, pagaments, liquidacions i fitxa fiscal de professors |
 | `editor` | Gestió d'usuaris i cursos |
 | `viewer` | Només lectura |
 
@@ -96,8 +104,17 @@ Accedeix al panel a `/admin` i al catàleg públic a `/cursos`.
 | admin@app.com | admin |
 | manager@app.com | manager |
 | secretaria@app.com | secretaria |
+| tresoreria@app.com | tresoreria |
 | editor@app.com | editor |
 | viewer@app.com | viewer |
+
+## Dades de prova (CampusSeeder)
+
+El seeder genera dades realistes per a tres temporades:
+
+- **Tardor 2025-2026** — cursos tancats (temporada passada)
+- **Primavera 2026** — temporada activa amb cursos en curs
+- **Tardor 2026-2027** — en preparació (temporada futura)
 
 ## Alumnes de prova (CampusStudentSeeder)
 

@@ -4,8 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeacherResource\Pages;
 use App\Models\CampusTeacher;
-use Filament\Actions\{Action, BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction};
-use Filament\Forms\Components\{Select, TextInput, Textarea, Toggle};
+use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction};
+use Filament\Forms\Components\{DatePicker, DateTimePicker, Select, TagsInput, Textarea, TextInput, Toggle};
 use Filament\Schemas\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -31,14 +31,20 @@ class TeacherResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
+        $isTresoreria = fn() => auth()->user()?->hasAnyRole(['admin', 'tresoreria']);
+
         return $schema->components([
-            Section::make(__('site.teacher_personal'))->columns(2)->schema([
+
+            // ── Dades personals ───────────────────────────────────────────
+            Section::make(__('site.teacher_personal'))->columns(3)->schema([
                 TextInput::make('code')
                     ->label(__('site.teacher_code'))
-                    ->maxLength(20)
-                    ->unique(ignoreRecord: true)
-                    ->placeholder('ex: JM, ABC')
-                    ->columnSpan(1),
+                    ->maxLength(20)->unique(ignoreRecord: true)
+                    ->placeholder('ex: JM, ABC'),
+
+                TextInput::make('degree')
+                    ->label(__('site.teacher_degree'))
+                    ->maxLength(20)->placeholder('Dr., Dra., Prof.'),
 
                 TextInput::make('first_name')
                     ->label(__('site.teacher_firstname'))
@@ -48,29 +54,177 @@ class TeacherResource extends Resource
                     ->label(__('site.teacher_lastname'))
                     ->required()->maxLength(100),
 
+                TextInput::make('title')
+                    ->label(__('site.teacher_title'))
+                    ->maxLength(150),
+
                 TextInput::make('specialization')
                     ->label(__('site.teacher_spec'))
-                    ->maxLength(150)->columnSpanFull(),
+                    ->maxLength(150),
+
+                TagsInput::make('areas')
+                    ->label(__('site.teacher_areas'))
+                    ->columnSpanFull(),
 
                 Textarea::make('bio')
                     ->label(__('site.teacher_bio'))
                     ->rows(3)->columnSpanFull(),
             ]),
 
+            // ── Contacte ──────────────────────────────────────────────────
             Section::make(__('site.teacher_contact'))->columns(2)->schema([
                 TextInput::make('email')
                     ->label(__('site.email'))
                     ->email()->maxLength(150),
 
                 TextInput::make('phone')
-                    ->label('Telèfon')
+                    ->label(__('site.phone'))
                     ->tel()->maxLength(20),
 
                 Select::make('status')
                     ->label(__('site.teacher_status'))
                     ->options(CampusTeacher::STATUSES)
                     ->default('active')->required()->native(false),
+
+                DatePicker::make('hiring_date')
+                    ->label(__('site.teacher_hiring_date'))
+                    ->nullable()->native(false),
+
+                Textarea::make('observacions')
+                    ->label(__('site.teacher_observacions'))
+                    ->rows(2)->columnSpanFull(),
             ]),
+
+            // ── Adreça i identificació ────────────────────────────────────
+            Section::make(__('site.teacher_address_section'))->columns(2)
+                ->visible(fn() => auth()->user()?->hasAnyRole(['admin', 'manager', 'tresoreria']))
+                ->schema([
+                    TextInput::make('dni')
+                        ->label(__('site.teacher_dni'))
+                        ->maxLength(20),
+
+                    TextInput::make('address')
+                        ->label(__('site.teacher_address'))
+                        ->maxLength(255)->columnSpanFull(),
+
+                    TextInput::make('city')
+                        ->label(__('site.teacher_city'))
+                        ->maxLength(100),
+
+                    TextInput::make('postal_code')
+                        ->label(__('site.teacher_postal_code'))
+                        ->maxLength(10),
+                ]),
+
+            // ── Dades fiscals ─────────────────────────────────────────────
+            Section::make(__('site.teacher_fiscal'))->columns(2)
+                ->visible($isTresoreria)
+                ->schema([
+                    Select::make('fiscal_situation')
+                        ->label(__('site.fiscal_situation'))
+                        ->options(CampusTeacher::FISCAL_SITUATIONS)
+                        ->nullable()->native(false),
+
+                    Select::make('payment_type')
+                        ->label(__('site.payment_type'))
+                        ->options(CampusTeacher::PAYMENT_TYPES)
+                        ->nullable()->native(false),
+
+                    Toggle::make('needs_payment')
+                        ->label(__('site.needs_payment'))
+                        ->default(true)->inline(false),
+
+                    Toggle::make('invoice')
+                        ->label(__('site.teacher_invoice'))
+                        ->nullable()->inline(false),
+                ]),
+
+            // ── Dades bancàries ───────────────────────────────────────────
+            Section::make(__('site.teacher_bank'))->columns(2)
+                ->visible($isTresoreria)
+                ->schema([
+                    TextInput::make('bank_iban')
+                        ->label(__('site.bank_iban'))
+                        ->maxLength(34)->placeholder('ES00 0000 0000 00 0000000000'),
+
+                    TextInput::make('bank_holder')
+                        ->label(__('site.bank_holder'))
+                        ->maxLength(150),
+
+                    TextInput::make('fiscal_id')
+                        ->label(__('site.fiscal_id'))
+                        ->maxLength(20),
+                ]),
+
+            // ── Beneficiari ───────────────────────────────────────────────
+            Section::make(__('site.teacher_beneficiary'))->columns(2)
+                ->visible($isTresoreria)
+                ->schema([
+                    TextInput::make('beneficiary_dni')
+                        ->label(__('site.beneficiary_dni'))
+                        ->maxLength(20),
+
+                    TextInput::make('beneficiary_iban')
+                        ->label(__('site.beneficiary_iban'))
+                        ->maxLength(34),
+
+                    TextInput::make('beneficiary_holder')
+                        ->label(__('site.beneficiary_holder'))
+                        ->maxLength(150),
+
+                    Select::make('beneficiary_fiscal_situation')
+                        ->label(__('site.beneficiary_fiscal_situation'))
+                        ->options(CampusTeacher::FISCAL_SITUATIONS)
+                        ->nullable()->native(false),
+
+                    TextInput::make('beneficiary_city')
+                        ->label(__('site.beneficiary_city'))
+                        ->maxLength(100),
+
+                    TextInput::make('beneficiary_postal_code')
+                        ->label(__('site.beneficiary_postal_code'))
+                        ->maxLength(10),
+
+                    Toggle::make('beneficiary_invoice')
+                        ->label(__('site.beneficiary_invoice'))
+                        ->nullable()->inline(false),
+                ]),
+
+            // ── RGPD i consentiments ──────────────────────────────────────
+            Section::make(__('site.teacher_rgpd'))->columns(3)
+                ->visible($isTresoreria)
+                ->schema([
+                    Toggle::make('data_consent')
+                        ->label(__('site.data_consent'))
+                        ->default(false)->inline(false),
+
+                    Toggle::make('fiscal_responsibility')
+                        ->label(__('site.fiscal_responsibility'))
+                        ->default(false)->inline(false),
+
+                    Toggle::make('ceded_confirmation')
+                        ->label(__('site.ceded_confirmation'))
+                        ->default(false)->inline(false),
+                ]),
+
+            // ── Estat del pagament ────────────────────────────────────────
+            Section::make(__('site.teacher_payment_tracking'))->columns(2)
+                ->visible($isTresoreria)
+                ->schema([
+                    Select::make('payment_status')
+                        ->label(__('site.teacher_payment_status'))
+                        ->options(CampusTeacher::PAYMENT_STATUSES)
+                        ->default('pending')->required()->native(false),
+
+                    DateTimePicker::make('payment_confirmed_at')
+                        ->label(__('site.payment_confirmed_at'))
+                        ->nullable()->native(false),
+
+                    TextInput::make('payment_pdf_path')
+                        ->label(__('site.payment_pdf_path'))
+                        ->maxLength(500)->columnSpanFull(),
+                ]),
+
         ]);
     }
 
@@ -103,6 +257,13 @@ class TeacherResource extends Resource
                     ->label(__('site.courses'))
                     ->counts('courses')->badge()->color('primary'),
 
+                Tables\Columns\TextColumn::make('payment_status')
+                    ->label(__('site.teacher_payment_status'))
+                    ->formatStateUsing(fn($state) => CampusTeacher::PAYMENT_STATUSES[$state] ?? $state)
+                    ->badge()
+                    ->color(fn($state) => CampusTeacher::PAYMENT_STATUS_COLORS[$state] ?? 'gray')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('site.status'))
                     ->formatStateUsing(fn($state) => CampusTeacher::STATUSES[$state] ?? $state)
@@ -115,6 +276,11 @@ class TeacherResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options(CampusTeacher::STATUSES)
+                    ->native(false),
+
+                Tables\Filters\SelectFilter::make('payment_status')
+                    ->label(__('site.teacher_payment_status'))
+                    ->options(CampusTeacher::PAYMENT_STATUSES)
                     ->native(false),
             ])
             ->actions([

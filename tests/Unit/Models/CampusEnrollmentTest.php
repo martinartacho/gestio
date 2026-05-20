@@ -21,15 +21,24 @@ class CampusEnrollmentTest extends TestCase
         $this->assertArrayHasKey('refunded',  CampusEnrollment::STATUSES);
     }
 
+    private function baseEnrollmentData(CampusStudent $student, CampusCourse $course): array
+    {
+        return [
+            'student_id'      => $student->id,
+            'course_id'       => $course->id,
+            'first_name'      => $student->first_name,
+            'last_name'       => $student->last_name,
+            'email'           => $student->email,
+            'enrollment_date' => now()->toDateString(),
+        ];
+    }
+
     public function test_enrollment_defaults_to_pending(): void
     {
         $student = CampusStudent::factory()->create();
         $course  = CampusCourse::factory()->create();
 
-        $enrollment = CampusEnrollment::create([
-            'student_id' => $student->id,
-            'course_id'  => $course->id,
-        ]);
+        $enrollment = CampusEnrollment::create($this->baseEnrollmentData($student, $course));
 
         $this->assertSame('pending', $enrollment->fresh()->status);
     }
@@ -39,12 +48,10 @@ class CampusEnrollmentTest extends TestCase
         $student = CampusStudent::factory()->create();
         $course  = CampusCourse::factory()->create();
 
-        $enrollment = CampusEnrollment::create([
-            'student_id' => $student->id,
-            'course_id'  => $course->id,
-            'status'     => 'paid',
-            'paid_at'    => now(),
-        ]);
+        $enrollment = CampusEnrollment::create(array_merge(
+            $this->baseEnrollmentData($student, $course),
+            ['status' => 'paid', 'paid_at' => now()],
+        ));
 
         $this->assertTrue($enrollment->isPaid());
     }
@@ -53,7 +60,7 @@ class CampusEnrollmentTest extends TestCase
     {
         $student    = CampusStudent::factory()->create();
         $course     = CampusCourse::factory()->create();
-        $enrollment = CampusEnrollment::create(['student_id' => $student->id, 'course_id' => $course->id]);
+        $enrollment = CampusEnrollment::create($this->baseEnrollmentData($student, $course));
 
         $this->assertInstanceOf(CampusStudent::class, $enrollment->student);
     }
@@ -62,7 +69,7 @@ class CampusEnrollmentTest extends TestCase
     {
         $student    = CampusStudent::factory()->create();
         $course     = CampusCourse::factory()->create();
-        $enrollment = CampusEnrollment::create(['student_id' => $student->id, 'course_id' => $course->id]);
+        $enrollment = CampusEnrollment::create($this->baseEnrollmentData($student, $course));
 
         $this->assertInstanceOf(CampusCourse::class, $enrollment->course);
     }
