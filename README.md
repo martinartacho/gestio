@@ -154,17 +154,6 @@ El seeder genera dades realistes per a cinc temporades, 8 professors i 35 cursos
 
 8 professors amb fitxa completa (dades fiscals, bancàries encriptades, RGPD). Contrasenya definida per `SEEDER_TEACHER_PASSWORD` al `.env`. Accés a `/professorat/login`.
 
-| Codi | Nom | Estat |
-|---|---|---|
-| ANNBER | Anna Bernad | actiu |
-| MARSOL | Marta Soler | actiu |
-| LAUMAR | Laura Martínez | actiu |
-| JOASEG | Joan Segura | actiu |
-| CLAROS | Clàudia Ros | actiu |
-| MIGPUI | Miquel Puig | actiu |
-| NURFIT | Núria Fité | actiu |
-| BERPLA | Bernat Planes | inactiu |
-
 ## Alumnes de prova (CampusStudentSeeder)
 
 12 alumnes amb 14 inscripcions variades (paid, pending, cancelled, refunded) en fins a 4 cursos.
@@ -195,4 +184,4 @@ php artisan test
 
 ## Llicència
 
-Projecte privat — tots els drets reservats.
+[MIT License](LICENSE) — projecte obert a contribucions i millores.
