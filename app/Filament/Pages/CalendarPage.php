@@ -32,7 +32,7 @@ class CalendarPage extends Page
 
     public function mount(): void
     {
-        $active = CampusSeason::where('is_active', true)->first();
+        $active = CampusSeason::where('status', 'active')->first();
         $this->currentSeasonId = $active?->id;
     }
 

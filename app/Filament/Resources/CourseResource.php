@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CourseResource\Pages;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
-use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction};
+use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction, Action};
 use Filament\Forms\Components\{DatePicker, Select, Textarea, TextInput, Toggle};
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -68,7 +68,7 @@ class CourseResource extends Resource
                 Select::make('season_id')
                     ->label(__('site.season'))
                     ->relationship('season', 'name')
-                    ->default(fn() => CampusSeason::where('is_active', true)->first()?->id)
+                    ->default(fn() => CampusSeason::where('status', 'active')->first()?->id)
                     ->required()->searchable()->preload()->native(false),
 
                 Grid::make(2)->schema([
@@ -151,18 +151,15 @@ class CourseResource extends Resource
             ]),
 
             // 7. Configuració
-            Section::make(__('site.course_config'))->columns(3)->schema([
+            Section::make(__('site.course_config'))->columns(2)->schema([
                 Select::make('status')
                     ->label(__('site.status'))
                     ->options(__('site.course_statuses'))
                     ->required()->native(false)->default('draft'),
 
-                Toggle::make('is_active')
-                    ->label(__('site.course_is_active'))
-                    ->default(true)->inline(false),
-
                 Toggle::make('is_public')
                     ->label(__('site.course_is_public'))
+                    ->helperText(__('site.course_is_public_hint'))
                     ->default(true)->inline(false),
             ]),
         ]);
@@ -224,9 +221,9 @@ class CourseResource extends Resource
                     ->badge()
                     ->color(fn($state) => CampusCourse::STATUS_COLORS[$state] ?? 'gray'),
 
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label(__('site.active'))->boolean()
-                    ->trueColor('success')->falseColor('danger'),
+                Tables\Columns\IconColumn::make('is_public')
+                    ->label(__('site.public'))->boolean()
+                    ->trueColor('success')->falseColor('gray'),
 
                 Tables\Columns\TextColumn::make('start_date')
                     ->label(__('site.course_start'))
@@ -256,13 +253,19 @@ class CourseResource extends Resource
                     ->options(__('site.course_statuses'))
                     ->native(false),
 
-                Tables\Filters\TernaryFilter::make('is_active')
-                    ->label(__('site.active'))
-                    ->trueLabel(__('site.only_active'))
-                    ->falseLabel(__('site.only_inactive'))
+                Tables\Filters\TernaryFilter::make('is_public')
+                    ->label(__('site.public'))
+                    ->trueLabel(__('site.only_public'))
+                    ->falseLabel(__('site.only_private'))
                     ->native(false),
             ])
             ->actions([
+                Action::make('preview')
+                    ->label('Previsualitzar')
+                    ->icon('heroicon-o-eye')
+                    ->color('gray')
+                    ->url(fn(CampusCourse $r) => route('campus.catalog.show', ['slug' => $r->slug, 'preview' => 1]))
+                    ->openUrlInNewTab(),
                 EditAction::make()->label(__('site.edit')),
                 DeleteAction::make()->label(__('site.delete')),
             ])
@@ -275,7 +278,7 @@ class CourseResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) CampusCourse::where('is_active', true)->count();
+        return (string) CampusCourse::where('status', 'active')->count();
     }
 
     public static function getPages(): array

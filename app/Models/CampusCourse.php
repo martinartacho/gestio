@@ -21,7 +21,7 @@ class CampusCourse extends Model
         'sessions', 'hours',
         'format', 'max_students', 'price',
         'description', 'objectives', 'requirements',
-        'status', 'is_active', 'is_public', 'created_by',
+        'status', 'is_public', 'created_by',
     ];
 
     protected $casts = [
@@ -31,7 +31,6 @@ class CampusCourse extends Model
         'hours'        => 'integer',
         'max_students' => 'integer',
         'price'        => 'decimal:2',
-        'is_active'    => 'boolean',
         'is_public'    => 'boolean',
     ];
 
@@ -162,6 +161,11 @@ class CampusCourse extends Model
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────
+    public function isVisible(): bool
+    {
+        return $this->status === 'active' && $this->is_public;
+    }
+
     public function isTemplate(): bool
     {
         return is_null($this->parent_id);

@@ -16,12 +16,24 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 ### Gestió del campus
 | Mòdul | Descripció |
 |---|---|
-| Temporades | Anys acadèmics i quadrimestres amb dates d'inscripció |
+| Temporades | Anys acadèmics i quadrimestres amb dates d'inscripció; estat `draft` / `active` / `closed` |
 | Categories | Àrees temàtiques amb color identificador |
 | Espais | Aules i ubicacions amb capacitat |
 | Franges horàries | Horaris setmanals reutilitzables |
 | Professors | Fitxa completa: dades personals, fiscals, bancàries (encriptades), RGPD |
 | Cursos | Gestió completa: codi, format, dates, sessions, preu, professors assignats |
+
+### Regles de visibilitat i inscripció
+
+| Condició | Resultat |
+|---|---|
+| `campus_seasons.status = active` | Temporada visible al catàleg |
+| `campus_courses.status = active` AND `is_public = true` | Curs visible al catàleg |
+| anterior + `season.enrollmentIsOpen()` | Inscripció disponible |
+| `season.status = closed` | Temporada visible però no inscrivible |
+| `season.status = draft` | Temporada oculta al públic |
+
+**Mode previsualització** (`?preview=1`): usuaris del panel amb permís `courses.edit` poden veure tots els cursos i temporades (inclosos `draft` i `is_public=false`) des de `/cursos?preview=1` o des del botó **Vista prèvia** al CalendarPage.
 
 ### Calendari visual
 - Vista mensual i setmanal de sessions per temporada
@@ -110,11 +122,15 @@ Accedeix al panel a `/admin` i al catàleg públic a `/cursos`.
 
 ## Dades de prova (CampusSeeder)
 
-El seeder genera dades realistes per a tres temporades:
+El seeder genera dades realistes per a cinc temporades, 8 professors i 35 cursos:
 
-- **Tardor 2025-2026** — cursos tancats (temporada passada)
-- **Primavera 2026** — temporada activa amb cursos en curs
-- **Tardor 2026-2027** — en preparació (temporada futura)
+| Temporada | Estat | Descripció |
+|---|---|---|
+| Tardor 2024 | `closed` | Tancada |
+| Primavera 2025 | `closed` | Tancada |
+| Tardor 2025 | `closed` | Tancada |
+| Primavera 2026 | `active` | Temporada en curs |
+| Tardor 2026 | `draft` | En preparació |
 
 ## Alumnes de prova (CampusStudentSeeder)
 

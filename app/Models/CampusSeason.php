@@ -19,7 +19,7 @@ class CampusSeason extends Model
         'end_date',
         'start_date_enrollment',
         'end_date_enrollment',
-        'is_active',
+        'status',
     ];
 
     protected $casts = [
@@ -29,7 +29,18 @@ class CampusSeason extends Model
         'end_date'              => 'date',
         'start_date_enrollment' => 'date',
         'end_date_enrollment'   => 'date',
-        'is_active'             => 'boolean',
+    ];
+
+    public const STATUSES = [
+        'draft'  => 'En preparació',
+        'active' => 'Activa',
+        'closed' => 'Tancada',
+    ];
+
+    public const STATUS_COLORS = [
+        'draft'  => 'gray',
+        'active' => 'success',
+        'closed' => 'danger',
     ];
 
     public function courses(): HasMany
@@ -53,7 +64,22 @@ class CampusSeason extends Model
 
     public static function active(): ?self
     {
-        return static::where('is_active', true)->first();
+        return static::where('status', 'active')->first();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->status === 'draft';
+    }
+
+    public function isClosed(): bool
+    {
+        return $this->status === 'closed';
     }
 
     public function isPast(): bool

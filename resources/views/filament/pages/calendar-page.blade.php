@@ -17,8 +17,24 @@
             </x-filament::input.wrapper>
         </div>
 
-{{-- Exportació WooCommerce --}}
-        <div class="ml-auto">
+{{-- Botons dreta --}}
+        <div class="ml-auto flex items-center gap-2">
+
+            {{-- Vista prèvia catàleg --}}
+            <x-filament::button
+                tag="a"
+                :href="$currentSeasonId
+                    ? route('campus.catalog.index', ['season' => $currentSeasonId, 'preview' => 1])
+                    : route('campus.catalog.index', ['preview' => 1])"
+                target="_blank"
+                color="info"
+                size="sm"
+                icon="heroicon-o-eye"
+            >
+                Vista prèvia
+            </x-filament::button>
+
+            {{-- Exportació WooCommerce --}}
             <x-filament::button
                 tag="a"
                 :href="route('calendar.export.woocommerce', ['season' => $currentSeasonId])"
@@ -28,6 +44,7 @@
             >
                 {{ __('site.export_wp') }}
             </x-filament::button>
+
         </div>
 
     </div>
@@ -138,6 +155,18 @@
                     >
                         {{ __('site.cancel') }}
                     </x-filament::button>
+                    @if($course?->slug)
+                    <x-filament::button
+                        tag="a"
+                        :href="route('campus.catalog.show', ['slug' => $course->slug, 'preview' => 1])"
+                        target="_blank"
+                        color="info"
+                        size="sm"
+                        icon="heroicon-o-eye"
+                    >
+                        Vista prèvia
+                    </x-filament::button>
+                    @endif
                     @can('courses.edit')
                     <x-filament::button
                         tag="a"

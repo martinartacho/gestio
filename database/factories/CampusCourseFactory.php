@@ -27,14 +27,13 @@ class CampusCourseFactory extends Factory
             'max_students'=> $this->faker->numberBetween(10, 30),
             'price'       => $this->faker->randomFloat(2, 50, 500),
             'status'      => 'draft',
-            'is_active'   => true,
             'is_public'   => false,
         ];
     }
 
     public function active(): static
     {
-        return $this->state(['status' => 'active', 'is_active' => true]);
+        return $this->state(['status' => 'active', 'is_public' => true]);
     }
 
     public function edition(int $parentId): static

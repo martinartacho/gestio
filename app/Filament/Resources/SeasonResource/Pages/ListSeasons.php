@@ -82,7 +82,7 @@ class ListSeasons extends ListRecords
                     foreach ($periods as [$q, $name, $start, $end]) {
                         $season = CampusSeason::firstOrCreate(
                             ['year' => $year, 'quadrimester' => $q],
-                            ['name' => $name, 'start_date' => $start, 'end_date' => $end, 'is_active' => false]
+                            ['name' => $name, 'start_date' => $start, 'end_date' => $end, 'status' => 'draft']
                         );
                         $season->wasRecentlyCreated ? $created++ : $skipped++;
                     }

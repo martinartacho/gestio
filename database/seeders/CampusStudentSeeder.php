@@ -95,13 +95,18 @@ class CampusStudentSeeder extends Seeder
             }
 
             $enrollment = CampusEnrollment::create([
-                'student_id' => $student->id,
-                'course_id'  => $course->id,
-                'status'     => $status,
-                'amount'     => $course->price,
-                'paid_at'    => $paidAt,
-                'stripe_session_id'      => $status === 'paid' ? 'cs_test_seed_' . uniqid() : null,
-                'stripe_payment_intent'  => $status === 'paid' ? 'pi_test_seed_' . uniqid() : null,
+                'student_id'      => $student->id,
+                'course_id'       => $course->id,
+                'first_name'      => $student->first_name,
+                'last_name'       => $student->last_name,
+                'email'           => $student->email,
+                'phone'           => $student->phone,
+                'enrollment_date' => ($paidAt ?? now())->toDateString(),
+                'status'          => $status,
+                'amount'          => $course->price,
+                'paid_at'         => $paidAt,
+                'stripe_session_id'     => $status === 'paid' ? 'cs_test_seed_' . uniqid() : null,
+                'stripe_payment_intent' => $status === 'paid' ? 'pi_test_seed_' . uniqid() : null,
             ]);
 
             // Inserir al pivot campus_course_student només si pagat

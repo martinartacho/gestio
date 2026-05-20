@@ -183,7 +183,7 @@ class CampusSeeder extends Seeder
             );
         }
 
-        $tAnna   = CampusTeacher::where('code', 'ANNEST')->first();
+        $tAnna   = CampusTeacher::where('code', 'ANNBER')->first();
         $tMarta  = CampusTeacher::where('code', 'MARSOL')->first();
         $tLaura  = CampusTeacher::where('code', 'LAUMAR')->first();
         $tJoan   = CampusTeacher::where('code', 'JOASEG')->first();
@@ -196,29 +196,29 @@ class CampusSeeder extends Seeder
         $sAnt1 = CampusSeason::firstOrCreate(
             ['year' => 2024, 'quadrimester' => 1],
             ['name' => 'Tardor 2024', 'start_date' => '2024-09-01', 'end_date' => '2025-01-31',
-             'start_date_enrollment' => '2024-07-01', 'end_date_enrollment' => '2024-09-15', 'is_active' => false]
+             'start_date_enrollment' => '2024-07-01', 'end_date_enrollment' => '2024-09-15', 'status' => 'closed']
         );
         $sAnt2 = CampusSeason::firstOrCreate(
             ['year' => 2025, 'quadrimester' => 2],
             ['name' => 'Primavera 2025', 'start_date' => '2025-02-01', 'end_date' => '2025-06-30',
-             'start_date_enrollment' => '2025-01-01', 'end_date_enrollment' => '2025-01-25', 'is_active' => false]
+             'start_date_enrollment' => '2025-01-01', 'end_date_enrollment' => '2025-01-25', 'status' => 'closed']
         );
         // Any actual: 2025-2026
         $sTardor = CampusSeason::firstOrCreate(
             ['year' => 2025, 'quadrimester' => 1],
             ['name' => 'Tardor 2025', 'start_date' => '2025-09-01', 'end_date' => '2026-01-31',
-             'start_date_enrollment' => '2025-07-01', 'end_date_enrollment' => '2025-09-15', 'is_active' => false]
+             'start_date_enrollment' => '2025-07-01', 'end_date_enrollment' => '2025-09-15', 'status' => 'closed']
         );
         $sPrimavera = CampusSeason::firstOrCreate(
             ['year' => 2026, 'quadrimester' => 2],
             ['name' => 'Primavera 2026', 'start_date' => '2026-02-01', 'end_date' => '2026-06-30',
-             'start_date_enrollment' => '2026-01-01', 'end_date_enrollment' => '2026-01-25', 'is_active' => true]
+             'start_date_enrollment' => '2026-01-01', 'end_date_enrollment' => '2026-01-25', 'status' => 'active']
         );
         // En preparació: tardor 2026-2027
         $sPrep = CampusSeason::firstOrCreate(
             ['year' => 2026, 'quadrimester' => 1],
             ['name' => 'Tardor 2026', 'start_date' => '2026-09-01', 'end_date' => '2027-01-31',
-             'start_date_enrollment' => '2026-07-01', 'end_date_enrollment' => '2026-09-15', 'is_active' => false]
+             'start_date_enrollment' => '2026-07-01', 'end_date_enrollment' => '2026-09-15', 'status' => 'draft']
         );
 
         // ── Cursos per temporada ──────────────────────────────────────────
