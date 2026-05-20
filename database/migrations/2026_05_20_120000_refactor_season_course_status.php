@@ -39,10 +39,20 @@ return new class extends Migration
             $table->dropColumn('is_active');
         });
 
-        // 2. campus_courses: eliminar is_active
+        // 2. campus_courses: crear índex simple category_id per suportar la FK
+        Schema::table('campus_courses', function (Blueprint $table) {
+            $table->index('category_id', 'campus_courses_category_id_plain_index');
+        });
+
+        // 3. campus_courses: eliminar índex compost i columna is_active
         Schema::table('campus_courses', function (Blueprint $table) {
             $table->dropIndex('campus_courses_category_id_is_active_index');
             $table->dropColumn('is_active');
+        });
+
+        // 4. campus_courses: afegir índex de reemplaçament (category_id, status)
+        Schema::table('campus_courses', function (Blueprint $table) {
+            $table->index(['category_id', 'status'], 'campus_courses_category_id_status_index');
         });
     }
 

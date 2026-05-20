@@ -183,7 +183,7 @@ class CampusSeeder extends Seeder
             );
         }
 
-        $tAnna   = CampusTeacher::where('code', 'ANNEST')->first();
+        $tAnna   = CampusTeacher::where('code', 'ANNBER')->first();
         $tMarta  = CampusTeacher::where('code', 'MARSOL')->first();
         $tLaura  = CampusTeacher::where('code', 'LAUMAR')->first();
         $tJoan   = CampusTeacher::where('code', 'JOASEG')->first();
