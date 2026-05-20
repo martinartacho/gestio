@@ -195,25 +195,30 @@ class CampusSeeder extends Seeder
         // Any anterior: 2024-2025
         $sAnt1 = CampusSeason::firstOrCreate(
             ['year' => 2024, 'quadrimester' => 1],
-            ['name' => 'Tardor 2024', 'start_date' => '2024-09-01', 'end_date' => '2025-01-31', 'is_active' => false]
+            ['name' => 'Tardor 2024', 'start_date' => '2024-09-01', 'end_date' => '2025-01-31',
+             'start_date_enrollment' => '2024-07-01', 'end_date_enrollment' => '2024-09-15', 'is_active' => false]
         );
         $sAnt2 = CampusSeason::firstOrCreate(
             ['year' => 2025, 'quadrimester' => 2],
-            ['name' => 'Primavera 2025', 'start_date' => '2025-02-01', 'end_date' => '2025-06-30', 'is_active' => false]
+            ['name' => 'Primavera 2025', 'start_date' => '2025-02-01', 'end_date' => '2025-06-30',
+             'start_date_enrollment' => '2025-01-01', 'end_date_enrollment' => '2025-01-25', 'is_active' => false]
         );
         // Any actual: 2025-2026
         $sTardor = CampusSeason::firstOrCreate(
             ['year' => 2025, 'quadrimester' => 1],
-            ['name' => 'Tardor 2025', 'start_date' => '2025-09-01', 'end_date' => '2026-01-31', 'is_active' => false]
+            ['name' => 'Tardor 2025', 'start_date' => '2025-09-01', 'end_date' => '2026-01-31',
+             'start_date_enrollment' => '2025-07-01', 'end_date_enrollment' => '2025-09-15', 'is_active' => false]
         );
         $sPrimavera = CampusSeason::firstOrCreate(
             ['year' => 2026, 'quadrimester' => 2],
-            ['name' => 'Primavera 2026', 'start_date' => '2026-02-01', 'end_date' => '2026-06-30', 'is_active' => true]
+            ['name' => 'Primavera 2026', 'start_date' => '2026-02-01', 'end_date' => '2026-06-30',
+             'start_date_enrollment' => '2026-01-01', 'end_date_enrollment' => '2026-01-25', 'is_active' => true]
         );
         // En preparació: tardor 2026-2027
         $sPrep = CampusSeason::firstOrCreate(
             ['year' => 2026, 'quadrimester' => 1],
-            ['name' => 'Tardor 2026', 'start_date' => '2026-09-01', 'end_date' => '2027-01-31', 'is_active' => false]
+            ['name' => 'Tardor 2026', 'start_date' => '2026-09-01', 'end_date' => '2027-01-31',
+             'start_date_enrollment' => '2026-07-01', 'end_date_enrollment' => '2026-09-15', 'is_active' => false]
         );
 
         // ── Cursos per temporada ──────────────────────────────────────────
@@ -503,7 +508,7 @@ class CampusSeeder extends Seeder
 
         $n  = 3 + 6 + 8 + 4 + 5 + 9;
         $nc = 5 + 4 + 6 + 3 + 4;
-        $this->command->info("✅ CampusSeeder completat: 5 temporades, 6 categories, 8 espais, 9 franges, 8 professors, {$n} cursos, {$nc} liquidacions.");
+        $this->command->info("✅ CampusSeeder completat: 5 temporades amb dates inscripció, 6 categories, 8 espais, 9 franges, 8 professors, {$n} cursos, {$nc} liquidacions.");
     }
 
     private function seedPayment(

@@ -54,7 +54,6 @@ class CourseResourceTest extends TestCase
     public function test_course_is_template_by_default(): void
     {
         $course = CampusCourse::factory()->create(['parent_id' => null]);
-
         $this->assertTrue($course->isTemplate());
     }
 
@@ -65,5 +64,14 @@ class CourseResourceTest extends TestCase
 
         $this->assertTrue($edition->isEdition());
         $this->assertEquals($parent->id, $edition->parent_id);
+    }
+
+    public function test_admin_can_access_course_students_tab(): void
+    {
+        $course = CampusCourse::factory()->create();
+
+        $this->actingAs($this->admin)
+             ->get("/admin/courses/{$course->id}/students")
+             ->assertSuccessful();
     }
 }

@@ -56,9 +56,6 @@ class CategoryResourceTest extends TestCase
     {
         CampusCategory::factory()->create(['name' => 'Tecnologia', 'color' => 'blue']);
 
-        $this->assertDatabaseHas('campus_categories', [
-            'name'  => 'Tecnologia',
-            'color' => 'blue',
-        ]);
+        $this->assertDatabaseHas('campus_categories', ['name' => 'Tecnologia', 'color' => 'blue']);
     }
 }

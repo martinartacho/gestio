@@ -138,6 +138,22 @@ class CampusCourse extends Model
          ->withTimestamps();
     }
 
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(CampusEnrollment::class, 'course_id');
+    }
+
+    public function students(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            CampusStudent::class,
+            'campus_course_student',
+            'course_id',
+            'student_id'
+        )->withPivot('enrollment_id', 'enrolled_at')
+         ->withTimestamps();
+    }
+
     public function mainTeacher(): ?CampusTeacher
     {
         return $this->teachers()

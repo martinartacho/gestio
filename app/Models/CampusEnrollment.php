@@ -13,15 +13,16 @@ class CampusEnrollment extends Model
     protected $table = 'campus_enrollments';
 
     protected $fillable = [
-        'course_id',
+        'student_id', 'course_id', 'status', 'amount',
+        'stripe_session_id', 'stripe_payment_intent', 'paid_at', 'notes',
         'first_name', 'last_name', 'email', 'phone', 'dni',
-        'status', 'enrollment_date',
-        'bank_iban', 'bank_holder',
+        'enrollment_date', 'bank_iban', 'bank_holder',
         'rgpd_accepted', 'rgpd_accepted_at',
-        'notes',
     ];
 
     protected $casts = [
+        'amount'           => 'decimal:2',
+        'paid_at'          => 'datetime',
         'enrollment_date'  => 'date',
         'rgpd_accepted'    => 'boolean',
         'rgpd_accepted_at' => 'datetime',
@@ -29,17 +30,26 @@ class CampusEnrollment extends Model
 
     public const STATUSES = [
         'pending'   => 'Pendent',
+        'paid'      => 'Pagat',
         'confirmed' => 'Confirmada',
         'cancelled' => 'Cancel·lada',
         'completed' => 'Completada',
+        'refunded'  => 'Retornat',
     ];
 
     public const STATUS_COLORS = [
         'pending'   => 'warning',
+        'paid'      => 'success',
         'confirmed' => 'success',
         'cancelled' => 'danger',
         'completed' => 'gray',
+        'refunded'  => 'gray',
     ];
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(CampusStudent::class, 'student_id');
+    }
 
     public function course(): BelongsTo
     {
@@ -53,11 +63,14 @@ class CampusEnrollment extends Model
 
     public function getFullNameAttribute(): string
     {
-        return "{$this->first_name} {$this->last_name}";
+        if ($this->student) {
+            return $this->student->full_name;
+        }
+        return trim("{$this->first_name} {$this->last_name}");
     }
 
-    public function getTotalPaidAttribute(): float
+    public function isPaid(): bool
     {
-        return $this->payments()->where('status', 'completed')->sum('amount');
+        return in_array($this->status, ['paid', 'confirmed']);
     }
 }

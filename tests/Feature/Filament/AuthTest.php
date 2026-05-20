@@ -41,8 +41,7 @@ class AuthTest extends TestCase
 
     public function test_guest_is_redirected_to_login(): void
     {
-        $this->get('/admin')
-             ->assertRedirect();
+        $this->get('/admin')->assertRedirect();
     }
 
     public function test_active_tresoreria_can_access_panel(): void
