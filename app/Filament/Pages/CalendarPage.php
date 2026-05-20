@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\CampusCategory;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
 use Carbon\Carbon;
@@ -37,6 +38,34 @@ class CalendarPage extends Page
     }
 
     // ── Helpers per a la vista ────────────────────────────────────────────
+    private const COLOR_HEX = [
+        'red'    => '#ef4444',
+        'blue'   => '#3b82f6',
+        'purple' => '#a855f7',
+        'indigo' => '#6366f1',
+        'pink'   => '#ec4899',
+        'green'  => '#22c55e',
+        'orange' => '#f97316',
+        'yellow' => '#eab308',
+        'teal'   => '#14b8a6',
+        'cyan'   => '#06b6d4',
+    ];
+
+    public function getLegendCategories(): \Illuminate\Support\Collection
+    {
+        return CampusCategory::whereHas('courses', function ($q) {
+                if ($this->currentSeasonId) {
+                    $q->where('season_id', $this->currentSeasonId);
+                }
+            })
+            ->orderBy('order')
+            ->get()
+            ->map(fn($cat) => [
+                'name'  => $cat->name,
+                'color' => self::COLOR_HEX[$cat->color] ?? '#6b7280',
+            ]);
+    }
+
     public function getSeasonOptions(): array
     {
         return CampusSeason::orderByDesc('year')

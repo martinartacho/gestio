@@ -45,6 +45,38 @@
                 {{ __('site.export_wp') }}
             </x-filament::button>
 
+            {{-- Llegenda de colors (popover ⓘ) --}}
+            @php $legend = $this->getLegendCategories(); @endphp
+            @if ($legend->isNotEmpty())
+            <div x-data="{ open: false }" style="position:relative; display:inline-flex; align-items:center;" @keydown.escape.window="open = false">
+                <button
+                    @click="open = !open"
+                    title="Llegenda de colors"
+                    style="display:inline-flex; align-items:center; justify-content:center; width:1.5rem; height:1.5rem; border-radius:9999px; border:none; background:transparent; cursor:pointer; color:#9ca3af; flex-shrink:0;"
+                    onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'"
+                >
+                    <svg style="width:1.1rem; height:1.1rem;" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/>
+                    </svg>
+                </button>
+
+                <div
+                    x-show="open"
+                    x-transition
+                    @click.outside="open = false"
+                    style="display:none; position:absolute; right:0; top:1.8rem; z-index:30; width:15rem; background:#fff; border:1px solid #e5e7eb; border-radius:0.75rem; box-shadow:0 10px 15px -3px rgb(0 0 0/.1); padding:0.75rem;"
+                >
+                    <p style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af; margin-bottom:0.5rem;">Colors per categoria</p>
+                    @foreach ($legend as $item)
+                        <div style="display:flex; align-items:center; gap:0.6rem; padding:0.25rem 0;">
+                            <span style="width:0.7rem; height:0.7rem; border-radius:9999px; flex-shrink:0; background-color:{{ $item['color'] }}"></span>
+                            <span style="font-size:0.8rem; color:#374151;">{{ $item['name'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
         </div>
 
     </div>
