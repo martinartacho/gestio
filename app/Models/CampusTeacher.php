@@ -3,18 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class CampusTeacher extends Model
+class CampusTeacher extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
     protected $table = 'campus_teachers';
 
     protected $fillable = [
-        'user_id', 'code', 'first_name', 'last_name', 'email', 'phone', 'specialization', 'bio', 'status',
+        'user_id', 'code', 'first_name', 'last_name', 'email', 'password', 'phone', 'specialization', 'bio', 'status',
         'dni', 'address', 'postal_code', 'city', 'observacions',
         'degree', 'title', 'areas', 'hiring_date',
         'fiscal_situation', 'needs_payment', 'invoice', 'payment_type',
@@ -26,7 +27,10 @@ class CampusTeacher extends Model
         'metadata',
     ];
 
+    protected $hidden = ['password', 'remember_token'];
+
     protected $casts = [
+        'password' => 'hashed',
         'areas'                  => 'array',
         'metadata'               => 'array',
         'dni'                    => 'encrypted',

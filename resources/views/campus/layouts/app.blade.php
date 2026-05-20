@@ -44,8 +44,14 @@
         @yield('content')
     </main>
 
-    <footer class="border-t border-gray-200 text-center text-xs text-gray-400 py-4">
+    <footer class="border-t border-gray-200 text-center text-xs text-gray-400 py-5">
         Campus de Formació Continuada
+        &nbsp;·&nbsp;
+        <a href="{{ route('campus.catalog.index') }}" class="hover:text-gray-600">Catàleg</a>
+        &nbsp;·&nbsp;
+        <a href="{{ route('campus.login') }}" class="hover:text-gray-600">Alumnat</a>
+        &nbsp;·&nbsp;
+        <a href="{{ route('teacher.login') }}" class="hover:text-gray-600">Professorat</a>
         &nbsp;·&nbsp;
         <a href="/admin" class="hover:text-gray-600">Administració</a>
     </footer>
@@ -56,7 +62,7 @@
             'courses as courses_active_count'  => fn($q) => $q->where('status','active'),
             'courses as courses_public_count'  => fn($q) => $q->where('is_public', true),
         ])->orderByDesc('start_date')->get();
-        $dbgActive   = $dbgSeasons->firstWhere('is_active', true);
+        $dbgActive   = $dbgSeasons->firstWhere('status', 'active');
         $dbgEnroll   = \App\Models\CampusEnrollment::selectRaw('status, count(*) as total')
                             ->groupBy('status')->pluck('total','status');
         $dbgStudents = \App\Models\CampusStudent::count();
@@ -79,9 +85,9 @@
                     </tr></thead>
                     <tbody>
                     @foreach($dbgSeasons as $s)
-                    <tr class="border-b border-yellow-100 {{ $s->is_active ? 'bg-green-50 font-semibold' : '' }}">
-                        <td class="pr-4 py-0.5">{{ $s->name }} {{ $s->is_active ? '★' : '' }}</td>
-                        <td class="text-center pr-4">{{ $s->is_active ? 'SÍ' : 'no' }}</td>
+                    <tr class="border-b border-yellow-100 {{ $s->status === 'active' ? 'bg-green-50 font-semibold' : '' }}">
+                        <td class="pr-4 py-0.5">{{ $s->name }} {{ $s->status === 'active' ? '★' : '' }}</td>
+                        <td class="text-center pr-4">{{ $s->status === 'active' ? 'SÍ' : 'no' }}</td>
                         <td class="text-center pr-4">{{ $s->courses_count }}</td>
                         <td class="text-center pr-4">{{ $s->courses_active_count }}</td>
                         <td class="text-center">{{ $s->courses_public_count }}</td>

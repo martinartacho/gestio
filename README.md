@@ -40,6 +40,11 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 - Clic sobre un event per veure el detall del curs
 - Drag & drop per reubicar dates (només admins)
 - Títol de l'event: `codi_curs / codi_professor`
+- **Llegenda ⓘ**: popover de colors per categoria, reactiu a la temporada seleccionada
+
+### Pàgina llançadora
+
+`/` — portal d'entrada amb accés directe per perfil: **Alumnat**, **Professorat** i **Gestió**. Catàleg de cursos i registre accessibles des de la mateixa pàgina.
 
 ### Mòdul Alumnat (portal públic)
 | Recurs | Descripció |
@@ -55,6 +60,18 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 1. Alumne selecciona curs → Stripe Checkout
 2. Webhook `checkout.session.completed` → `campus_enrollments.status = paid`
 3. Pivot `campus_course_student` s'actualitza amb l'alumne confirmat
+
+### Mòdul Professorat (portal autenticat)
+
+| Recurs | Descripció |
+|---|---|
+| Login | `/professorat/login` — auth independent (guard `teacher`) |
+| Els meus cursos | `/professorat/portal` — cursos assignats amb badge d'alumnes i progress de sessions |
+| Detall de curs | `/professorat/portal/curs/{slug}` — llista d'alumnes matriculats |
+| Perfil | `/professorat/portal/perfil` — editar telèfon, bio i contrasenya |
+| Liquidacions | `/professorat/portal/liquidacions` — resum d'ordres de pagament per curs |
+
+**Progress de sessions**: si el curs té `calendar_notes` (dates reals), compta les sessions passades/futures a partir de les dates; si no, estimació setmanal. Exemple: `● 8 fetes · 2 per fer [████████░░ 80%]`.
 
 ### Mòdul Tresoreria
 | Recurs | Descripció |
@@ -96,6 +113,7 @@ DB_PASSWORD=
 SEEDER_ADMIN_PASSWORD=el_teu_password_admin
 SEEDER_USER_PASSWORD=el_teu_password_usuaris
 SEEDER_STUDENT_PASSWORD=el_teu_password_alumnes
+SEEDER_TEACHER_PASSWORD=el_teu_password_professors
 
 STRIPE_KEY=pk_test_...
 STRIPE_SECRET=sk_test_...
@@ -132,6 +150,10 @@ El seeder genera dades realistes per a cinc temporades, 8 professors i 35 cursos
 | Primavera 2026 | `active` | Temporada en curs |
 | Tardor 2026 | `draft` | En preparació |
 
+## Professors de prova (CampusSeeder)
+
+8 professors amb fitxa completa (dades fiscals, bancàries encriptades, RGPD). Contrasenya definida per `SEEDER_TEACHER_PASSWORD` al `.env`. Accés a `/professorat/login`.
+
 ## Alumnes de prova (CampusStudentSeeder)
 
 12 alumnes amb 14 inscripcions variades (paid, pending, cancelled, refunded) en fins a 4 cursos.
@@ -162,4 +184,4 @@ php artisan test
 
 ## Llicència
 
-Projecte privat — tots els drets reservats.
+[MIT License](LICENSE) — projecte obert a contribucions i millores.

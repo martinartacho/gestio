@@ -5,9 +5,11 @@ use App\Http\Controllers\Campus\CheckoutController;
 use App\Http\Controllers\Campus\PortalController;
 use App\Http\Controllers\Campus\StudentAuthController;
 use App\Http\Controllers\Campus\StripeWebhookController;
+use App\Http\Controllers\Campus\TeacherAuthController;
+use App\Http\Controllers\Campus\TeacherPortalController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => redirect('/cursos'));
+Route::get('/', fn() => view('campus.home'))->name('home');
 
 // ── Catàleg públic ────────────────────────────────────────────────────────────
 Route::prefix('cursos')->name('campus.catalog.')->group(function () {
@@ -30,6 +32,23 @@ Route::prefix('portal')->name('campus.')->group(function () {
         Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
         Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
     });
+});
+
+// ── Auth professorat ─────────────────────────────────────────────────────────
+Route::prefix('professorat')->name('teacher.')->group(function () {
+    Route::get('/login', [TeacherAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [TeacherAuthController::class, 'login'])->name('login.post');
+    Route::post('/logout', [TeacherAuthController::class, 'logout'])->name('logout');
+
+    // ── Portal professor (requereix auth) ─────────────────────────────────
+    Route::middleware(\App\Http\Middleware\AuthenticateTeacher::class)
+        ->prefix('portal')->name('portal.')->group(function () {
+            Route::get('/', [TeacherPortalController::class, 'courses'])->name('courses');
+            Route::get('/curs/{slug}', [TeacherPortalController::class, 'course'])->name('course');
+            Route::get('/perfil', [TeacherPortalController::class, 'editProfile'])->name('profile');
+            Route::post('/perfil', [TeacherPortalController::class, 'updateProfile'])->name('profile.update');
+            Route::get('/liquidacions', [TeacherPortalController::class, 'liquidations'])->name('liquidations');
+        });
 });
 
 // ── Stripe Webhook (exclou CSRF) ──────────────────────────────────────────────

@@ -41,6 +41,11 @@
                         @endif
                     </div>
                     <h2 class="font-semibold text-gray-900">{{ $enrollment->course->title }}</h2>
+                     <div>
+                         @if ($enrollment->course->description !== null)
+                            {{ $enrollment->course->description }}
+                        @endif
+                    </div>
                     <div class="text-sm text-gray-500 mt-1">
                         @if ($enrollment->course->start_date)
                             {{ $enrollment->course->start_date->format('d/m/Y') }}
@@ -50,6 +55,13 @@
                             · {{ $enrollment->course->season->name }}
                         @endif
                     </div>
+                    <div  class="text-sm text-gray-500 mt-1">
+                         @if ($enrollment->course->calendar_notes !== null)
+                            {{ $enrollment->course->calendar_notes }}
+                        @endif
+                    </div>
+                    
+
                 </div>
                 <div class="text-right shrink-0">
                     <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-full {{ $colorClasses[$color] ?? 'bg-gray-100 text-gray-600' }}">

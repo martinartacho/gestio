@@ -169,12 +169,16 @@ class CampusSeeder extends Seeder
             ],
         ];
 
+        $teacherPassword = env('SEEDER_TEACHER_PASSWORD')
+            ?? throw new \RuntimeException('SEEDER_TEACHER_PASSWORD no definit al .env');
+
         foreach ($teachersDefs as $d) {
             CampusTeacher::firstOrCreate(
                 ['code' => $d['code']],
                 array_merge($d, [
                     'areas'             => [],
                     'hiring_date'       => '2022-09-01',
+                    'password'          => $teacherPassword,
                     'needs_payment'     => $d['needs_payment'],
                     'data_consent'      => $d['data_consent'],
                     'fiscal_responsibility' => $d['fiscal_responsibility'],
