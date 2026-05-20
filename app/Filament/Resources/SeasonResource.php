@@ -9,9 +9,9 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
@@ -57,10 +57,10 @@ class SeasonResource extends Resource
                             ->ignore($record?->id),
                     ]),
 
-                Toggle::make('is_active')
-                    ->label(__('site.season_active'))
-                    ->helperText(__('site.season_active_hint'))
-                    ->inline(false),
+                Select::make('status')
+                    ->label(__('site.status'))
+                    ->options(\App\Models\CampusSeason::STATUSES)
+                    ->required()->native(false)->default('draft'),
             ]),
 
             Section::make(__('site.season_dates'))->columns(2)->schema([
@@ -101,12 +101,20 @@ class SeasonResource extends Resource
                     ->label(__('site.courses'))
                     ->counts('courses')->badge()->color('primary'),
 
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label(__('site.active'))
-                    ->boolean()->trueColor('success')->falseColor('gray'),
+                Tables\Columns\TextColumn::make('status')
+                    ->label(__('site.status'))
+                    ->formatStateUsing(fn($state) => \App\Models\CampusSeason::STATUSES[$state] ?? $state)
+                    ->badge()
+                    ->color(fn($state) => \App\Models\CampusSeason::STATUS_COLORS[$state] ?? 'gray'),
             ])
             ->defaultSort('year', 'desc')
             ->recordAction(null)
+            ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->label(__('site.status'))
+                    ->options(\App\Models\CampusSeason::STATUSES)
+                    ->native(false),
+            ])
             ->actions([
                 EditAction::make()->label(__('site.edit')),
                 DeleteAction::make()->label(__('site.delete')),

@@ -31,8 +31,8 @@ class CampusSeasonTest extends TestCase
 
     public function test_active_scope_returns_only_active(): void
     {
-        CampusSeason::factory()->q1(2025)->create(['is_active' => false]);
-        $active = CampusSeason::factory()->q2(2025)->create(['is_active' => true]);
+        CampusSeason::factory()->q1(2025)->create(['status' => 'closed']);
+        $active = CampusSeason::factory()->q2(2025)->create(['status' => 'active']);
 
         $result = CampusSeason::active();
 
@@ -42,7 +42,7 @@ class CampusSeasonTest extends TestCase
 
     public function test_active_scope_returns_null_when_none_active(): void
     {
-        CampusSeason::factory()->q1()->create(['is_active' => false]);
+        CampusSeason::factory()->q1()->create(['status' => 'draft']);
 
         $this->assertNull(CampusSeason::active());
     }

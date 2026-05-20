@@ -18,13 +18,18 @@ class CampusSeasonFactory extends Factory
             'quadrimester' => $quad,
             'start_date'   => $quad === 1 ? "{$year}-09-01" : "{$year}-02-01",
             'end_date'     => $quad === 1 ? "{$year}-01-31" : "{$year}-06-30",
-            'is_active'    => false,
+            'status'       => 'draft',
         ];
     }
 
     public function active(): static
     {
-        return $this->state(['is_active' => true]);
+        return $this->state(['status' => 'active']);
+    }
+
+    public function closed(): static
+    {
+        return $this->state(['status' => 'closed']);
     }
 
     public function q1(int $year = 2026): static

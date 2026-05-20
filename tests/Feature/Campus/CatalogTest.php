@@ -19,7 +19,7 @@ class CatalogTest extends TestCase
 
     public function test_catalog_shows_public_active_courses(): void
     {
-        $season = CampusSeason::factory()->create(['is_active' => true]);
+        $season = CampusSeason::factory()->create(['status' => 'active']);
 
         $public = CampusCourse::factory()->create([
             'season_id' => $season->id,
@@ -42,7 +42,7 @@ class CatalogTest extends TestCase
 
     public function test_course_detail_page_loads(): void
     {
-        $season = CampusSeason::factory()->create(['is_active' => true]);
+        $season = CampusSeason::factory()->create(['status' => 'active']);
         $course = CampusCourse::factory()->create([
             'season_id' => $season->id,
             'status'    => 'active',

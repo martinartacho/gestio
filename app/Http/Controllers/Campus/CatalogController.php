@@ -11,9 +11,11 @@ class CatalogController extends Controller
 {
     public function index(Request $request)
     {
-        $seasons = CampusSeason::orderByDesc('start_date')->get();
+        $seasons = CampusSeason::whereIn('status', ['active', 'closed'])
+            ->orderByDesc('start_date')
+            ->get();
 
-        $activeSeason = $seasons->firstWhere('is_active', true) ?? $seasons->first();
+        $activeSeason = $seasons->firstWhere('status', 'active') ?? $seasons->first();
 
         $selectedSeason = $request->filled('season')
             ? $seasons->firstWhere('id', $request->integer('season'))
@@ -23,7 +25,7 @@ class CatalogController extends Controller
         $courses = CampusCourse::with(['category', 'space', 'teachers'])
             ->where('status', 'active')
             ->where('is_public', true)
-            ->when($selectedSeason, fn ($q) => $q->where('season_id', $selectedSeason->id))
+            ->when($selectedSeason, fn($q) => $q->where('season_id', $selectedSeason->id))
             ->orderBy('start_date')
             ->get();
 
@@ -43,10 +45,10 @@ class CatalogController extends Controller
             ? $student->courses()->where('campus_courses.id', $course->id)->exists()
             : false;
 
-        $season = $course->season;
-        $enrollmentOpen  = $season ? $season->enrollmentIsOpen() : false;
-        $seasonIsPast    = $season ? $season->isPast() : false;
-        $seasonIsFuture  = $season ? $season->isFuture() : false;
+        $season          = $course->season;
+        $enrollmentOpen  = $season?->enrollmentIsOpen() && $season?->isActive();
+        $seasonIsPast    = $season?->isClosed() || $season?->isPast();
+        $seasonIsFuture  = $season?->isDraft() || $season?->isFuture();
 
         return view('campus.catalog.show', compact(
             'course', 'alreadyEnrolled', 'enrollmentOpen', 'seasonIsPast', 'seasonIsFuture'
