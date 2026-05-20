@@ -79,7 +79,7 @@ class WooCommerceExportService
             $course->code ?? '',
             '',
             $course->title,
-            $course->is_active ? 1 : 0,
+            ($course->status === 'active') ? 1 : 0,
             0,
             'visible',
             $course->requirements ?? '',

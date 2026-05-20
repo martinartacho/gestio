@@ -17,10 +17,9 @@ class StatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $activeSeason  = CampusSeason::where('is_active', true)->first();
-        $totalCourses  = CampusCourse::where('is_active', true)->count();
-        $activeCourses = CampusCourse::where('is_active', true)
-                                     ->where('status', 'active')->count();
+        $activeSeason  = CampusSeason::where('status', 'active')->first();
+        $totalCourses  = CampusCourse::count();
+        $activeCourses = CampusCourse::where('status', 'active')->count();
         $totalTeachers = CampusTeacher::where('status', 'active')->count();
         $totalUsers    = User::count();
         $activeUsers   = User::where('active', true)->count();
