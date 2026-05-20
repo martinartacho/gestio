@@ -4,9 +4,32 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto">
-    <a href="{{ route('campus.catalog.index') }}" class="text-sm text-indigo-600 hover:underline mb-4 inline-block">← Tornar al catàleg</a>
 
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+    @if ($isPreview)
+    <div class="mb-4 flex items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <svg class="h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.641 0-8.573-3.007-9.964-7.178Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+        <div class="flex-1">
+            <strong>Mode previsualització</strong>
+            @if (! $course->is_public)
+                — <span class="text-amber-700">Aquest curs no és públic</span>
+            @endif
+            @if ($course->status !== 'active')
+                — Estat: <span class="font-semibold">{{ \App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status }}</span>
+            @endif
+        </div>
+        <a href="{{ route('campus.catalog.show', $course->slug) }}"
+           class="shrink-0 underline hover:no-underline">Sortir del preview</a>
+    </div>
+    @endif
+
+    <a href="{{ route('campus.catalog.index', array_filter(['preview' => $isPreview ? 1 : null])) }}"
+       class="text-sm text-indigo-600 hover:underline mb-4 inline-block">← Tornar al catàleg</a>
+
+    <div class="bg-white rounded-xl border shadow-sm p-8
+                {{ $isPreview && (! $course->is_public || $course->status !== 'active') ? 'border-amber-200' : 'border-gray-200' }}">
         <div class="flex items-center gap-3 mb-2">
             @if ($course->category)
                 <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
@@ -15,6 +38,9 @@
                 </span>
             @endif
             <span class="text-xs text-gray-400">{{ $course->code }}</span>
+            @if ($course->season)
+                <span class="text-xs text-gray-400">· {{ $course->season->name }}</span>
+            @endif
         </div>
 
         <h1 class="text-2xl font-bold text-gray-900 mb-4">{{ $course->title }}</h1>
@@ -63,7 +89,11 @@
                 {{ $course->price ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
             </div>
 
-            @if ($alreadyEnrolled)
+            @if ($isPreview)
+                <span class="bg-amber-50 text-amber-700 border border-amber-200 text-sm font-medium px-4 py-2 rounded-lg">
+                    Previsualització — inscripció desactivada
+                </span>
+            @elseif ($alreadyEnrolled)
                 <span class="bg-green-100 text-green-800 text-sm font-medium px-4 py-2 rounded-lg">
                     Ja estàs inscrit/a
                 </span>

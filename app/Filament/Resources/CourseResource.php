@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CourseResource\Pages;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
-use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction};
+use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction, Action};
 use Filament\Forms\Components\{DatePicker, Select, Textarea, TextInput, Toggle};
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -260,6 +260,12 @@ class CourseResource extends Resource
                     ->native(false),
             ])
             ->actions([
+                Action::make('preview')
+                    ->label('Previsualitzar')
+                    ->icon('heroicon-o-eye')
+                    ->color('gray')
+                    ->url(fn(CampusCourse $r) => route('campus.catalog.show', ['slug' => $r->slug, 'preview' => 1]))
+                    ->openUrlInNewTab(),
                 EditAction::make()->label(__('site.edit')),
                 DeleteAction::make()->label(__('site.delete')),
             ])
