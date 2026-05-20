@@ -46,6 +46,8 @@ class StudentAuthController extends Controller
             'data_consent' => ['accepted'],
         ]);
 
+        $data['data_consent'] = true;
+
         $student = CampusStudent::create($data);
 
         Auth::guard('student')->login($student);

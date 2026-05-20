@@ -19,10 +19,7 @@ class ViewCourseStudents extends ManageRelatedRecords
         return 'Alumnes';
     }
 
-    public static function getNavigationIcon(): string
-    {
-        return 'heroicon-o-users';
-    }
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
 
     public function table(Table $table): Table
     {

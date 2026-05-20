@@ -19,20 +19,36 @@ class CampusSeeder extends Seeder
         $season = CampusSeason::firstOrCreate(
             ['year' => 2026, 'quadrimester' => 2],
             [
-                'name'       => 'Primavera 2026',
-                'start_date' => '2026-02-01',
-                'end_date'   => '2026-06-30',
-                'is_active'  => true,
+                'name'                  => 'Primavera 2026',
+                'start_date'            => '2026-02-01',
+                'end_date'              => '2026-06-30',
+                'start_date_enrollment' => '2026-01-01',
+                'end_date_enrollment'   => '2026-01-25',
+                'is_active'             => true,
             ]
         );
 
-        CampusSeason::firstOrCreate(
+        $seasonTardor = CampusSeason::firstOrCreate(
             ['year' => 2026, 'quadrimester' => 1],
             [
-                'name'       => 'Tardor 2025-2026',
-                'start_date' => '2025-09-01',
-                'end_date'   => '2026-01-31',
-                'is_active'  => false,
+                'name'                  => 'Tardor 2025-2026',
+                'start_date'            => '2025-09-01',
+                'end_date'              => '2026-01-31',
+                'start_date_enrollment' => '2025-07-01',
+                'end_date_enrollment'   => '2025-09-15',
+                'is_active'             => false,
+            ]
+        );
+
+        $seasonFutura = CampusSeason::firstOrCreate(
+            ['year' => 2027, 'quadrimester' => 1],
+            [
+                'name'                  => 'Tardor 2026-2027',
+                'start_date'            => '2026-09-01',
+                'end_date'              => '2027-01-31',
+                'start_date_enrollment' => '2026-07-01',
+                'end_date_enrollment'   => '2026-09-15',
+                'is_active'             => false,
             ]
         );
 
@@ -205,6 +221,88 @@ class CampusSeeder extends Seeder
         ]);
         $c5->teachers()->syncWithoutDetaching([$tJoan->id => ['role' => 'main']]);
 
-        $this->command->info('✅ CampusSeeder completat: 2 temporades, 6 categories, 8 espais, 9 franges, 4 professors, 5 cursos.');
+        // ── Cursos Tardor 2025-2026 (passada) ────────────────────────────
+        $catArts = CampusCategory::where('name', 'Arts i Cultura')->first();
+        $catMedi = CampusCategory::where('name', 'Medi Ambient')->first();
+        $spaceAM1 = CampusSpace::where('code', 'AM1')->first();
+        $slotDT10 = CampusTimeSlot::where('code', 'DT10')->first();
+        $slotDT18 = CampusTimeSlot::where('code', 'DT18')->first();
+
+        CampusCourse::firstOrCreate(['slug' => 'primers-auxilis-2025'], [
+            'code' => 'SAN050', 'title' => 'Primers Auxilis',
+            'season_id' => $seasonTardor->id, 'category_id' => $catSalut?->id,
+            'space_id' => $spaceAM1?->id, 'time_slot_id' => $slotDT10?->id,
+            'sessions' => 6, 'max_students' => 20, 'price' => 18.00,
+            'format' => 'presencial', 'status' => 'active', 'is_public' => true,
+            'start_date' => '2025-10-07', 'end_date' => '2025-11-11',
+            'description' => 'Tècniques bàsiques de primers auxilis per a tothom.',
+        ])?->teachers()->syncWithoutDetaching([$tAnna->id => ['role' => 'main']]);
+
+        CampusCourse::firstOrCreate(['slug' => 'fotografia-digital-2025'], [
+            'code' => null, 'title' => 'Fotografia Digital',
+            'season_id' => $seasonTardor->id, 'category_id' => $catArts?->id,
+            'space_id' => $spaceAM1?->id, 'time_slot_id' => $slotDT18?->id,
+            'sessions' => 8, 'max_students' => 15, 'price' => 22.00,
+            'format' => 'presencial', 'status' => 'active', 'is_public' => true,
+            'start_date' => '2025-10-14', 'end_date' => '2025-12-02',
+            'description' => 'Composició, llum i edició fotogràfica.',
+        ])?->teachers()->syncWithoutDetaching([$tLaura->id => ['role' => 'main']]);
+
+        CampusCourse::firstOrCreate(['slug' => 'canvi-climatic-2025'], [
+            'code' => 'MA010', 'title' => 'Canvi Climàtic i Sostenibilitat',
+            'season_id' => $seasonTardor->id, 'category_id' => $catMedi?->id,
+            'space_id' => $spaceOnline?->id, 'time_slot_id' => null,
+            'sessions' => 5, 'max_students' => null, 'price' => 0.00,
+            'format' => 'online', 'status' => 'active', 'is_public' => true,
+            'start_date' => '2025-11-03', 'end_date' => '2025-12-01',
+            'description' => 'Impacte del canvi climàtic i estratègies de sostenibilitat local.',
+        ])?->teachers()->syncWithoutDetaching([$tMarta->id => ['role' => 'main']]);
+
+        // ── Cursos Tardor 2026-2027 (futura) ────────────────────────────
+        $spaceAP1 = CampusSpace::where('code', 'AP1')->first();
+        $slotDC10 = CampusTimeSlot::where('code', 'DC10')->first();
+        $slotDJ10 = CampusTimeSlot::where('code', 'DJ10')->first();
+
+        CampusCourse::firstOrCreate(['slug' => 'geriatria-2026'], [
+            'code' => 'SAN201', 'title' => 'Cures Geriàtriques',
+            'season_id' => $seasonFutura->id, 'category_id' => $catSalut?->id,
+            'space_id' => $spaceCTUG?->id, 'time_slot_id' => $slotDL10?->id,
+            'sessions' => 10, 'max_students' => 25, 'price' => 25.00,
+            'format' => 'presencial', 'status' => 'active', 'is_public' => true,
+            'start_date' => '2026-09-14', 'end_date' => '2026-11-23',
+            'description' => 'Atenció i cures especialitzades per a persones grans.',
+        ])?->teachers()->syncWithoutDetaching([$tAnna->id => ['role' => 'main']]);
+
+        CampusCourse::firstOrCreate(['slug' => 'ia-educacio-2026'], [
+            'code' => 'TEC201', 'title' => 'Intel·ligència Artificial a l\'Educació',
+            'season_id' => $seasonFutura->id, 'category_id' => $catTech?->id,
+            'space_id' => $spaceOnline?->id, 'time_slot_id' => $slotDC10?->id,
+            'sessions' => 8, 'max_students' => null, 'price' => 20.00,
+            'format' => 'online', 'status' => 'active', 'is_public' => true,
+            'start_date' => '2026-09-16', 'end_date' => '2026-11-04',
+            'description' => 'Aplicació de la IA en contextos educatius.',
+        ])?->teachers()->syncWithoutDetaching([$tJoan->id => ['role' => 'main']]);
+
+        CampusCourse::firstOrCreate(['slug' => 'mediacio-conflictes-2026'], [
+            'code' => null, 'title' => 'Mediació i Gestió de Conflictes',
+            'season_id' => $seasonFutura->id, 'category_id' => $catCienc?->id,
+            'space_id' => $spaceAM1?->id, 'time_slot_id' => $slotDJ10?->id,
+            'sessions' => 6, 'max_students' => 20, 'price' => 18.00,
+            'format' => 'semipresencial', 'status' => 'active', 'is_public' => true,
+            'start_date' => '2026-10-01', 'end_date' => '2026-11-05',
+            'description' => 'Tècniques de mediació per a professionals i entitats.',
+        ])?->teachers()->syncWithoutDetaching([$tLaura->id => ['role' => 'main']]);
+
+        CampusCourse::firstOrCreate(['slug' => 'musica-creativa-2026'], [
+            'code' => null, 'title' => 'Música Creativa i Expressió',
+            'season_id' => $seasonFutura->id, 'category_id' => $catArts?->id,
+            'space_id' => $spaceAP1?->id, 'time_slot_id' => $slotDV10?->id,
+            'sessions' => 8, 'max_students' => 12, 'price' => 15.00,
+            'format' => 'presencial', 'status' => 'active', 'is_public' => true,
+            'start_date' => '2026-09-25', 'end_date' => '2026-11-13',
+            'description' => 'Taller pràctic de creació musical i expressió artística.',
+        ])?->teachers()->syncWithoutDetaching([$tMarta->id => ['role' => 'main']]);
+
+        $this->command->info('✅ CampusSeeder completat: 3 temporades, 6 categories, 8 espais, 9 franges, 4 professors, 12 cursos.');
     }
 }

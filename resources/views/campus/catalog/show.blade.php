@@ -67,6 +67,22 @@
                 <span class="bg-green-100 text-green-800 text-sm font-medium px-4 py-2 rounded-lg">
                     Ja estàs inscrit/a
                 </span>
+            @elseif ($seasonIsPast)
+                <span class="bg-gray-100 text-gray-500 text-sm font-medium px-4 py-2 rounded-lg">
+                    Curs finalitzat
+                </span>
+            @elseif ($seasonIsFuture && !$enrollmentOpen)
+                <span class="bg-blue-50 text-blue-700 text-sm font-medium px-4 py-2 rounded-lg">
+                    @if ($course->season?->start_date_enrollment)
+                        Inscripcions obertes a partir del {{ $course->season->start_date_enrollment->format('d/m/Y') }}
+                    @else
+                        Properament disponible
+                    @endif
+                </span>
+            @elseif (!$enrollmentOpen)
+                <span class="bg-orange-50 text-orange-700 text-sm font-medium px-4 py-2 rounded-lg">
+                    Inscripcions tancades
+                </span>
             @elseauth('student')
                 <form method="POST" action="{{ route('campus.checkout.create', $course->slug) }}">
                     @csrf

@@ -17,15 +17,19 @@ class CampusSeason extends Model
         'quadrimester',
         'start_date',
         'end_date',
+        'start_date_enrollment',
+        'end_date_enrollment',
         'is_active',
     ];
 
     protected $casts = [
-        'year'         => 'integer',
-        'quadrimester' => 'integer',
-        'start_date'   => 'date',
-        'end_date'     => 'date',
-        'is_active'    => 'boolean',
+        'year'                  => 'integer',
+        'quadrimester'          => 'integer',
+        'start_date'            => 'date',
+        'end_date'              => 'date',
+        'start_date_enrollment' => 'date',
+        'end_date_enrollment'   => 'date',
+        'is_active'             => 'boolean',
     ];
 
     public function courses(): HasMany
@@ -50,5 +54,27 @@ class CampusSeason extends Model
     public static function active(): ?self
     {
         return static::where('is_active', true)->first();
+    }
+
+    public function isPast(): bool
+    {
+        return now()->startOfDay()->gt($this->end_date);
+    }
+
+    public function isFuture(): bool
+    {
+        return now()->startOfDay()->lt($this->start_date);
+    }
+
+    public function enrollmentIsOpen(): bool
+    {
+        $today = now()->startOfDay();
+        if ($this->start_date_enrollment && $today->lt($this->start_date_enrollment)) {
+            return false;
+        }
+        if ($this->end_date_enrollment && $today->gt($this->end_date_enrollment)) {
+            return false;
+        }
+        return true;
     }
 }
