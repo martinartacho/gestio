@@ -16,6 +16,7 @@
             <div class="flex items-center gap-4 text-sm">
                 @auth('teacher')
                     <a href="{{ route('teacher.portal.courses') }}" class="text-gray-600 hover:text-indigo-700">Els meus cursos</a>
+                    <a href="{{ route('teacher.portal.documents') }}" class="text-gray-600 hover:text-indigo-700">Documents</a>
                     <a href="{{ route('teacher.portal.liquidations') }}" class="text-gray-600 hover:text-indigo-700">Liquidacions</a>
                     <a href="{{ route('teacher.portal.profile') }}" class="text-gray-600 hover:text-indigo-700">Perfil</a>
                     <form method="POST" action="{{ route('teacher.logout') }}" class="inline">

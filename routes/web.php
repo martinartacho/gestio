@@ -48,6 +48,11 @@ Route::prefix('professorat')->name('teacher.')->group(function () {
             Route::get('/curs/{slug}', [TeacherPortalController::class, 'course'])->name('course');
             Route::post('/curs/{slug}/documents', [TeacherPortalController::class, 'uploadDocument'])->name('course.documents.upload');
             Route::delete('/curs/{slug}/documents/{document}', [TeacherPortalController::class, 'deleteDocument'])->name('course.documents.delete');
+            // ── Gestor global de documents ─────────────────────────────────
+            Route::get('/documents', [TeacherPortalController::class, 'documents'])->name('documents');
+            Route::get('/documents/{document}/editar', [TeacherPortalController::class, 'editDocument'])->name('documents.edit');
+            Route::post('/documents/{document}', [TeacherPortalController::class, 'updateDocument'])->name('documents.update');
+            Route::delete('/documents/{document}', [TeacherPortalController::class, 'destroyDocument'])->name('documents.destroy');
             Route::get('/perfil', [TeacherPortalController::class, 'editProfile'])->name('profile');
             Route::post('/perfil', [TeacherPortalController::class, 'updateProfile'])->name('profile.update');
             Route::get('/liquidacions', [TeacherPortalController::class, 'liquidations'])->name('liquidations');

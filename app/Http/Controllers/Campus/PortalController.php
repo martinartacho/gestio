@@ -21,6 +21,7 @@ class PortalController extends Controller
         $courseIds = $enrollments->pluck('course_id');
 
         // Load documents accessible to this student for all enrolled courses
+        // Excludes: private, draft, and not-yet-available (available_from in the future)
         $documentsByCourse = CampusDocument::where('status', 'active')
             ->where(function ($q) use ($courseIds) {
                 $q->whereIn('course_id', $courseIds)
@@ -28,6 +29,10 @@ class PortalController extends Controller
                       $q2->where('visibility', 'public')
                          ->orWhere('visibility', 'enrolled');
                   });
+            })
+            ->where(function ($q) {
+                $q->whereNull('available_from')
+                  ->orWhere('available_from', '<=', now());
             })
             ->orderBy('sort_order')
             ->orderBy('created_at')

@@ -180,6 +180,11 @@
                             @else
                                 <span style="color:#6b7280;">Privat</span>
                             @endif
+                            @if ($doc->available_from && now()->lt($doc->available_from))
+                                · <span style="color:#d97706;" title="Els alumnes no hi tindran accés fins a aquesta data">
+                                    ⏰ Disponible {{ $doc->available_from->translatedFormat('d M Y') }}
+                                </span>
+                            @endif
                         </p>
                     </div>
 

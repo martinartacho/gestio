@@ -111,6 +111,7 @@ class TeacherPortalController extends Controller
             ->orderBy('first_name')
             ->get();
 
+        // Professor veu tots els documents actius (inclosos els no disponibles encara)
         $documents = CampusDocument::where('course_id', $course->id)
             ->where('status', 'active')
             ->orderBy('sort_order')
@@ -184,6 +185,117 @@ class TeacherPortalController extends Controller
         $document->delete();
 
         return back()->with('success', 'Document eliminat.');
+    }
+
+    // ── Gestor global de documents ─────────────────────────────────────────────
+
+    public function documents(Request $request)
+    {
+        $teacher = auth('teacher')->user();
+
+        // Cursos del professor per al filtre
+        $myCourses = $teacher->courses()->orderByDesc('start_date')->get();
+
+        // Documents propis
+        $ownQuery = CampusDocument::where('teacher_id', $teacher->id);
+
+        // Documents d'altres professors visibles (public o enrolled, no privats)
+        $othersQuery = CampusDocument::whereNotNull('teacher_id')
+            ->where('teacher_id', '!=', $teacher->id)
+            ->whereIn('visibility', ['public', 'enrolled'])
+            ->where('status', 'active');
+
+        // Aplicar filtres de la URL
+        foreach ([$ownQuery, $othersQuery] as $q) {
+            if ($request->filled('course_id')) {
+                $q->where('course_id', $request->course_id);
+            }
+            if ($request->filled('type')) {
+                $q->where('type', $request->type);
+            }
+        }
+
+        if ($request->filled('visibility')) {
+            $ownQuery->where('visibility', $request->visibility);
+            $othersQuery->where('visibility', $request->visibility);
+        }
+
+        $ownDocuments    = $ownQuery->with('course')->orderBy('sort_order')->orderByDesc('created_at')->get();
+        $othersDocuments = $othersQuery->with('course', 'teacher')->orderByDesc('created_at')->get();
+
+        return view('campus.teacher.portal.documents', compact(
+            'ownDocuments', 'othersDocuments', 'myCourses'
+        ));
+    }
+
+    public function editDocument(CampusDocument $document)
+    {
+        $teacher = auth('teacher')->user();
+        abort_unless($document->teacher_id === $teacher->id, 403);
+
+        $courses = $teacher->courses()->orderByDesc('start_date')->get();
+
+        return view('campus.teacher.portal.document-edit', compact('document', 'courses'));
+    }
+
+    public function updateDocument(Request $request, CampusDocument $document)
+    {
+        $teacher = auth('teacher')->user();
+        abort_unless($document->teacher_id === $teacher->id, 403);
+
+        $data = $request->validate([
+            'title'       => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'visibility'  => ['required', 'in:public,enrolled,private'],
+            'course_id'   => ['nullable', 'integer', 'exists:campus_courses,id'],
+            'status'      => ['required', 'in:active,draft'],
+            'url'         => ['nullable', 'url', 'max:2048', 'required_if:type,url'],
+            'file'        => ['nullable', 'file',
+                              'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,webp,mp4,mp3,zip',
+                              'max:' . CampusDocument::MAX_FILE_SIZE_KB],
+        ]);
+
+        $document->title       = $data['title'];
+        $document->description = $data['description'] ?? null;
+        $document->visibility  = $data['visibility'];
+        $document->course_id   = $data['course_id'] ?? null;
+        $document->status      = $data['status'];
+
+        if ($document->type === 'url') {
+            $document->url = $data['url'] ?? $document->url;
+        }
+
+        if ($document->type === 'file' && $request->hasFile('file')) {
+            // Eliminar fitxer antic
+            if ($document->file_path) {
+                Storage::disk('local')->delete($document->file_path);
+            }
+            $file = $request->file('file');
+            $document->file_path = $file->store('campus/documents', 'local');
+            $document->file_name = $file->getClientOriginalName();
+            $document->file_size = $file->getSize();
+            $document->mime_type = $file->getMimeType();
+        }
+
+        $document->save();
+
+        return redirect()->route('teacher.portal.documents')
+                         ->with('success', 'Document actualitzat correctament.');
+    }
+
+    public function destroyDocument(CampusDocument $document)
+    {
+        $teacher = auth('teacher')->user();
+        abort_unless($document->teacher_id === $teacher->id, 403);
+
+        if ($document->file_path) {
+            Storage::disk('local')->delete($document->file_path);
+        }
+
+        $document->delete();
+
+        return redirect()->route('teacher.portal.documents')
+                         ->with('success', 'Document eliminat.');
     }
 
     public function editProfile()

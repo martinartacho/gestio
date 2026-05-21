@@ -241,6 +241,155 @@ class DocumentAccessTest extends TestCase
         $this->assertDatabaseMissing('campus_documents', ['id' => $doc->id]);
     }
 
+    // ── available_from: disponibilitat temporal ───────────────────────────────
+
+    public function test_student_cannot_download_document_before_available_from(): void
+    {
+        Storage::fake('local');
+
+        $student = CampusStudent::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id, 'status' => 'active']);
+
+        CampusEnrollment::factory()->create([
+            'student_id' => $student->id,
+            'course_id'  => $course->id,
+            'status'     => 'paid',
+        ]);
+
+        $fakeFile = UploadedFile::fake()->create('futur.pdf', 100, 'application/pdf');
+        $path     = $fakeFile->storeAs('campus/documents', 'futur.pdf', 'local');
+
+        $doc = CampusDocument::factory()->forCourse($course->id)->create([
+            'type'           => 'file',
+            'file_path'      => $path,
+            'file_name'      => 'futur.pdf',
+            'visibility'     => 'enrolled',
+            'available_from' => now()->addDays(7), // disponible en 7 dies
+        ]);
+
+        $this->actingAs($student, 'student')
+             ->get(route('campus.documents.download', $doc))
+             ->assertForbidden();
+    }
+
+    public function test_teacher_can_download_document_before_available_from(): void
+    {
+        Storage::fake('local');
+
+        $teacher = CampusTeacher::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id, 'status' => 'active']);
+
+        $course->teachers()->attach($teacher->id, ['role' => 'main', 'sessions_assigned' => null]);
+
+        $fakeFile = UploadedFile::fake()->create('futur.pdf', 100, 'application/pdf');
+        $path     = $fakeFile->storeAs('campus/documents', 'futur.pdf', 'local');
+
+        $doc = CampusDocument::factory()->forCourse($course->id)->forTeacher($teacher->id)->create([
+            'type'           => 'file',
+            'file_path'      => $path,
+            'file_name'      => 'futur.pdf',
+            'visibility'     => 'enrolled',
+            'available_from' => now()->addDays(7),
+        ]);
+
+        // Professor pot descarregar sempre (ignora available_from)
+        $this->actingAs($teacher, 'teacher')
+             ->get(route('campus.documents.download', $doc))
+             ->assertSuccessful();
+    }
+
+    public function test_student_portal_hides_not_yet_available_documents(): void
+    {
+        $student = CampusStudent::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id, 'status' => 'active']);
+
+        CampusEnrollment::factory()->create([
+            'student_id' => $student->id,
+            'course_id'  => $course->id,
+            'status'     => 'paid',
+        ]);
+
+        CampusDocument::factory()->forCourse($course->id)->create([
+            'title'          => 'Document ja disponible',
+            'visibility'     => 'enrolled',
+            'status'         => 'active',
+            'available_from' => now()->subDay(),
+        ]);
+
+        CampusDocument::factory()->forCourse($course->id)->create([
+            'title'          => 'Document futur',
+            'visibility'     => 'enrolled',
+            'status'         => 'active',
+            'available_from' => now()->addDays(7),
+        ]);
+
+        $response = $this->actingAs($student, 'student')
+                         ->get('/portal/meus-cursos')
+                         ->assertSuccessful();
+
+        $response->assertSee('Document ja disponible');
+        $response->assertDontSee('Document futur');
+    }
+
+    // ── Gestor global de documents del professor ──────────────────────────────
+
+    public function test_teacher_can_access_own_documents_list(): void
+    {
+        $teacher = CampusTeacher::factory()->create();
+        $doc     = CampusDocument::factory()->forTeacher($teacher->id)->create(['title' => 'El meu document']);
+
+        $this->actingAs($teacher, 'teacher')
+             ->get(route('teacher.portal.documents'))
+             ->assertSuccessful()
+             ->assertSee('El meu document');
+    }
+
+    public function test_teacher_can_edit_own_document(): void
+    {
+        $teacher = CampusTeacher::factory()->create();
+        $season  = CampusSeason::factory()->create();
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id]);
+        $course->teachers()->attach($teacher->id, ['role' => 'main', 'sessions_assigned' => null]);
+
+        $doc = CampusDocument::factory()->forTeacher($teacher->id)->create([
+            'title'      => 'Títol original',
+            'visibility' => 'enrolled',
+            'status'     => 'active',
+        ]);
+
+        $this->actingAs($teacher, 'teacher')
+             ->post(route('teacher.portal.documents.update', $doc->id), [
+                 'title'      => 'Títol actualitzat',
+                 'visibility' => 'public',
+                 'status'     => 'active',
+             ])
+             ->assertRedirect(route('teacher.portal.documents'));
+
+        $this->assertDatabaseHas('campus_documents', [
+            'id'         => $doc->id,
+            'title'      => 'Títol actualitzat',
+            'visibility' => 'public',
+        ]);
+    }
+
+    public function test_teacher_cannot_edit_other_teachers_document(): void
+    {
+        $teacher      = CampusTeacher::factory()->create();
+        $otherTeacher = CampusTeacher::factory()->create();
+        $doc          = CampusDocument::factory()->forTeacher($otherTeacher->id)->create();
+
+        $this->actingAs($teacher, 'teacher')
+             ->post(route('teacher.portal.documents.update', $doc->id), [
+                 'title'      => 'Intrús',
+                 'visibility' => 'public',
+                 'status'     => 'active',
+             ])
+             ->assertForbidden();
+    }
+
     // ── Portal alumne: llistar documents ─────────────────────────────────────
 
     public function test_student_portal_shows_enrolled_documents(): void

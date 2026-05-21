@@ -4,6 +4,9 @@ namespace App\Filament\Resources\CourseResource\RelationManagers;
 
 use App\Models\CampusDocument;
 use App\Models\CampusTeacher;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -154,15 +157,15 @@ class DocumentsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Tables\Actions\Action::make('download')
+                Action::make('download')
                     ->label('Descarregar')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->url(fn(CampusDocument $r) => $r->download_url)
                     ->openUrlInNewTab()
                     ->visible(fn(CampusDocument $r) => $r->download_url !== null),
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                EditAction::make(),
+                DeleteAction::make()
                     ->after(function (CampusDocument $record) {
                         if ($record->file_path) {
                             Storage::disk('local')->delete($record->file_path);

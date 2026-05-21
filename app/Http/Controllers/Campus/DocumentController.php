@@ -20,7 +20,7 @@ class DocumentController extends Controller
         abort_if(! $document->isFile() || ! $document->file_path, 404);
         abort_if(! Storage::disk('local')->exists($document->file_path), 404);
 
-        // Comprovar accés
+        // Comprovar accés (visibilitat + disponibilitat temporal)
         $this->authorize($document);
 
         return Storage::disk('local')->download(
@@ -31,18 +31,26 @@ class DocumentController extends Controller
 
     private function authorize(CampusDocument $document): void
     {
-        if ($document->visibility === 'public') {
-            return; // Tothom pot accedir
-        }
-
         $student = auth('student')->user();
         $teacher = auth('teacher')->user();
         $admin   = auth('web')->user();
 
-        if ($admin) return; // Admin pot descarregar sempre
+        // Admin sempre pot descarregar (sense restriccions de data)
+        if ($admin) return;
 
+        // ── Comprovació de disponibilitat temporal (no afecta admin) ──────────
+        if ($document->available_from && now()->lt($document->available_from)) {
+            // Professors i admins poden veure'l sempre; alumnes no
+            abort_unless($teacher || $admin, 403);
+        }
+
+        // Visibilitat pública: qualsevol (respectant available_from)
+        if ($document->visibility === 'public') {
+            return;
+        }
+
+        // Visibilitat privada: únicament el professor propietari
         if ($document->visibility === 'private') {
-            // Només el professor propietari
             abort_unless(
                 $teacher && $teacher->id === $document->teacher_id,
                 403
@@ -50,7 +58,7 @@ class DocumentController extends Controller
             return;
         }
 
-        // visibility = 'enrolled': alumne matriculat o professor del curs
+        // visibility = 'enrolled': professor del curs o alumne matriculat
         if ($teacher) {
             abort_unless(
                 $teacher->courses()->where('campus_courses.id', $document->course_id)->exists()
