@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
 use App\Models\CampusCourse;
+use App\Models\CampusDocument;
 use App\Models\CampusEnrollment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class TeacherPortalController extends Controller
@@ -109,7 +111,79 @@ class TeacherPortalController extends Controller
             ->orderBy('first_name')
             ->get();
 
-        return view('campus.teacher.portal.course', compact('course', 'enrollments'));
+        $documents = CampusDocument::where('course_id', $course->id)
+            ->where('status', 'active')
+            ->orderBy('sort_order')
+            ->orderBy('created_at')
+            ->get();
+
+        return view('campus.teacher.portal.course', compact('course', 'enrollments', 'documents'));
+    }
+
+    public function uploadDocument(Request $request, string $slug)
+    {
+        $teacher = auth('teacher')->user();
+
+        $course = $teacher->courses()
+            ->where('campus_courses.slug', $slug)
+            ->firstOrFail();
+
+        $data = $request->validate([
+            'title'      => ['required', 'string', 'max:255'],
+            'type'       => ['required', 'in:file,url'],
+            'file'       => ['required_if:type,file', 'file',
+                             'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,webp,mp4,mp3,zip',
+                             'max:' . CampusDocument::MAX_FILE_SIZE_KB],
+            'url'        => ['required_if:type,url', 'nullable', 'url', 'max:2048'],
+            'visibility' => ['required', 'in:public,enrolled,private'],
+            'description' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $doc = new CampusDocument([
+            'title'       => $data['title'],
+            'type'        => $data['type'],
+            'visibility'  => $data['visibility'],
+            'description' => $data['description'] ?? null,
+            'course_id'   => $course->id,
+            'teacher_id'  => $teacher->id,
+            'created_by'  => null,
+            'status'      => 'active',
+        ]);
+
+        if ($data['type'] === 'file' && $request->hasFile('file')) {
+            $file      = $request->file('file');
+            $path      = $file->store('campus/documents', 'local');
+            $doc->file_path  = $path;
+            $doc->file_name  = $file->getClientOriginalName();
+            $doc->file_size  = $file->getSize();
+            $doc->mime_type  = $file->getMimeType();
+        } else {
+            $doc->url = $data['url'];
+        }
+
+        $doc->save();
+
+        return back()->with('success', 'Document pujat correctament.');
+    }
+
+    public function deleteDocument(Request $request, string $slug, CampusDocument $document)
+    {
+        $teacher = auth('teacher')->user();
+
+        // Only the teacher owner or a teacher of this course can delete
+        abort_unless(
+            $document->teacher_id === $teacher->id
+            || $teacher->courses()->where('campus_courses.id', $document->course_id)->exists(),
+            403
+        );
+
+        if ($document->file_path) {
+            Storage::disk('local')->delete($document->file_path);
+        }
+
+        $document->delete();
+
+        return back()->with('success', 'Document eliminat.');
     }
 
     public function editProfile()

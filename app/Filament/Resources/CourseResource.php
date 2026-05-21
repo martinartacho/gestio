@@ -281,6 +281,13 @@ class CourseResource extends Resource
         return (string) CampusCourse::where('status', 'active')->count();
     }
 
+    public static function getRelationManagers(): array
+    {
+        return [
+            \App\Filament\Resources\CourseResource\RelationManagers\DocumentsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [

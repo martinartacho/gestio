@@ -73,6 +73,25 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 
 **Progress de sessions**: si el curs té `calendar_notes` (dates reals), compta les sessions passades/futures a partir de les dates; si no, estimació setmanal. Exemple: `● 8 fetes · 2 per fer [████████░░ 80%]`.
 
+### Mòdul Documents
+
+| Recurs | Descripció |
+|---|---|
+| Tipus | Fitxer (PDF, Office, imatges, ZIP, àudio, vídeo) o Enllaç extern (URL) |
+| Emmagatzematge | Disk `local` de Laravel — no exposat directament |
+| Descàrrega segura | `GET /documents/{document}/download` — comprova accés per guard |
+| Visibilitat | `public` (tothom) · `enrolled` (alumnes matriculats) · `private` (sol professor/a propietari/a) |
+| Herència | `inherit_to_editions` — documents d'un curs template visibles als cursos fills |
+| Admin (Filament) | `/admin/documents` — CRUD complet + tab **Documents** a cada curs |
+| Portal professor | `/professorat/portal/curs/{slug}` — puja i elimina documents per curs |
+| Portal alumne | `/portal/meus-cursos` — veu els documents `public` i `enrolled` dels cursos inscrits |
+
+**Accés a la descàrrega:**
+- `public` → qualsevol visitant (si és fitxer)
+- `enrolled` → alumne amb matrícula `paid`/`pending` al curs (o curs pare / fills)
+- `private` → únicament el professor/a propietari/a o admin
+- Admin Filament → sempre pot descarregar
+
 ### Mòdul Tresoreria
 | Recurs | Descripció |
 |---|---|

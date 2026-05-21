@@ -142,6 +142,11 @@ class CampusCourse extends Model
         return $this->hasMany(CampusEnrollment::class, 'course_id');
     }
 
+    public function documents(): HasMany
+    {
+        return $this->hasMany(CampusDocument::class, 'course_id')->orderBy('sort_order');
+    }
+
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(

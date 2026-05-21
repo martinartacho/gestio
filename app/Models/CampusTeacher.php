@@ -107,6 +107,11 @@ class CampusTeacher extends Authenticatable
         return $this->hasMany(CampusTeacherPayment::class, 'teacher_id');
     }
 
+    public function documents(): HasMany
+    {
+        return $this->hasMany(CampusDocument::class, 'teacher_id')->orderBy('sort_order');
+    }
+
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";

@@ -5,6 +5,7 @@ use App\Http\Controllers\Campus\CheckoutController;
 use App\Http\Controllers\Campus\PortalController;
 use App\Http\Controllers\Campus\StudentAuthController;
 use App\Http\Controllers\Campus\StripeWebhookController;
+use App\Http\Controllers\Campus\DocumentController;
 use App\Http\Controllers\Campus\TeacherAuthController;
 use App\Http\Controllers\Campus\TeacherPortalController;
 use Illuminate\Support\Facades\Route;
@@ -45,11 +46,17 @@ Route::prefix('professorat')->name('teacher.')->group(function () {
         ->prefix('portal')->name('portal.')->group(function () {
             Route::get('/', [TeacherPortalController::class, 'courses'])->name('courses');
             Route::get('/curs/{slug}', [TeacherPortalController::class, 'course'])->name('course');
+            Route::post('/curs/{slug}/documents', [TeacherPortalController::class, 'uploadDocument'])->name('course.documents.upload');
+            Route::delete('/curs/{slug}/documents/{document}', [TeacherPortalController::class, 'deleteDocument'])->name('course.documents.delete');
             Route::get('/perfil', [TeacherPortalController::class, 'editProfile'])->name('profile');
             Route::post('/perfil', [TeacherPortalController::class, 'updateProfile'])->name('profile.update');
             Route::get('/liquidacions', [TeacherPortalController::class, 'liquidations'])->name('liquidations');
         });
 });
+
+// ── Documents (descàrrega segura) ────────────────────────────────────────────
+Route::get('/documents/{document}/download', [DocumentController::class, 'download'])
+    ->name('campus.documents.download');
 
 // ── Stripe Webhook (exclou CSRF) ──────────────────────────────────────────────
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])

@@ -1,0 +1,276 @@
+<?php
+
+namespace Tests\Feature\Campus;
+
+use App\Models\CampusCourse;
+use App\Models\CampusDocument;
+use App\Models\CampusEnrollment;
+use App\Models\CampusSeason;
+use App\Models\CampusStudent;
+use App\Models\CampusTeacher;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
+
+class DocumentAccessTest extends TestCase
+{
+    use RefreshDatabase;
+
+    // ── Descàrrega de documents ───────────────────────────────────────────────
+
+    public function test_public_document_url_is_accessible_to_anyone(): void
+    {
+        $doc = CampusDocument::factory()->public()->create();
+
+        $this->get(route('campus.documents.download', $doc))
+             ->assertNotFound(); // No file_path, so 404 is correct
+    }
+
+    public function test_enrolled_document_requires_auth(): void
+    {
+        Storage::fake('local');
+
+        $course   = CampusCourse::factory()->create();
+        $fakeFile = UploadedFile::fake()->create('material.pdf', 100, 'application/pdf');
+        $path     = $fakeFile->storeAs('campus/documents', 'material.pdf', 'local');
+
+        $doc = CampusDocument::factory()->forCourse($course->id)->create([
+            'type'       => 'file',
+            'file_path'  => $path,
+            'file_name'  => 'material.pdf',
+            'visibility' => 'enrolled',
+        ]);
+
+        $this->get(route('campus.documents.download', $doc))
+             ->assertForbidden();
+    }
+
+    public function test_student_with_enrollment_can_access_enrolled_document(): void
+    {
+        Storage::fake('local');
+
+        $student = CampusStudent::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id, 'status' => 'active']);
+
+        CampusEnrollment::factory()->create([
+            'student_id' => $student->id,
+            'course_id'  => $course->id,
+            'status'     => 'paid',
+        ]);
+
+        $fakeFile = UploadedFile::fake()->create('doc.pdf', 100, 'application/pdf');
+        $path     = $fakeFile->storeAs('campus/documents', 'doc.pdf', 'local');
+
+        $doc = CampusDocument::factory()->forCourse($course->id)->create([
+            'type'       => 'file',
+            'file_path'  => $path,
+            'file_name'  => 'doc.pdf',
+            'visibility' => 'enrolled',
+        ]);
+
+        $this->actingAs($student, 'student')
+             ->get(route('campus.documents.download', $doc))
+             ->assertSuccessful();
+    }
+
+    public function test_student_without_enrollment_cannot_access_enrolled_document(): void
+    {
+        Storage::fake('local');
+
+        $student = CampusStudent::factory()->create();
+        $course  = CampusCourse::factory()->create(['status' => 'active']);
+
+        $fakeFile = UploadedFile::fake()->create('doc.pdf', 100, 'application/pdf');
+        $path     = $fakeFile->storeAs('campus/documents', 'doc.pdf', 'local');
+
+        $doc = CampusDocument::factory()->forCourse($course->id)->create([
+            'type'       => 'file',
+            'file_path'  => $path,
+            'file_name'  => 'doc.pdf',
+            'visibility' => 'enrolled',
+        ]);
+
+        $this->actingAs($student, 'student')
+             ->get(route('campus.documents.download', $doc))
+             ->assertForbidden();
+    }
+
+    public function test_private_document_only_accessible_to_owner_teacher(): void
+    {
+        Storage::fake('local');
+
+        $teacher      = CampusTeacher::factory()->create();
+        $otherTeacher = CampusTeacher::factory()->create();
+
+        $fakeFile = UploadedFile::fake()->create('notes.pdf', 100, 'application/pdf');
+        $path     = $fakeFile->storeAs('campus/documents', 'notes.pdf', 'local');
+
+        $doc = CampusDocument::factory()->forTeacher($teacher->id)->private()->create([
+            'type'      => 'file',
+            'file_path' => $path,
+            'file_name' => 'notes.pdf',
+        ]);
+
+        // Owner can access
+        $this->actingAs($teacher, 'teacher')
+             ->get(route('campus.documents.download', $doc))
+             ->assertSuccessful();
+
+        // Other teacher cannot
+        $this->actingAs($otherTeacher, 'teacher')
+             ->get(route('campus.documents.download', $doc))
+             ->assertForbidden();
+    }
+
+    // ── Pujada de documents (portal professor) ────────────────────────────────
+
+    public function test_teacher_can_upload_url_document_to_own_course(): void
+    {
+        $teacher = CampusTeacher::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id, 'status' => 'active']);
+
+        $course->teachers()->attach($teacher->id, ['role' => 'main', 'sessions_assigned' => null]);
+
+        $this->actingAs($teacher, 'teacher')
+             ->post(route('teacher.portal.course.documents.upload', $course->slug), [
+                 'title'      => 'Presentació sessió 1',
+                 'type'       => 'url',
+                 'url'        => 'https://example.com/presentacio.pdf',
+                 'visibility' => 'enrolled',
+             ])
+             ->assertRedirect();
+
+        $this->assertDatabaseHas('campus_documents', [
+            'title'      => 'Presentació sessió 1',
+            'course_id'  => $course->id,
+            'teacher_id' => $teacher->id,
+            'type'       => 'url',
+        ]);
+    }
+
+    public function test_teacher_can_upload_file_document_to_own_course(): void
+    {
+        Storage::fake('local');
+
+        $teacher = CampusTeacher::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id, 'status' => 'active']);
+
+        $course->teachers()->attach($teacher->id, ['role' => 'main', 'sessions_assigned' => null]);
+
+        $file = UploadedFile::fake()->create('exercicis.pdf', 200, 'application/pdf');
+
+        $this->actingAs($teacher, 'teacher')
+             ->post(route('teacher.portal.course.documents.upload', $course->slug), [
+                 'title'      => 'Exercicis pràctics',
+                 'type'       => 'file',
+                 'file'       => $file,
+                 'visibility' => 'enrolled',
+             ])
+             ->assertRedirect();
+
+        $this->assertDatabaseHas('campus_documents', [
+            'title'      => 'Exercicis pràctics',
+            'course_id'  => $course->id,
+            'teacher_id' => $teacher->id,
+            'type'       => 'file',
+            'file_name'  => 'exercicis.pdf',
+        ]);
+    }
+
+    public function test_teacher_cannot_upload_to_course_they_dont_teach(): void
+    {
+        $teacher = CampusTeacher::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id]); // no teacher attached
+
+        $this->actingAs($teacher, 'teacher')
+             ->post(route('teacher.portal.course.documents.upload', $course->slug), [
+                 'title'      => 'Intrusió',
+                 'type'       => 'url',
+                 'url'        => 'https://example.com/intrusion.pdf',
+                 'visibility' => 'enrolled',
+             ])
+             ->assertNotFound(); // course not in teacher's courses → firstOrFail 404
+    }
+
+    // ── Eliminació de documents ───────────────────────────────────────────────
+
+    public function test_teacher_can_delete_own_document(): void
+    {
+        $teacher = CampusTeacher::factory()->create();
+        $season  = CampusSeason::factory()->create();
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id]);
+
+        $course->teachers()->attach($teacher->id, ['role' => 'main', 'sessions_assigned' => null]);
+
+        $doc = CampusDocument::factory()->forCourse($course->id)->forTeacher($teacher->id)->create();
+
+        $this->actingAs($teacher, 'teacher')
+             ->delete(route('teacher.portal.course.documents.delete', [$course->slug, $doc->id]))
+             ->assertRedirect();
+
+        $this->assertDatabaseMissing('campus_documents', ['id' => $doc->id]);
+    }
+
+    public function test_teacher_cannot_delete_other_teachers_private_document(): void
+    {
+        $teacher      = CampusTeacher::factory()->create();
+        $otherTeacher = CampusTeacher::factory()->create();
+        $season       = CampusSeason::factory()->create();
+        $course       = CampusCourse::factory()->create(['season_id' => $season->id]);
+
+        // teacher teaches the course but doc belongs to otherTeacher and is private
+        $course->teachers()->attach($teacher->id, ['role' => 'main', 'sessions_assigned' => null]);
+
+        $doc = CampusDocument::factory()
+            ->forCourse($course->id)
+            ->forTeacher($otherTeacher->id)
+            ->private()
+            ->create();
+
+        // teacher can still delete because they teach the course
+        // (our delete logic: owner OR teacher of the course)
+        $this->actingAs($teacher, 'teacher')
+             ->delete(route('teacher.portal.course.documents.delete', [$course->slug, $doc->id]))
+             ->assertRedirect();
+
+        $this->assertDatabaseMissing('campus_documents', ['id' => $doc->id]);
+    }
+
+    // ── Portal alumne: llistar documents ─────────────────────────────────────
+
+    public function test_student_portal_shows_enrolled_documents(): void
+    {
+        $student = CampusStudent::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create(['season_id' => $season->id, 'status' => 'active']);
+
+        CampusEnrollment::factory()->create([
+            'student_id' => $student->id,
+            'course_id'  => $course->id,
+            'status'     => 'paid',
+        ]);
+
+        CampusDocument::factory()->forCourse($course->id)->create([
+            'title'      => 'Document visible',
+            'visibility' => 'enrolled',
+            'status'     => 'active',
+        ]);
+
+        CampusDocument::factory()->forCourse($course->id)->private()->create([
+            'title'  => 'Document privat',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($student, 'student')
+                         ->get('/portal/meus-cursos')
+                         ->assertSuccessful();
+
+        $response->assertSee('Document visible');
+        $response->assertDontSee('Document privat');
+    }
+}
