@@ -6,6 +6,7 @@ use App\Filament\Resources\DocumentResource\Pages;
 use App\Models\CampusCourse;
 use App\Models\CampusDocument;
 use App\Models\CampusTeacher;
+use App\Settings\SettingStore;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -32,6 +33,11 @@ class DocumentResource extends Resource
     public static function getNavigationLabel(): string  { return 'Documents'; }
     public static function getModelLabel(): string       { return 'document'; }
     public static function getPluralModelLabel(): string { return 'documents'; }
+
+    public static function canAccess(): bool
+    {
+        return (bool) app(SettingStore::class)->get('documents_enabled', true);
+    }
 
     public static function form(Schema $schema): Schema
     {

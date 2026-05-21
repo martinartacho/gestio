@@ -14,7 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         App\Providers\Filament\AdminPanelProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'feature' => \App\Http\Middleware\FeatureEnabled::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

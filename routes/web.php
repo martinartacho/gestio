@@ -61,6 +61,7 @@ Route::prefix('professorat')->name('teacher.')->group(function () {
 
 // ── Documents (descàrrega segura) ────────────────────────────────────────────
 Route::get('/documents/{document}/download', [DocumentController::class, 'download'])
+    ->middleware('feature:documents_enabled')
     ->name('campus.documents.download');
 
 // ── Stripe Webhook (exclou CSRF) ──────────────────────────────────────────────

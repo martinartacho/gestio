@@ -92,6 +92,30 @@ Panel d'administració per a la gestió de cursos, professors, espais i calendar
 - `private` → únicament el professor/a propietari/a o admin
 - Admin Filament → sempre pot descarregar
 
+**Gestor global de documents (professorat):**
+- `/professorat/portal/documents` — llista tots els documents propis i els d'altres professors (visibilitat `public` o `enrolled`), amb formulari d'edició complet (condicions d'accés, ordre, estat)
+- Condicions d'accés (lògica OR): `available_from` (data) **o** `session_number` (sessió) — en complir-se qualsevol condició el document es desbloqueja per als alumnes
+- Indicador ⏰ visible al portal del professor i al panel Filament
+
+### Configuració del lloc (`/admin/settings-page`)
+
+Pàgina d'administració (rol `admin`) per personalitzar el campus sense tocar el codi:
+
+| Pestanya | Ajustos |
+|---|---|
+| 🏫 Campus | Nom, eslògan, logotip, favicon, contacte, adreça |
+| 🎨 Aparença | Títol i subtítol del hero, colors de fons i text (amb previsualització en viu) |
+| ✉️ Correu | Remitent dels correus automàtics (nom + adreça + peu) |
+| 🔧 Mòduls | Feature flags: `documents_enabled`, `lms_enabled`, `courses_learning_enabled` |
+| ⚙️ Avançat | Zona horària i idioma |
+
+**Implementació tècnica:**
+- Taula `site_settings` (clau primària: `key` VARCHAR(100), valor JSON)
+- `SettingStore` singleton amb caché (`Cache::remember` 1 hora, invalidada en desar)
+- Facade `Setting` i helper global `setting('clau', 'defecte')`
+- Middleware `FeatureEnabled` (`feature:nom_del_flag`) retorna 404 si el mòdul és inactiu
+- Timezone aplicada dinàmicament a `AppServiceProvider::boot()`
+
 ### Mòdul Tresoreria
 | Recurs | Descripció |
 |---|---|

@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Portal Professorat') — Campus</title>
+    <title>@yield('title', 'Portal Professorat') — {{ setting('campus_name', 'Campus') }}</title>
+    @if(setting('campus_favicon_url'))
+        <link rel="icon" href="{{ setting('campus_favicon_url') }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
@@ -11,12 +14,14 @@
     <nav class="bg-white border-b border-gray-200 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <a href="{{ route('campus.catalog.index') }}" class="text-xl font-bold text-indigo-700 hover:text-indigo-900">
-                Campus
+                {{ setting('campus_name', 'Campus') }}
             </a>
             <div class="flex items-center gap-4 text-sm">
                 @auth('teacher')
                     <a href="{{ route('teacher.portal.courses') }}" class="text-gray-600 hover:text-indigo-700">Els meus cursos</a>
+                    @if(setting('documents_enabled', true))
                     <a href="{{ route('teacher.portal.documents') }}" class="text-gray-600 hover:text-indigo-700">Documents</a>
+                    @endif
                     <a href="{{ route('teacher.portal.liquidations') }}" class="text-gray-600 hover:text-indigo-700">Liquidacions</a>
                     <a href="{{ route('teacher.portal.profile') }}" class="text-gray-600 hover:text-indigo-700">Perfil</a>
                     <form method="POST" action="{{ route('teacher.logout') }}" class="inline">
@@ -44,7 +49,7 @@
     </main>
 
     <footer class="border-t border-gray-200 text-center text-xs text-gray-400 py-5">
-        Campus de Formació Continuada
+        {{ setting('campus_name', 'Campus de Formació Continuada') }}
         &nbsp;·&nbsp;
         <a href="{{ route('campus.catalog.index') }}" class="hover:text-gray-600">Catàleg</a>
         &nbsp;·&nbsp;

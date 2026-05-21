@@ -136,6 +136,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // ── Configuració del lloc ─────────────────────────────────────────
+        $this->call(SiteSettingsSeeder::class);
+
         // ── Dades del campus ──────────────────────────────────────────────
         $this->call(CampusSeeder::class);
         $this->call(CampusStudentSeeder::class);

@@ -3,16 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus de Formació Continuada</title>
+    <title>{{ setting('campus_name', 'Campus') }}</title>
+    @if(setting('campus_favicon_url'))
+        <link rel="icon" href="{{ setting('campus_favicon_url') }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
 
     {{-- Hero ----------------------------------------------------------------}}
-    <div style="background-color:#3730a3;">
+    <div style="background-color:{{ setting('hero_color', '#3730a3') }};">
         <div class="max-w-5xl mx-auto px-6 py-16 text-center">
-            <h1 class="text-4xl font-extrabold tracking-tight mb-3" style="color:#ffffff;">Campus de Formació Continuada</h1>
-            <p class="text-lg mb-8" style="color:#c7d2fe;">Formació professional i personal al teu ritme</p>
+            <h1 class="text-4xl font-extrabold tracking-tight mb-3" style="color:{{ setting('hero_text_color', '#ffffff') }};">
+                {{ setting('hero_title', setting('campus_name', 'Campus de Formació Continuada')) }}
+            </h1>
+            <p class="text-lg mb-8" style="color:{{ setting('hero_text_color', '#ffffff') }};opacity:0.85;">
+                {{ setting('hero_subtitle', 'Formació professional i personal al teu ritme') }}
+            </p>
             <div class="flex flex-wrap justify-center gap-4">
                 <a href="{{ route('campus.catalog.index') }}"
                    class="font-semibold px-6 py-3 rounded-xl transition shadow"
@@ -87,7 +94,7 @@
 
     {{-- Footer -------------------------------------------------------------}}
     <footer class="border-t border-gray-200 text-center text-xs text-gray-400 py-5">
-        Campus de Formació Continuada
+        {{ setting('campus_name', 'Campus de Formació Continuada') }}
         &nbsp;·&nbsp;
         <a href="{{ route('campus.catalog.index') }}" class="hover:text-gray-600">Catàleg</a>
         &nbsp;·&nbsp;
