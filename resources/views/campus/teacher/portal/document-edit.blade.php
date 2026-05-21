@@ -31,7 +31,12 @@
             </div>
         @endif
 
-        <form action="{{ route('teacher.portal.documents.update', $document->id) }}"
+        {{-- ─────────────────────────────────────────────────────────────────
+             FORMULARI D'EDICIÓ (id="edit-form")
+             El botó Eliminar és FORA d'aquest form (form niuat = bug HTML)
+        ──────────────────────────────────────────────────────────────────── --}}
+        <form id="edit-form"
+              action="{{ route('teacher.portal.documents.update', $document->id) }}"
               method="POST" enctype="multipart/form-data">
             @csrf
 
@@ -101,7 +106,7 @@
                 </select>
             </div>
 
-            {{-- Condicions d'accés ──────────────────────────────────────────── --}}
+            {{-- Condicions d'accés --}}
             <div style="border:1px solid #e5e7eb;border-radius:0.5rem;padding:1rem;margin-bottom:1rem;background:#fafafa;">
                 <p style="font-size:0.8125rem;font-weight:600;color:#374151;margin:0 0 0.125rem;">Condicions d'accés</p>
                 <p style="font-size:0.75rem;color:#9ca3af;margin:0 0 0.875rem;">
@@ -153,7 +158,7 @@
                 <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">Número més petit = apareix abans.</p>
             </div>
 
-            {{-- Visibilitat + Estat (2 columnes) --}}
+            {{-- Visibilitat + Estat --}}
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.5rem;">
                 <div>
                     <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
@@ -186,7 +191,7 @@
                 </div>
             </div>
 
-            {{-- Botons --}}
+            {{-- Botons (DINS del form d'edició; el botó Eliminar usa form="delete-form") --}}
             <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f3f4f6;padding-top:1.25rem;">
                 <a href="{{ route('teacher.portal.documents') }}"
                    style="font-size:0.875rem;color:#6b7280;text-decoration:none;">
@@ -194,16 +199,13 @@
                 </a>
 
                 <div style="display:flex;gap:0.75rem;align-items:center;">
-                    {{-- Eliminar --}}
-                    <form action="{{ route('teacher.portal.documents.destroy', $document->id) }}"
-                          method="POST"
-                          onsubmit="return confirm('Eliminar «{{ addslashes($document->title) }}»?')">
-                        @csrf @method('DELETE')
-                        <button type="submit"
-                                style="font-size:0.875rem;color:#dc2626;background:none;border:none;cursor:pointer;padding:0;">
-                            Eliminar document
-                        </button>
-                    </form>
+                    {{-- Aquest botó envia el form#delete-form (definit FORA d'aquest form) --}}
+                    <button type="submit"
+                            form="delete-form"
+                            onclick="return confirm('Eliminar «{{ addslashes($document->title) }}»?')"
+                            style="font-size:0.875rem;color:#dc2626;background:none;border:none;cursor:pointer;padding:0;">
+                        Eliminar document
+                    </button>
 
                     <button type="submit"
                             style="background:#4f46e5;color:#fff;border:none;border-radius:0.375rem;padding:0.5rem 1.25rem;font-size:0.875rem;font-weight:500;cursor:pointer;">
@@ -211,8 +213,21 @@
                     </button>
                 </div>
             </div>
-        </form>
+
+        </form>{{-- fi form#edit-form --}}
     </div>
 </div>
+
+{{-- ─────────────────────────────────────────────────────────────────────────
+     FORMULARI D'ELIMINACIÓ — FORA del formulari d'edició (no niuat)
+     El botó que l'envia es troba a dalt, amb form="delete-form"
+──────────────────────────────────────────────────────────────────────────── --}}
+<form id="delete-form"
+      action="{{ route('teacher.portal.documents.destroy', $document->id) }}"
+      method="POST"
+      style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
 
 @endsection
