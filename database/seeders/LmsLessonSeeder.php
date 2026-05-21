@@ -3,8 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\CampusCourse;
+use App\Models\CampusEnrollment;
+use App\Models\CampusStudent;
+use App\Models\CampusTeacher;
 use App\Models\LmsLesson;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class LmsLessonSeeder extends Seeder
 {
@@ -16,6 +20,72 @@ class LmsLessonSeeder extends Seeder
             $this->command->warn('LmsLessonSeeder: cap curs actiu trobat, s\'ometen les lliçons.');
             return;
         }
+
+        $seederMail     = env('SEEDER_MAIL', 'gestio.test');
+        $teacherPass    = env('SEEDER_TEACHER_PASSWORD')
+            ?? throw new \RuntimeException('SEEDER_TEACHER_PASSWORD no està definit al .env');
+        $studentPass    = env('SEEDER_STUDENT_PASSWORD')
+            ?? throw new \RuntimeException('SEEDER_STUDENT_PASSWORD no està definit al .env');
+
+        // ── Professor de prova: Claudi Hartacho ───────────────────────────────
+        $teacher = CampusTeacher::firstOrCreate(
+            ['email' => "profe@{$seederMail}"],
+            [
+                'code'       => 'LMS-01',
+                'first_name' => 'Claudi',
+                'last_name'  => 'Hartacho',
+                'email'      => "profe@{$seederMail}",
+                'password'   => Hash::make($teacherPass),
+                'status'     => 'active',
+            ]
+        );
+
+        // Assignar al curs com a professor principal (idempotent)
+        $course->teachers()->syncWithoutDetaching([$teacher->id => ['role' => 'main']]);
+
+        // ── Alumne de prova ───────────────────────────────────────────────────
+        $student = CampusStudent::firstOrCreate(
+            ['email' => "student@{$seederMail}"],
+            [
+                'first_name'   => 'Alumne',
+                'last_name'    => 'Prova',
+                'email'        => "student@{$seederMail}",
+                'password'     => Hash::make($studentPass),
+                'data_consent' => true,
+            ]
+        );
+
+        // Matrícula pagada al curs (idempotent)
+        $existing = CampusEnrollment::where('student_id', $student->id)
+            ->where('course_id', $course->id)
+            ->first();
+
+        if (! $existing) {
+            $enrollment = CampusEnrollment::create([
+                'student_id'      => $student->id,
+                'course_id'       => $course->id,
+                'first_name'      => $student->first_name,
+                'last_name'       => $student->last_name,
+                'email'           => $student->email,
+                'enrollment_date' => now()->toDateString(),
+                'status'          => 'paid',
+                'amount'          => $course->price ?? 0,
+                'paid_at'         => now(),
+                'stripe_session_id'     => 'cs_test_lms_seed',
+                'stripe_payment_intent' => 'pi_test_lms_seed',
+            ]);
+
+            $course->students()->syncWithoutDetaching([
+                $student->id => [
+                    'enrollment_id' => $enrollment->id,
+                    'enrolled_at'   => now(),
+                ],
+            ]);
+        }
+
+        $this->command->info("👤 Professor: profe@{$seederMail} / {$teacherPass}");
+        $this->command->info("👤 Alumne:    student@{$seederMail} / {$studentPass}");
+        $this->command->info("📚 Curs:      {$course->title} (slug: {$course->slug})");
 
         // ── Sessió 1: Narrativa curta ─────────────────────────────────────────
         LmsLesson::firstOrCreate(
