@@ -143,5 +143,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CampusSeeder::class);
         $this->call(CampusStudentSeeder::class);
         $this->call(CampusDocumentSeeder::class);
+        $this->call(LmsLessonSeeder::class);
     }
 }

@@ -149,6 +149,13 @@ class CampusCourse extends Model
         return $this->hasMany(CampusDocument::class, 'course_id')->orderBy('sort_order');
     }
 
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(LmsLesson::class, 'course_id')
+            ->orderBy('sort_order')
+            ->orderBy('session_number');
+    }
+
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(

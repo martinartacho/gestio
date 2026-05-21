@@ -285,6 +285,7 @@ class CourseResource extends Resource
     {
         return [
             \App\Filament\Resources\CourseResource\RelationManagers\DocumentsRelationManager::class,
+            \App\Filament\Resources\CourseResource\RelationManagers\LessonsRelationManager::class,
         ];
     }
 

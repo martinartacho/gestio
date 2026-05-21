@@ -33,6 +33,11 @@ class CampusStudent extends Authenticatable
         return $this->hasMany(CampusEnrollment::class, 'student_id');
     }
 
+    public function lessonProgresses(): HasMany
+    {
+        return $this->hasMany(LmsLessonProgress::class, 'student_id');
+    }
+
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(

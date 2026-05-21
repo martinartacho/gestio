@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Campus\CatalogController;
 use App\Http\Controllers\Campus\CheckoutController;
+use App\Http\Controllers\Campus\LmsPreviewController;
+use App\Http\Controllers\Campus\LmsStudentController;
+use App\Http\Controllers\Campus\LmsTeacherController;
 use App\Http\Controllers\Campus\PortalController;
 use App\Http\Controllers\Campus\StudentAuthController;
 use App\Http\Controllers\Campus\StripeWebhookController;
@@ -58,6 +61,28 @@ Route::prefix('professorat')->name('teacher.')->group(function () {
             Route::get('/liquidacions', [TeacherPortalController::class, 'liquidations'])->name('liquidations');
         });
 });
+
+// ── LMS Alumnes ───────────────────────────────────────────────────────────────
+Route::prefix('portal/lms')->name('campus.lms.')
+    ->middleware([\App\Http\Middleware\AuthenticateStudent::class, 'feature:lms_enabled'])
+    ->group(function () {
+        Route::get('/curs/{slug}', [LmsStudentController::class, 'index'])->name('course');
+        Route::get('/curs/{slug}/sessio/{lesson}', [LmsStudentController::class, 'show'])->name('lesson');
+        Route::post('/sessio/{lesson}/completar', [LmsStudentController::class, 'complete'])->name('lesson.complete');
+    });
+
+// ── LMS Professors ────────────────────────────────────────────────────────────
+Route::prefix('professorat/portal/lms')->name('teacher.lms.')
+    ->middleware([\App\Http\Middleware\AuthenticateTeacher::class, 'feature:lms_enabled'])
+    ->group(function () {
+        Route::get('/curs/{slug}', [LmsTeacherController::class, 'index'])->name('course');
+        Route::get('/curs/{slug}/sessio/{lesson}', [LmsTeacherController::class, 'show'])->name('lesson');
+    });
+
+// ── LMS Previsualització admin ─────────────────────────────────────────────────
+Route::get('/lms/preview/{lesson}', [LmsPreviewController::class, 'show'])
+    ->middleware(['web', 'auth'])
+    ->name('lms.preview');
 
 // ── Documents (descàrrega segura) ────────────────────────────────────────────
 Route::get('/documents/{document}/download', [DocumentController::class, 'download'])
