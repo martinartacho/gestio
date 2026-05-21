@@ -59,6 +59,21 @@
                     <div class="text-sm text-gray-500 mt-1">{{ $enrollment->course->calendar_notes }}</div>
                     @endif
 
+                    {{-- Accés LMS --}}
+                    @if (setting('lms_enabled') && ($enrollment->course->published_lessons_count ?? 0) > 0)
+                    <div style="margin-top:0.875rem;">
+                        <a href="{{ route('campus.lms.course', $enrollment->course->slug) }}"
+                           style="display:inline-flex;align-items:center;gap:0.4rem;background:#4f46e5;color:#fff;font-size:0.8125rem;font-weight:600;padding:0.45rem 1rem;border-radius:0.5rem;text-decoration:none;"
+                           onmouseover="this.style.background='#4338ca'" onmouseout="this.style.background='#4f46e5'">
+                            <svg style="width:0.9rem;height:0.9rem;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            Accedir al curs en línia
+                            <span style="font-size:0.7rem;opacity:0.8;">({{ $enrollment->course->published_lessons_count }} sessions)</span>
+                        </a>
+                    </div>
+                    @endif
+
                     {{-- Documents accessibles --}}
                     @php $docs = $documentsByCourse[$enrollment->course_id] ?? collect(); @endphp
                     @if ($docs->isNotEmpty())

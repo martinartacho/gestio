@@ -12,7 +12,11 @@ class PortalController extends Controller
         $student = auth('student')->user();
 
         $enrollments = $student->enrollments()
-            ->with('course.category', 'course.season')
+            ->with([
+                'course' => fn ($q) => $q
+                    ->with('category', 'season')
+                    ->withCount(['lessons as published_lessons_count' => fn ($q) => $q->where('status', 'published')]),
+            ])
             ->whereIn('status', ['paid', 'pending'])
             ->orderByDesc('created_at')
             ->get();
