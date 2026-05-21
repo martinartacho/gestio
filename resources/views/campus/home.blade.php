@@ -93,16 +93,37 @@
     </main>
 
     {{-- Footer -------------------------------------------------------------}}
-    <footer class="border-t border-gray-200 text-center text-xs text-gray-400 py-5">
-        {{ setting('campus_name', 'Campus de Formació Continuada') }}
-        &nbsp;·&nbsp;
-        <a href="{{ route('campus.catalog.index') }}" class="hover:text-gray-600">Catàleg</a>
-        &nbsp;·&nbsp;
-        <a href="{{ route('campus.login') }}" class="hover:text-gray-600">Alumnat</a>
-        &nbsp;·&nbsp;
-        <a href="{{ route('teacher.login') }}" class="hover:text-gray-600">Professorat</a>
-        &nbsp;·&nbsp;
-        <a href="/admin" class="hover:text-gray-600">Administració</a>
+    <footer class="border-t border-gray-200 bg-white">
+        <div class="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-gray-400">
+
+            {{-- Columna 1: Identificació --}}
+            <div class="flex flex-col gap-1">
+                <span class="font-semibold text-gray-600 text-sm">
+                    {{ setting('campus_name', 'Campus de Formació Continuada') }}
+                </span>
+                @if(setting('campus_contact_email'))
+                    <a href="mailto:{{ setting('campus_contact_email') }}"
+                       class="hover:text-indigo-600 transition-colors">
+                        {{ setting('campus_contact_email') }}
+                    </a>
+                @endif
+                @if(setting('campus_contact_phone'))
+                    <span>{{ setting('campus_contact_phone') }}</span>
+                @endif
+                @if(setting('campus_address'))
+                    <span>{{ setting('campus_address') }}</span>
+                @endif
+            </div>
+
+            {{-- Columna 2: Menús --}}
+            <nav class="flex flex-wrap gap-x-5 gap-y-1 text-xs">
+                <a href="{{ route('campus.catalog.index') }}" class="hover:text-gray-600 transition-colors">Catàleg</a>
+                <a href="{{ route('campus.login') }}" class="hover:text-gray-600 transition-colors">Alumnat</a>
+                <a href="{{ route('teacher.login') }}" class="hover:text-gray-600 transition-colors">Professorat</a>
+                <a href="/admin" class="hover:text-gray-600 transition-colors">Administració</a>
+            </nav>
+
+        </div>
     </footer>
 
 </body>
