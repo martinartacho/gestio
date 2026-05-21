@@ -17,26 +17,35 @@ class PortalController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        // Collect accessible course IDs (direct + parent templates)
         $courseIds = $enrollments->pluck('course_id');
 
-        // Load documents accessible to this student for all enrolled courses
-        // Excludes: private, draft, and not-yet-available (available_from in the future)
-        $documentsByCourse = CampusDocument::where('status', 'active')
-            ->where(function ($q) use ($courseIds) {
-                $q->whereIn('course_id', $courseIds)
-                  ->where(function ($q2) {
-                      $q2->where('visibility', 'public')
-                         ->orWhere('visibility', 'enrolled');
-                  });
-            })
-            ->where(function ($q) {
-                $q->whereNull('available_from')
-                  ->orWhere('available_from', '<=', now());
-            })
+        // Càrrega candidats: actius, no privats, del curs correcte
+        // El filtre de session_number es fa en PHP (requereix calcular sessions passades)
+        $candidates = CampusDocument::where('status', 'active')
+            ->whereIn('course_id', $courseIds)
+            ->whereIn('visibility', ['public', 'enrolled'])
+            ->with('course')
             ->orderBy('sort_order')
             ->orderBy('created_at')
-            ->get()
+            ->get();
+
+        // Filtre OR: available_from O session_number (lògica idèntica a DocumentController)
+        $now = now();
+        $documentsByCourse = $candidates
+            ->filter(function (CampusDocument $doc) use ($now) {
+                $conditions = [];
+
+                if ($doc->available_from) {
+                    $conditions[] = $now->gte($doc->available_from);
+                }
+
+                if ($doc->session_number && $doc->course) {
+                    $done        = $doc->course->sessionsPast() ?? 0;
+                    $conditions[] = $done >= $doc->session_number;
+                }
+
+                return empty($conditions) || in_array(true, $conditions, true);
+            })
             ->groupBy('course_id');
 
         return view('campus.portal.courses', compact('enrollments', 'documentsByCourse'));

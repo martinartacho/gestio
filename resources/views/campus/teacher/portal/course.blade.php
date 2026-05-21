@@ -180,9 +180,22 @@
                             @else
                                 <span style="color:#6b7280;">Privat</span>
                             @endif
-                            @if ($doc->available_from && now()->lt($doc->available_from))
-                                · <span style="color:#d97706;" title="Els alumnes no hi tindran accés fins a aquesta data">
-                                    ⏰ Disponible {{ $doc->available_from->translatedFormat('d M Y') }}
+                            @php
+                                $docConditions = [];
+                                if ($doc->available_from) $docConditions[] = now()->gte($doc->available_from);
+                                if ($doc->session_number) $docConditions[] = ($course->sessionsPast() ?? 0) >= $doc->session_number;
+                                $docBlocked = !empty($docConditions) && !in_array(true, $docConditions, true);
+                            @endphp
+                            @if ($docBlocked)
+                                · <span style="color:#d97706;" title="Els alumnes no hi tindran accés encara">⏰
+                                    @if ($doc->available_from && !now()->gte($doc->available_from))
+                                        Des del {{ $doc->available_from->format('d/m/Y') }}
+                                    @endif
+                                    @if ($doc->session_number)
+                                        @if ($doc->available_from && !now()->gte($doc->available_from)) o @endif
+                                        sessió {{ $doc->session_number }}
+                                        (ara: {{ $course->sessionsPast() ?? 0 }})
+                                    @endif
                                 </span>
                             @endif
                         </p>

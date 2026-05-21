@@ -273,6 +273,79 @@ class DocumentAccessTest extends TestCase
              ->assertForbidden();
     }
 
+    public function test_session_number_blocks_student_when_not_reached(): void
+    {
+        Storage::fake('local');
+
+        $student = CampusStudent::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        // Curs sense calendar_notes i sense start_date → sessionsPast() = null → 0
+        $course  = CampusCourse::factory()->create([
+            'season_id' => $season->id,
+            'status'    => 'active',
+            'sessions'  => 5,
+        ]);
+
+        CampusEnrollment::factory()->create([
+            'student_id' => $student->id,
+            'course_id'  => $course->id,
+            'status'     => 'paid',
+        ]);
+
+        $fakeFile = UploadedFile::fake()->create('sessio3.pdf', 100, 'application/pdf');
+        $path     = $fakeFile->storeAs('campus/documents', 'sessio3.pdf', 'local');
+
+        // Requereix sessió 3, però sessionsPast() = null → 0 (curs sense dates)
+        $doc = CampusDocument::factory()->forCourse($course->id)->create([
+            'type'           => 'file',
+            'file_path'      => $path,
+            'file_name'      => 'sessio3.pdf',
+            'visibility'     => 'enrolled',
+            'session_number' => 3,
+        ]);
+
+        $this->actingAs($student, 'student')
+             ->get(route('campus.documents.download', $doc))
+             ->assertForbidden();
+    }
+
+    public function test_or_logic_date_unlocks_when_session_not_reached(): void
+    {
+        Storage::fake('local');
+
+        $student = CampusStudent::factory()->create();
+        $season  = CampusSeason::factory()->create(['status' => 'active']);
+        $course  = CampusCourse::factory()->create([
+            'season_id' => $season->id,
+            'status'    => 'active',
+            'sessions'  => 5,
+        ]);
+
+        CampusEnrollment::factory()->create([
+            'student_id' => $student->id,
+            'course_id'  => $course->id,
+            'status'     => 'paid',
+        ]);
+
+        $fakeFile = UploadedFile::fake()->create('mixte.pdf', 100, 'application/pdf');
+        $path     = $fakeFile->storeAs('campus/documents', 'mixte.pdf', 'local');
+
+        // Condicions OR: data passada (✓) O sessió 10 (✗) → accessible per data
+        $doc = CampusDocument::factory()->forCourse($course->id)->create([
+            'type'           => 'file',
+            'file_path'      => $path,
+            'file_name'      => 'mixte.pdf',
+            'visibility'     => 'enrolled',
+            'available_from' => now()->subDay(), // data passada → OK
+            'session_number' => 10,              // sessió no assolida (0 < 10) → KO
+        ]);
+
+        // OR: data OK → accessible
+        $this->actingAs($student, 'student')
+             ->get(route('campus.documents.download', $doc))
+             ->assertSuccessful();
+    }
+
     public function test_teacher_can_download_document_before_available_from(): void
     {
         Storage::fake('local');

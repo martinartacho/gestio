@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class CampusCourse extends Model
@@ -194,5 +196,79 @@ class CampusCourse extends Model
     public function getStatusLabelAttribute(): string
     {
         return self::STATUSES[$this->status] ?? $this->status;
+    }
+
+    /**
+     * Nombre de sessions ja celebrades (fins avui).
+     * Retorna null si no hi ha prou dades per calcular-ho.
+     */
+    public function sessionsPast(): ?int
+    {
+        if (! $this->sessions || ! $this->start_date) {
+            return null;
+        }
+
+        $today = now()->startOfDay();
+
+        if ($today < $this->start_date) {
+            return 0;
+        }
+
+        // Prioritat: dates reals de calendar_notes
+        if ($this->calendar_notes) {
+            $dates = $this->parseSessionDates($this->calendar_notes, $this->start_date);
+            if ($dates->isNotEmpty()) {
+                return $dates->filter(fn($d) => $d->lte($today))->count();
+            }
+        }
+
+        // Fallback: estimació setmanal fins end_date
+        $end = $this->end_date ?? $this->start_date->copy()->addWeeks($this->sessions - 1);
+
+        if ($today >= $end) {
+            return $this->sessions;
+        }
+
+        $weeksDone = (int) ($this->start_date->diffInDays($today) / 7) + 1;
+
+        return min($weeksDone, $this->sessions);
+    }
+
+    /**
+     * Parseja tokens "d/m" o "d/m/yyyy" des de calendar_notes.
+     */
+    public function parseSessionDates(string $notes, Carbon $startDate): Collection
+    {
+        $year      = $startDate->year;
+        $prevMonth = 0;
+
+        return collect(array_filter(array_map('trim', explode(',', $notes))))
+            ->map(function (string $part) use (&$year, &$prevMonth) {
+                if (! preg_match('/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/', $part, $m)) {
+                    return null;
+                }
+
+                $day   = (int) $m[1];
+                $month = (int) $m[2];
+                $y     = isset($m[3])
+                    ? (strlen($m[3]) === 2 ? 2000 + (int) $m[3] : (int) $m[3])
+                    : null;
+
+                if ($y === null) {
+                    if ($prevMonth > 0 && $month < $prevMonth) {
+                        $year++;
+                    }
+                    $y = $year;
+                }
+
+                $prevMonth = $month;
+
+                try {
+                    return Carbon::createFromDate($y, $month, $day)->startOfDay();
+                } catch (\Exception) {
+                    return null;
+                }
+            })
+            ->filter();
     }
 }

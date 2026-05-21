@@ -20,8 +20,7 @@ class DocumentController extends Controller
         abort_if(! $document->isFile() || ! $document->file_path, 404);
         abort_if(! Storage::disk('local')->exists($document->file_path), 404);
 
-        // Comprovar accés (visibilitat + disponibilitat temporal)
-        $this->authorize($document);
+        $this->checkAccess($document);
 
         return Storage::disk('local')->download(
             $document->file_path,
@@ -29,27 +28,26 @@ class DocumentController extends Controller
         );
     }
 
-    private function authorize(CampusDocument $document): void
+    private function checkAccess(CampusDocument $document): void
     {
         $student = auth('student')->user();
         $teacher = auth('teacher')->user();
         $admin   = auth('web')->user();
 
-        // Admin sempre pot descarregar (sense restriccions de data)
+        // Admin sempre pot descarregar
         if ($admin) return;
 
-        // ── Comprovació de disponibilitat temporal (no afecta admin) ──────────
-        if ($document->available_from && now()->lt($document->available_from)) {
-            // Professors i admins poden veure'l sempre; alumnes no
-            abort_unless($teacher || $admin, 403);
+        // ── Disponibilitat temporal (OR: data O sessió) ────────────────────
+        // Professors bypassen la restricció temporal (veuen tots els seus docs)
+        if (! $teacher && ! $this->isAvailable($document)) {
+            abort(403, 'El document encara no és accessible.');
         }
 
-        // Visibilitat pública: qualsevol (respectant available_from)
+        // ── Visibilitat ────────────────────────────────────────────────────
         if ($document->visibility === 'public') {
             return;
         }
 
-        // Visibilitat privada: únicament el professor propietari
         if ($document->visibility === 'private') {
             abort_unless(
                 $teacher && $teacher->id === $document->teacher_id,
@@ -58,7 +56,7 @@ class DocumentController extends Controller
             return;
         }
 
-        // visibility = 'enrolled': professor del curs o alumne matriculat
+        // visibility = 'enrolled'
         if ($teacher) {
             abort_unless(
                 $teacher->courses()->where('campus_courses.id', $document->course_id)->exists()
@@ -69,12 +67,10 @@ class DocumentController extends Controller
         }
 
         if ($student && $document->course_id) {
-            // Comprova matrícula directa o al curs pare (herència)
             $courseIds = collect([$document->course_id]);
             if ($document->course?->parent_id) {
                 $courseIds->push($document->course->parent_id);
             }
-            // Afegir cursos fills si el document és template
             if ($document->inherit_to_editions) {
                 $childIds = \App\Models\CampusCourse::where('parent_id', $document->course_id)
                     ->pluck('id');
@@ -91,5 +87,42 @@ class DocumentController extends Controller
         }
 
         abort(403);
+    }
+
+    /**
+     * Comprova si el document és disponible ara per a l'alumne.
+     *
+     * Lògica OR: el document s'activa quan ES COMPLEIX qualsevol de les
+     * condicions configurades (data OU sessió). Si no hi ha cap condició,
+     * el document és immediatament accessible.
+     *
+     * Exemples:
+     *   - Només available_from (passat)   → accessible
+     *   - Només available_from (futur)    → bloquejat
+     *   - Només session_number (assolit)  → accessible
+     *   - Només session_number (no assolit) → bloquejat
+     *   - Tots dos: si data passada OR sessió assolida → accessible
+     */
+    private function isAvailable(CampusDocument $document): bool
+    {
+        $conditions = [];
+
+        if ($document->available_from) {
+            $conditions[] = now()->gte($document->available_from);
+        }
+
+        if ($document->session_number && $document->course_id) {
+            $course      = $document->course ?? $document->course()->first();
+            $sessionsDone = $course?->sessionsPast() ?? 0;
+            $conditions[] = $sessionsDone >= $document->session_number;
+        }
+
+        // Cap condició configurada → accessible sempre
+        if (empty($conditions)) {
+            return true;
+        }
+
+        // OR: n'hi ha prou amb que una condició es compleixi
+        return in_array(true, $conditions, true);
     }
 }

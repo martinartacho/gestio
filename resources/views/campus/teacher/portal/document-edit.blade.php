@@ -101,6 +101,58 @@
                 </select>
             </div>
 
+            {{-- Condicions d'accés ──────────────────────────────────────────── --}}
+            <div style="border:1px solid #e5e7eb;border-radius:0.5rem;padding:1rem;margin-bottom:1rem;background:#fafafa;">
+                <p style="font-size:0.8125rem;font-weight:600;color:#374151;margin:0 0 0.125rem;">Condicions d'accés</p>
+                <p style="font-size:0.75rem;color:#9ca3af;margin:0 0 0.875rem;">
+                    Si s'especifica <strong>alguna</strong> condició, el document s'activa en complir-se'n
+                    <strong>qualsevol</strong> (OR). Sense condicions: accés immediat.
+                </p>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Disponible a partir de
+                        </label>
+                        <input type="datetime-local" name="available_from"
+                               value="{{ old('available_from', $document->available_from?->format('Y-m-d\TH:i')) }}"
+                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;box-sizing:border-box;background:#fff;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">Deixa buit per a accés immediat per data.</p>
+                    </div>
+
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            A partir de la sessió #
+                        </label>
+                        <input type="number" name="session_number"
+                               value="{{ old('session_number', $document->session_number) }}"
+                               min="1"
+                               @if($document->course) max="{{ $document->course->sessions }}" @endif
+                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;box-sizing:border-box;background:#fff;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Deixa buit per a accés immediat per sessió.
+                            @if($document->course && $document->course->sessions)
+                                <br>El curs té <strong>{{ $document->course->sessions }}</strong> sessions
+                                @php $done = $document->course->sessionsPast(); @endphp
+                                @if($done !== null)
+                                    · <strong>{{ $done }}</strong> fetes fins avui.
+                                @endif
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Ordre de visualització --}}
+            <div style="margin-bottom:1rem;">
+                <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Ordre de visualització</label>
+                <input type="number" name="sort_order"
+                       value="{{ old('sort_order', $document->sort_order ?? 0) }}"
+                       min="0"
+                       style="width:8rem;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;box-sizing:border-box;">
+                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">Número més petit = apareix abans.</p>
+            </div>
+
             {{-- Visibilitat + Estat (2 columnes) --}}
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.5rem;">
                 <div>
