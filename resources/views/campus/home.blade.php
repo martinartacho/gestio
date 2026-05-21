@@ -93,17 +93,18 @@
     </main>
 
     {{-- Footer -------------------------------------------------------------}}
-    <footer class="border-t border-gray-200 bg-white">
-        <div class="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-gray-400">
+    <footer style="border-top:1px solid #e5e7eb;background:#fff;">
+        <div style="max-width:64rem;margin:0 auto;padding:1.5rem 1.5rem;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1rem;">
 
             {{-- Columna 1: Identificació --}}
-            <div class="flex flex-col gap-1">
-                <span class="font-semibold text-gray-600 text-sm">
+            <div style="display:flex;flex-direction:column;gap:0.25rem;font-size:0.75rem;color:#9ca3af;">
+                <span style="font-size:0.875rem;font-weight:600;color:#4b5563;">
                     {{ setting('campus_name', 'Campus de Formació Continuada') }}
                 </span>
                 @if(setting('campus_contact_email'))
                     <a href="mailto:{{ setting('campus_contact_email') }}"
-                       class="hover:text-indigo-600 transition-colors">
+                       style="color:#9ca3af;text-decoration:none;"
+                       onmouseover="this.style.color='#4f46e5'" onmouseout="this.style.color='#9ca3af'">
                         {{ setting('campus_contact_email') }}
                     </a>
                 @endif
@@ -116,11 +117,19 @@
             </div>
 
             {{-- Columna 2: Menús --}}
-            <nav class="flex flex-wrap gap-x-5 gap-y-1 text-xs">
-                <a href="{{ route('campus.catalog.index') }}" class="hover:text-gray-600 transition-colors">Catàleg</a>
-                <a href="{{ route('campus.login') }}" class="hover:text-gray-600 transition-colors">Alumnat</a>
-                <a href="{{ route('teacher.login') }}" class="hover:text-gray-600 transition-colors">Professorat</a>
-                <a href="/admin" class="hover:text-gray-600 transition-colors">Administració</a>
+            <nav style="display:flex;align-items:center;gap:0;font-size:0.75rem;">
+                <a href="{{ route('campus.catalog.index') }}"
+                   style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
+                   onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Catàleg</a>
+                <a href="{{ route('campus.login') }}"
+                   style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
+                   onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Alumnat</a>
+                <a href="{{ route('teacher.login') }}"
+                   style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
+                   onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Professorat</a>
+                <a href="/admin"
+                   style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;"
+                   onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Administració</a>
             </nav>
 
         </div>
