@@ -185,6 +185,16 @@ class DocumentResource extends Resource
                     ->label('Mida')
                     ->placeholder('—'),
 
+                Tables\Columns\TextColumn::make('not_available_reason')
+                    ->label('Accés alumnes')
+                    ->getStateUsing(function (CampusDocument $r): string {
+                        $r->loadMissing('course');
+                        return $r->not_available_reason ?? '✓ Accessible';
+                    })
+                    ->color(fn(CampusDocument $r): string => $r->not_available_reason ? 'warning' : 'success')
+                    ->badge()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Creat')
                     ->date('d/m/Y')

@@ -43,8 +43,10 @@ class TeacherPortalController extends Controller
             ->get();
 
         // Professor veu tots els documents actius (inclosos els no disponibles encara)
+        // Carguem 'course' perquè not_available_reason pugui calcular sessionsPast()
         $documents = CampusDocument::where('course_id', $course->id)
             ->where('status', 'active')
+            ->with('course')
             ->orderBy('sort_order')
             ->orderBy('created_at')
             ->get();

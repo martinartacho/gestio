@@ -123,10 +123,11 @@
                             <span style="color:#d1d5db;">·</span>
                             <span style="font-size:0.75rem;color:#9ca3af;">{{ $doc->file_size_formatted }}</span>
                         @endif
-                        @if ($doc->available_from && now()->lt($doc->available_from))
+                        @if ($doc->not_available_reason)
                             <span style="color:#d1d5db;">·</span>
-                            <span style="font-size:0.75rem;color:#d97706;" title="Els alumnes no hi tindran accés fins a aquesta data">
-                                ⏰ Des del {{ $doc->available_from->format('d/m/Y') }}
+                            <span style="font-size:0.75rem;color:#d97706;font-style:italic;"
+                                  title="Els alumnes no hi tindran accés fins que es compleixi alguna de les condicions">
+                                {{ $doc->not_available_reason }}
                             </span>
                         @endif
                     </div>

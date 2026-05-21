@@ -134,6 +134,15 @@ class DocumentsRelationManager extends RelationManager
                     ->label('Mida')
                     ->placeholder('—'),
 
+                Tables\Columns\TextColumn::make('not_available_reason')
+                    ->label('Accés alumnes')
+                    ->getStateUsing(function (CampusDocument $r): string {
+                        $r->loadMissing('course');
+                        return $r->not_available_reason ?? '✓ Accessible';
+                    })
+                    ->color(fn(CampusDocument $r): string => $r->not_available_reason ? 'warning' : 'success')
+                    ->badge(),
+
                 Tables\Columns\TextColumn::make('sort_order')
                     ->label('Ordre')
                     ->sortable(),

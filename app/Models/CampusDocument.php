@@ -123,6 +123,57 @@ class CampusDocument extends Model
         return $this->type === 'url';
     }
 
+    /**
+     * El document és accessible ara per a alumnes?
+     * Lògica OR: cap condició → sí; si n'hi ha → n'hi ha prou amb que una es compleixi.
+     * Requereix que 'course' estigui carregat si hi ha session_number.
+     */
+    public function isAvailableForStudents(): bool
+    {
+        $conditions = [];
+
+        if ($this->available_from) {
+            $conditions[] = now()->gte($this->available_from);
+        }
+
+        if ($this->session_number) {
+            $course = $this->relationLoaded('course') ? $this->course : null;
+            $done   = $course?->sessionsPast() ?? 0;
+            $conditions[] = $done >= $this->session_number;
+        }
+
+        return empty($conditions) || in_array(true, $conditions, true);
+    }
+
+    /**
+     * Text descriptiu de PER QUÈ el document encara no és accessible.
+     * Retorna null si el document ja és accessible.
+     * Requereix que 'course' estigui carregat si hi ha session_number.
+     */
+    public function getNotAvailableReasonAttribute(): ?string
+    {
+        if ($this->isAvailableForStudents()) return null;
+
+        $parts = [];
+
+        if ($this->available_from && now()->lt($this->available_from)) {
+            $parts[] = 'des del ' . $this->available_from->format('d/m/Y H:i');
+        }
+
+        if ($this->session_number) {
+            $course = $this->relationLoaded('course') ? $this->course : null;
+            $done   = $course?->sessionsPast() ?? 0;
+            if ($done < $this->session_number) {
+                $parts[] = 'sessió ' . $this->session_number . ' (fetes: ' . $done . ')';
+            }
+        }
+
+        if (empty($parts)) return null;
+
+        return '⏰ ' . implode(' o ', $parts);
+    }
+
+    /** @deprecated Usar isAvailableForStudents() */
     public function isAvailable(): bool
     {
         return $this->status === 'active'
