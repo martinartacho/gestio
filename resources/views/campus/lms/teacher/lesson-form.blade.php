@@ -47,11 +47,6 @@
     @if($isEdit) @method('PATCH') @endif
 
     {{-- ── BLOC 1: Capçalera ─────────────────────────────────────────────── --}}
-    @include('campus.lms.teacher.partials.form-section', [
-        'title' => 'Capçalera de la sessió',
-        'open'  => true,
-        'slot'  => '
-    '])
     <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
         <p style="font-size:0.75rem;font-weight:600;color:#4f46e5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;">Capçalera</p>
         <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;gap:1rem;margin-bottom:1rem;">
