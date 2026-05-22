@@ -65,4 +65,20 @@ class LmsLessonFactory extends Factory
     {
         return $this->state(['status' => 'published']);
     }
+
+    /**
+     * Lliçó amb preguntes de tots els tipus per a tests.
+     */
+    public function withQuestions(): static
+    {
+        return $this->state([
+            'questions' => [
+                ['index' => 0, 'type' => 'open_text',   'block' => 'reflection', 'text' => 'Reflexió oberta', 'required' => false, 'points' => 0],
+                ['index' => 1, 'type' => 'yes_no',       'block' => 'quiz', 'text' => 'Veritat o fals?', 'correct_answer' => true,  'required' => true, 'points' => 1],
+                ['index' => 2, 'type' => 'choice_one',   'block' => 'quiz', 'text' => 'Tria una opció', 'options' => ['A', 'B', 'C'], 'correct_answer' => 'A', 'required' => true, 'points' => 2],
+                ['index' => 3, 'type' => 'choice_many',  'block' => 'quiz', 'text' => 'Tria les correctes', 'options' => ['X', 'Y', 'Z'], 'correct_answers' => ['X', 'Y'], 'required' => false, 'points' => 2],
+                ['index' => 4, 'type' => 'select_from_examples', 'block' => 'exercise', 'text' => 'Escull exemple', 'options' => ['Op1', 'Op2'], 'allow_custom' => true, 'required' => false, 'points' => 0],
+            ],
+        ]);
+    }
 }

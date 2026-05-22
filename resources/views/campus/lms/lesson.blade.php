@@ -197,6 +197,17 @@
             </p>
         </div>
     @endforeach
+
+    {{-- Preguntes interactives del bloc 'reflection' --}}
+    @if(!($isPreview ?? false))
+        @foreach($lesson->getQuestionsOfBlock('reflection') as $q)
+            @include('campus.lms.partials.question-form', [
+                'question'  => $q,
+                'response'  => $studentResponses[$q['index']] ?? null,
+                'lesson'    => $lesson,
+            ])
+        @endforeach
+    @endif
 </div>
 @endif
 
@@ -275,6 +286,39 @@
             @endforeach
         </div>
     @endif
+
+    {{-- Preguntes interactives del bloc 'exercise' --}}
+    @if(!($isPreview ?? false))
+        @foreach($lesson->getQuestionsOfBlock('exercise') as $q)
+            @include('campus.lms.partials.question-form', [
+                'question'  => $q,
+                'response'  => $studentResponses[$q['index']] ?? null,
+                'lesson'    => $lesson,
+            ])
+        @endforeach
+    @endif
+</div>
+@endif
+
+{{-- ═══════════════════════════════════════════════════
+     BLOC 11 — QÜESTIONARI (preguntes avaluables)
+═══════════════════════════════════════════════════ --}}
+@php $quizQuestions = $lesson->getQuestionsOfBlock('quiz'); @endphp
+@if(!($isPreview ?? false) && count($quizQuestions) > 0)
+<div style="border:1px solid #c7d2fe;border-radius:0.75rem;padding:1.5rem;margin-bottom:2rem;background:#f8f9ff;">
+    <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#4338ca;font-weight:600;margin-bottom:0.25rem;">
+        Qüestionari
+    </p>
+    <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">
+        Comprova el que has après en aquesta sessió.
+    </p>
+    @foreach($quizQuestions as $q)
+        @include('campus.lms.partials.question-form', [
+            'question'  => $q,
+            'response'  => $studentResponses[$q['index']] ?? null,
+            'lesson'    => $lesson,
+        ])
+    @endforeach
 </div>
 @endif
 

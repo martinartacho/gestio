@@ -69,6 +69,8 @@ Route::prefix('portal/lms')->name('campus.lms.')
         Route::get('/curs/{slug}', [LmsStudentController::class, 'index'])->name('course');
         Route::get('/curs/{slug}/sessio/{lesson}', [LmsStudentController::class, 'show'])->name('lesson');
         Route::post('/sessio/{lesson}/completar', [LmsStudentController::class, 'complete'])->name('lesson.complete');
+        Route::post('/sessio/{lesson}/resposta/{questionIndex}', [LmsStudentController::class, 'saveResponse'])->name('lesson.response.save');
+        Route::get('/curs/{slug}/certificat', [LmsStudentController::class, 'certificate'])->name('course.certificate');
     });
 
 // ── LMS Professors ────────────────────────────────────────────────────────────

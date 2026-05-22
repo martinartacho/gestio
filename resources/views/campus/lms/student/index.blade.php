@@ -28,6 +28,26 @@
     @endif
 </div>
 
+{{-- Certificat --}}
+@if($certificate ?? null)
+<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:0.75rem;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+        <span style="font-size:1.5rem;">🎓</span>
+        <div>
+            <p style="font-size:0.9375rem;font-weight:600;color:#065f46;margin:0;">Certificat d'aprofitament</p>
+            <p style="font-size:0.8125rem;color:#6b7280;margin:0.125rem 0 0;">
+                Emès el {{ $certificate->issued_at->format('d/m/Y') }} · Núm. {{ $certificate->certificate_number }}
+            </p>
+        </div>
+    </div>
+    <a href="{{ route('campus.lms.course.certificate', $course->slug) }}"
+       style="display:inline-flex;align-items:center;gap:0.4rem;background:#059669;color:#fff;font-size:0.8125rem;font-weight:600;padding:0.5rem 1.125rem;border-radius:0.5rem;text-decoration:none;"
+       onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
+        ↓ Veure el certificat
+    </a>
+</div>
+@endif
+
 {{-- Llista de lliçons --}}
 @if($lessons->isEmpty())
     <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:2rem;text-align:center;color:#6b7280;">

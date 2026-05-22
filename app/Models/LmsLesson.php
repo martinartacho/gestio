@@ -24,12 +24,14 @@ class LmsLesson extends Model
         'intro_text',
         // Tema
         'topic_text',
-        // Blocs JSON
+        // Blocs JSON (visualització)
         'concepts',
         'text_cards',
         'comparison',
         'reflection_questions',
         'exercise',
+        // Preguntes interactives (avaluables o obertes)
+        'questions',
         // Control
         'status',
         'sort_order',
@@ -43,6 +45,7 @@ class LmsLesson extends Model
         'comparison'           => 'array',
         'reflection_questions' => 'array',
         'exercise'             => 'array',
+        'questions'            => 'array',
     ];
 
     // ─── Relacions ────────────────────────────────────────────────────────────
@@ -55,6 +58,11 @@ class LmsLesson extends Model
     public function progresses(): HasMany
     {
         return $this->hasMany(LmsLessonProgress::class, 'lesson_id');
+    }
+
+    public function responses(): HasMany
+    {
+        return $this->hasMany(LmsLessonResponse::class, 'lesson_id');
     }
 
     // ─── Scopes ───────────────────────────────────────────────────────────────
@@ -70,6 +78,31 @@ class LmsLesson extends Model
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    /**
+     * Retorna les preguntes d'un bloc concret (reflection, exercise, quiz).
+     */
+    public function getQuestionsOfBlock(string $block): array
+    {
+        if (empty($this->questions)) {
+            return [];
+        }
+
+        return array_values(
+            array_filter($this->questions, fn ($q) => ($q['block'] ?? '') === $block)
+        );
+    }
+
+    /**
+     * Retorna la resposta d'un alumne per a una pregunta concreta (per index).
+     */
+    public function getResponseFor(CampusStudent $student, int $questionIndex): ?LmsLessonResponse
+    {
+        return $this->responses()
+            ->where('student_id', $student->id)
+            ->where('question_index', $questionIndex)
+            ->first();
+    }
 
     public function isCompletedBy(CampusStudent $student): bool
     {

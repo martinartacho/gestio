@@ -8,6 +8,7 @@ use App\Models\CampusSeason;
 use App\Models\CampusStudent;
 use App\Models\CampusTeacher;
 use App\Models\LmsLesson;
+use App\Models\LmsLessonResponse;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -113,7 +114,7 @@ class LmsLessonSeeder extends Seeder
         // ── Sessions ──────────────────────────────────────────────────────────
 
         // ── Sessió 1: Narrativa curta ─────────────────────────────────────────
-        LmsLesson::firstOrCreate(
+        $lessonS1 = LmsLesson::firstOrCreate(
             ['course_id' => $course->id, 'session_number' => 1],
             [
                 'title'      => 'Què és un relat curt?',
@@ -192,6 +193,80 @@ class LmsLessonSeeder extends Seeder
                     'demo_first_person' => null,
                     'demo_third_person' => null,
                 ],
+            ]
+        );
+
+        // ── Questions interactives de la sessió 1 (idempotent) ───────────────
+        if (empty($lessonS1->questions)) {
+            $lessonS1->update([
+                'questions' => [
+                    [
+                        'index'    => 0,
+                        'type'     => 'open_text',
+                        'block'    => 'reflection',
+                        'text'     => 'Qué és exactament el que "passa" en el fragment de CAMPUS? És suficient per ser una historia?',
+                        'required' => false,
+                        'points'   => 0,
+                    ],
+                    [
+                        'index'       => 1,
+                        'type'        => 'select_from_examples',
+                        'block'       => 'exercise',
+                        'text'        => 'Escull el narrador per al teu exercici',
+                        'options'     => [
+                            'Un semàfor que s\'activa per primera vegada en una cruïlla',
+                            'Un rellotge despertador just abans de sonar',
+                            'Una bústia de correu que rep la primera carta',
+                            'Un fanal de carrer en un barri nou',
+                        ],
+                        'allow_custom' => true,
+                        'required'    => false,
+                        'points'      => 0,
+                    ],
+                    [
+                        'index'          => 2,
+                        'type'           => 'yes_no',
+                        'block'          => 'quiz',
+                        'text'           => 'Un relat curt és una novel·la a la qual li falta material?',
+                        'correct_answer' => false,
+                        'required'       => true,
+                        'points'         => 1,
+                    ],
+                    [
+                        'index'          => 3,
+                        'type'           => 'choice_one',
+                        'block'          => 'quiz',
+                        'text'           => 'Txékhov era d\'origen rus?',
+                        'options'        => ['Sí', 'No', 'Era ucraïnès'],
+                        'correct_answer' => 'Sí',
+                        'required'       => true,
+                        'points'         => 1,
+                    ],
+                ],
+            ]);
+        }
+
+        // ── Respostes demo per a l'alumne de prova (sessió 1) ────────────────
+        // Resposta oberta (reflexió)
+        LmsLessonResponse::updateOrCreate(
+            ['lesson_id' => $lessonS1->id, 'student_id' => $student->id, 'question_index' => 0],
+            [
+                'question_type' => 'open_text',
+                'response_text' => 'El que "passa" és que el sistema s\'encén per primera vegada. És un moment mínim, però explicat com si fos un despertar humà. Crec que sí, que és suficient per ser una historia curta.',
+                'score'         => null,
+                'auto_graded'   => false,
+                'submitted_at'  => now(),
+            ]
+        );
+        // Resposta quiz yes_no (correcta: No)
+        LmsLessonResponse::updateOrCreate(
+            ['lesson_id' => $lessonS1->id, 'student_id' => $student->id, 'question_index' => 2],
+            [
+                'question_type' => 'yes_no',
+                'response_bool' => false,
+                'score'         => 1.00,
+                'auto_graded'   => true,
+                'submitted_at'  => now(),
             ]
         );
 

@@ -49,6 +49,16 @@ class CampusStudent extends Authenticatable
          ->withTimestamps();
     }
 
+    public function lmsResponses(): HasMany
+    {
+        return $this->hasMany(LmsLessonResponse::class, 'student_id');
+    }
+
+    public function lmsCertificates(): HasMany
+    {
+        return $this->hasMany(LmsCourseCertificate::class, 'student_id');
+    }
+
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";

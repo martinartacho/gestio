@@ -35,12 +35,13 @@ class LmsTeacherController extends Controller
         $prevLesson   = $index > 0 ? $lessons[$index - 1] : null;
         $nextLesson   = isset($lessons[$index + 1]) ? $lessons[$index + 1] : null;
         $totalLessons = $lessons->count();
-        $isCompleted  = false;
-        $isPreview    = true; // el professor sempre veu en mode previsualització
+        $isCompleted      = false;
+        $isPreview        = true; // el professor sempre veu en mode previsualització
+        $studentResponses = collect(); // buit: el professor no té respostes pròpies
 
         return view('campus.lms.lesson', compact(
             'course', 'lesson', 'isCompleted', 'isPreview',
-            'prevLesson', 'nextLesson', 'totalLessons'
+            'prevLesson', 'nextLesson', 'totalLessons', 'studentResponses'
         ));
     }
 

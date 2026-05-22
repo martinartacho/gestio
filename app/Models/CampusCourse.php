@@ -156,6 +156,11 @@ class CampusCourse extends Model
             ->orderBy('session_number');
     }
 
+    public function lmsCertificates(): HasMany
+    {
+        return $this->hasMany(LmsCourseCertificate::class, 'course_id');
+    }
+
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(
