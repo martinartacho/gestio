@@ -79,6 +79,13 @@ Route::prefix('professorat/portal/lms')->name('teacher.lms.')
     ->group(function () {
         Route::get('/curs/{slug}', [LmsTeacherController::class, 'index'])->name('course');
         Route::get('/curs/{slug}/sessio/{lesson}', [LmsTeacherController::class, 'show'])->name('lesson');
+
+        // Gestió de sessions (crear / editar)
+        Route::get('/curs/{slug}/sessions/nova', [LmsTeacherController::class, 'create'])->name('lesson.create');
+        Route::post('/curs/{slug}/sessions', [LmsTeacherController::class, 'store'])->name('lesson.store');
+        Route::get('/curs/{slug}/sessions/{lesson}/editar', [LmsTeacherController::class, 'edit'])->name('lesson.edit');
+        Route::patch('/curs/{slug}/sessions/{lesson}', [LmsTeacherController::class, 'update'])->name('lesson.update');
+        Route::delete('/curs/{slug}/sessions/{lesson}', [LmsTeacherController::class, 'destroy'])->name('lesson.destroy');
     });
 
 // ── LMS Previsualització admin ─────────────────────────────────────────────────
