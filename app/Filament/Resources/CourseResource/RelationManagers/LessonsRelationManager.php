@@ -10,6 +10,8 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -171,6 +173,95 @@ class LessonsRelationManager extends RelationManager
                     ->label('Demo en 3a persona')->rows(3),
             ])->columns(3)->collapsed(),
 
+            Section::make('Preguntes interactives')->schema([
+                Repeater::make('questions')
+                    ->label('')
+                    ->schema([
+                        TextInput::make('index')
+                            ->label('Índex')
+                            ->numeric()
+                            ->required()
+                            ->helperText('Posició dins l\'array (0, 1, 2…)'),
+
+                        Select::make('type')
+                            ->label('Tipus de pregunta')
+                            ->options([
+                                'open_text'            => 'Text obert (no avaluable)',
+                                'select_from_examples' => 'Selecció d\'exemples',
+                                'choice_one'           => 'Opció única (avaluable)',
+                                'choice_many'          => 'Múltiple opció (avaluable)',
+                                'yes_no'               => 'Sí / No (avaluable)',
+                            ])
+                            ->required()
+                            ->live()
+                            ->columnSpan(2),
+
+                        Select::make('block')
+                            ->label('Bloc on apareix')
+                            ->options([
+                                'reflection' => 'Reflexió',
+                                'exercise'   => 'Exercici',
+                                'quiz'       => 'Qüestionari',
+                            ])
+                            ->required(),
+
+                        Textarea::make('text')
+                            ->label('Enunciat de la pregunta')
+                            ->required()
+                            ->rows(2)
+                            ->columnSpanFull(),
+
+                        // Opcions (choice_one, choice_many, select_from_examples)
+                        Repeater::make('options')
+                            ->label('Opcions de resposta')
+                            ->simple(TextInput::make('option')->label('Opció'))
+                            ->addActionLabel('Afegir opció')
+                            ->columnSpanFull()
+                            ->hidden(fn (Get $get) => ! in_array($get('type'), ['choice_one', 'choice_many', 'select_from_examples'])),
+
+                        // Resposta correcta única (choice_one, yes_no)
+                        TextInput::make('correct_answer')
+                            ->label('Resposta correcta')
+                            ->helperText('Per yes_no: "true" o "false". Per choice_one: el text exacte de l\'opció.')
+                            ->columnSpan(2)
+                            ->hidden(fn (Get $get) => ! in_array($get('type'), ['choice_one', 'yes_no'])),
+
+                        // Respostes correctes (choice_many)
+                        Repeater::make('correct_answers')
+                            ->label('Respostes correctes (múltiple)')
+                            ->simple(TextInput::make('answer')->label('Resposta'))
+                            ->addActionLabel('Afegir resposta correcta')
+                            ->columnSpanFull()
+                            ->hidden(fn (Get $get) => $get('type') !== 'choice_many'),
+
+                        // Permetre opció personalitzada (select_from_examples)
+                        Toggle::make('allow_custom')
+                            ->label('Permetre opció personalitzada (camp de text lliure)')
+                            ->columnSpan(2)
+                            ->hidden(fn (Get $get) => $get('type') !== 'select_from_examples'),
+
+                        Toggle::make('required')
+                            ->label('Obligatòria')
+                            ->default(false),
+
+                        TextInput::make('points')
+                            ->label('Punts')
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0),
+                    ])
+                    ->columns(4)
+                    ->addActionLabel('Afegir pregunta')
+                    ->reorderable()
+                    ->collapsible()
+                    ->columnSpanFull()
+                    ->itemLabel(fn (array $state): string =>
+                        '[' . ($state['index'] ?? '?') . '] ' .
+                        ($state['type'] ?? '—') . ' · ' .
+                        mb_strimwidth($state['text'] ?? '', 0, 40, '…')
+                    ),
+            ])->collapsed()->collapsible(),
+
         ]);
     }
 
@@ -205,6 +296,11 @@ class LessonsRelationManager extends RelationManager
                     ->counts('progresses')
                     ->badge()
                     ->color('gray'),
+                Tables\Columns\TextColumn::make('responses_count')
+                    ->label('Respostes')
+                    ->counts('responses')
+                    ->badge()
+                    ->color('info'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
