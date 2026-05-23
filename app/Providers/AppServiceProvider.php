@@ -42,19 +42,24 @@ class AppServiceProvider extends ServiceProvider
 
     private function configureRateLimiters(): void
     {
-        // Registre: màx. 5 intents per IP cada 10 min (anti-bots de creació de comptes)
-        RateLimiter::for('register', function (Request $request) {
+        $isLocal = app()->environment('local');
+
+        // Registre: màx. 5 intents per IP cada 10 min (desactivat en local)
+        RateLimiter::for('register', function (Request $request) use ($isLocal) {
+            if ($isLocal) return Limit::perMinutes(10, 200)->by($request->ip());
             return Limit::perMinutes(10, 5)->by($request->ip());
         });
 
-        // Login: màx. 10 intents per email+IP cada 10 min
-        RateLimiter::for('login', function (Request $request) {
+        // Login: màx. 10 intents per email+IP cada 10 min (desactivat en local)
+        RateLimiter::for('login', function (Request $request) use ($isLocal) {
+            if ($isLocal) return Limit::perMinutes(10, 200)->by($request->ip());
             return Limit::perMinutes(10, 10)
                 ->by(strtolower((string) $request->input('email')) . '|' . $request->ip());
         });
 
-        // Checkout: màx. 5 intents per alumne cada 10 min (anti seat-squatting massiu)
-        RateLimiter::for('checkout', function (Request $request) {
+        // Checkout: màx. 5 per alumne cada 10 min (desactivat en local)
+        RateLimiter::for('checkout', function (Request $request) use ($isLocal) {
+            if ($isLocal) return Limit::perMinutes(10, 200)->by($request->ip());
             return Limit::perMinutes(10, 5)
                 ->by($request->user('student')?->id ?: $request->ip());
         });

@@ -36,15 +36,25 @@
     {{-- Banner verificació email --}}
     @auth('student')
         @if (! auth('student')->user()->hasVerifiedEmail() && ! request()->routeIs('campus.verification.*'))
-        <div class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-sm text-amber-800 flex items-center justify-between gap-4">
-            <span>
-                ⚠️ Cal verificar el correu electrònic per poder inscriure's als cursos.
-                <a href="{{ route('campus.verification.notice') }}" class="underline font-medium hover:no-underline ml-1">Veure instruccions</a>
-            </span>
-            <form method="POST" action="{{ route('campus.verification.resend') }}" class="shrink-0">
-                @csrf
-                <button type="submit" class="text-xs text-amber-700 underline hover:no-underline">Reenviar correu</button>
-            </form>
+        <div class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-sm text-amber-800">
+            <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+                <span class="flex items-center gap-2">
+                    <svg class="w-4 h-4 shrink-0 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+                    </svg>
+                    Compte pendent de verificació — introduïu el codi que heu rebut per correu.
+                </span>
+                <div class="flex items-center gap-3 shrink-0">
+                    <a href="{{ route('campus.verification.notice') }}"
+                       class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+                        Introduir codi →
+                    </a>
+                    <form method="POST" action="{{ route('campus.verification.resend') }}">
+                        @csrf
+                        <button type="submit" class="text-xs text-amber-700 underline hover:no-underline">Reenviar</button>
+                    </form>
+                </div>
+            </div>
         </div>
         @endif
     @endauth

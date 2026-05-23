@@ -155,6 +155,7 @@ class StudentAuthController extends Controller
 
         Mail::to($student->email)->send(new EmailVerificationMail($student));
 
-        return back()->with('info', 'Hem enviat un nou codi a ' . $student->email . '. Comproveu la safata d\'entrada.');
+        return redirect()->route('campus.verification.notice')
+            ->with('info', 'Nou codi enviat a ' . $student->email . '. Introduïu-lo aquí.');
     }
 }
