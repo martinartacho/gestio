@@ -9,6 +9,7 @@ use App\Models\CampusEnrollment;
 use App\Settings\SettingStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Stripe\Checkout\Session as StripeSession;
@@ -16,12 +17,15 @@ use Stripe\Stripe;
 
 class CheckoutController extends Controller
 {
+    /** Màxim d'inscripcions pendents simultànies per alumne (anti seat-squatting). */
+    private const MAX_PENDING = 3;
+
     public function create(Request $request, string $slug): RedirectResponse|View
     {
         $course  = CampusCourse::where('slug', $slug)->where('is_public', true)->firstOrFail();
         $student = auth('student')->user();
 
-        // Evitar doble inscripció (les cancel·lades i retornades permeten re-inscripció)
+        // ── Evitar doble inscripció (cancel·lades/retornades permeten re-inscripció) ─
         if ($student->enrollments()
                     ->where('course_id', $course->id)
                     ->whereNotIn('status', ['cancelled', 'refunded'])
@@ -30,10 +34,12 @@ class CheckoutController extends Controller
                 ->with('info', 'Ja estàs inscrit/a a aquest curs.');
         }
 
-        // Verificar capacitat (pending + paid + confirmed + completed compten)
-        if ($course->isFull()) {
+        // ── A2: Límit de pendents per alumne (anti seat-squatting) ───────────────
+        $pendingCount = $student->enrollments()->where('status', 'pending')->count();
+        if ($pendingCount >= self::MAX_PENDING) {
             return redirect()->route('campus.catalog.show', $slug)
-                ->with('error', 'Ho sentim, el curs ja no té places disponibles.');
+                ->with('error', 'Tens ' . self::MAX_PENDING . ' inscripcions pendents de pagament. '
+                    . 'Completa-les o cancel·la-les abans d\'inscriure\'t a un nou curs.');
         }
 
         // Verificar que les inscripcions estan obertes (tret que el curs ho permeti sempre)
@@ -53,25 +59,34 @@ class CheckoutController extends Controller
             'enrollment_date' => now()->toDateString(),
         ];
 
-        // ── Curs gratuït → inscripció directa ────────────────────────────────
+        // ── Curs gratuït → inscripció directa ────────────────────────────────────
         if ($course->price <= 0) {
-            CampusEnrollment::updateOrCreate(
-                ['student_id' => $student->id, 'course_id' => $course->id],
-                $studentData + [
-                    'status'         => 'paid',
-                    'payment_method' => 'free',
-                    'amount'         => 0,
-                    'paid_at'        => now(),
-                ]
-            );
+            // A3: transacció + lock per evitar race condition
+            DB::transaction(function () use ($course, $student, $studentData, $slug, &$redirect) {
+                $locked = CampusCourse::where('id', $course->id)->lockForUpdate()->first();
+                if ($locked->isFull()) {
+                    $redirect = redirect()->route('campus.catalog.show', $slug)
+                        ->with('error', 'Ho sentim, el curs ja no té places disponibles.');
+                    return;
+                }
+                CampusEnrollment::updateOrCreate(
+                    ['student_id' => $student->id, 'course_id' => $course->id],
+                    $studentData + [
+                        'status'         => 'paid',
+                        'payment_method' => 'free',
+                        'amount'         => 0,
+                        'paid_at'        => now(),
+                    ]
+                );
+            });
 
-            return redirect()->route('campus.portal.courses')
+            return $redirect ?? redirect()->route('campus.portal.courses')
                 ->with('success', '✓ Inscripció completada. El curs és gratuït!');
         }
 
         $method = $request->input('payment_method', 'stripe');
 
-        // ── Pagament manual (transferència, bizum, efectiu, paypal) ───────────
+        // ── Pagament manual (transferència, bizum, efectiu, paypal) ──────────────
         if ($method !== 'stripe') {
             $allowedMethods = array_filter([
                 'transfer' => setting('payment_transfer_enabled'),
@@ -80,29 +95,48 @@ class CheckoutController extends Controller
                 'paypal'   => setting('payment_paypal_enabled'),
             ]);
 
-            // Rebutja mètode no habilitat
             if (! isset($allowedMethods[$method])) {
                 return redirect()->route('campus.catalog.show', $slug)
                     ->with('error', 'El mètode de pagament seleccionat no està disponible.');
             }
 
-            $settings     = app(SettingStore::class);
-            $expiryValue  = (int)    $settings->get('payment_expiry_value', 5);
-            $expiryUnit   = (string) $settings->get('payment_expiry_unit', 'days');
-            $expiresAt    = $expiryValue > 0
+            $settings    = app(SettingStore::class);
+            $expiryValue = (int)    $settings->get('payment_expiry_value', 5);
+            $expiryUnit  = (string) $settings->get('payment_expiry_unit', 'days');
+            $expiresAt   = $expiryValue > 0
                 ? ($expiryUnit === 'hours' ? now()->addHours($expiryValue) : now()->addDays($expiryValue))
                 : null;
 
-            $enrollment = CampusEnrollment::updateOrCreate(
-                ['student_id' => $student->id, 'course_id' => $course->id],
-                $studentData + [
-                    'status'              => 'pending',
-                    'payment_method'      => $method,
-                    'amount'              => $course->price,
-                    'payment_reference'   => CampusEnrollment::generateReference(),
-                    'payment_expires_at'  => $expiresAt,
-                ]
-            );
+            // A3: transacció + lock — la comprovació de capacitat i la inserció son atòmiques
+            $enrollment = null;
+            $isFull     = false;
+
+            DB::transaction(function () use (
+                $course, $student, $studentData, $method, $expiresAt, &$enrollment, &$isFull
+            ) {
+                $locked = CampusCourse::where('id', $course->id)->lockForUpdate()->first();
+
+                if ($locked->isFull()) {
+                    $isFull = true;
+                    return;
+                }
+
+                $enrollment = CampusEnrollment::updateOrCreate(
+                    ['student_id' => $student->id, 'course_id' => $course->id],
+                    $studentData + [
+                        'status'             => 'pending',
+                        'payment_method'     => $method,
+                        'amount'             => $course->price,
+                        'payment_reference'  => CampusEnrollment::generateReference(),
+                        'payment_expires_at' => $expiresAt,
+                    ]
+                );
+            });
+
+            if ($isFull) {
+                return redirect()->route('campus.catalog.show', $slug)
+                    ->with('error', 'Ho sentim, el curs ja no té places disponibles.');
+            }
 
             Mail::to($student->email)
                 ->send(new ManualPaymentPendingMail($student, $course, $enrollment, $method));
@@ -110,7 +144,19 @@ class CheckoutController extends Controller
             return view('campus.checkout.pending', compact('course', 'student', 'enrollment', 'method', 'settings'));
         }
 
-        // ── Stripe ────────────────────────────────────────────────────────────
+        // ── Stripe ────────────────────────────────────────────────────────────────
+        // A3: verificació de capacitat amb lock abans de crear la sessió Stripe
+        $isFull = false;
+        DB::transaction(function () use ($course, &$isFull) {
+            $locked = CampusCourse::where('id', $course->id)->lockForUpdate()->first();
+            $isFull = $locked->isFull();
+        });
+
+        if ($isFull) {
+            return redirect()->route('campus.catalog.show', $slug)
+                ->with('error', 'Ho sentim, el curs ja no té places disponibles.');
+        }
+
         Stripe::setApiKey(config('services.stripe.secret'));
 
         $stripeSession = StripeSession::create([
@@ -151,7 +197,6 @@ class CheckoutController extends Controller
 
     /**
      * Cancel·la una matrícula pendent de l'alumne autenticat.
-     * Permet al curs tornar a acceptar inscripcions (re-inscripció amb altre mètode).
      */
     public function cancelEnrollment(Request $request, string $slug): RedirectResponse
     {

@@ -38,6 +38,7 @@ class StudentAuthController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
+            'website'      => ['size:0'],           // honeypot: bots l'omplen, humans no
             'first_name'   => ['required', 'string', 'max:100'],
             'last_name'    => ['required', 'string', 'max:100'],
             'email'        => ['required', 'email', 'unique:campus_students,email'],
