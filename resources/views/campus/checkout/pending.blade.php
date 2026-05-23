@@ -139,8 +139,15 @@
     <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-700 mb-6">
         ℹ️ L'equip us confirmarà la plaça per correu electrònic un cop rebut el pagament.
         @if ($enrollment->payment_expires_at)
-            La vostra plaça quedarà reservada fins al
-            <strong>{{ $enrollment->payment_expires_at->format('d/m/Y') }}</strong>.
+            @php
+                $exp = $enrollment->payment_expires_at;
+                $expText = $exp->isToday()
+                    ? 'avui a les ' . $exp->format('H:i') . ' h'
+                    : ($exp->isTomorrow()
+                        ? 'demà a les ' . $exp->format('H:i') . ' h'
+                        : $exp->format('d/m/Y') . ' a les ' . $exp->format('H:i') . ' h');
+            @endphp
+            La vostra plaça quedarà reservada fins al <strong>{{ $expText }}</strong>.
         @endif
     </div>
 
