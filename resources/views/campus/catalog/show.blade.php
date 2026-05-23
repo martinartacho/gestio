@@ -114,11 +114,46 @@
                     Inscripcions tancades
                 </span>
             @elseauth('student')
-                <form method="POST" action="{{ route('campus.checkout.create', $course->slug) }}">
+                @php
+                    // Mètodes de pagament disponibles (ordre: primer Stripe, despres manuals)
+                    $payMethods = [];
+                    if (config('services.stripe.secret') && $course->price > 0) {
+                        $payMethods['stripe'] = 'Targeta bancària';
+                    }
+                    if ($course->price > 0) {
+                        if (setting('payment_transfer_enabled')) $payMethods['transfer'] = 'Transferència bancària';
+                        if (setting('payment_bizum_enabled'))    $payMethods['bizum']    = 'Bizum';
+                        if (setting('payment_cash_enabled'))     $payMethods['cash']     = 'Efectiu';
+                        if (setting('payment_paypal_enabled'))   $payMethods['paypal']   = 'PayPal';
+                    }
+                @endphp
+
+                <form method="POST" action="{{ route('campus.checkout.create', $course->slug) }}"
+                      class="flex flex-col items-end gap-3">
                     @csrf
+
+                    @if (count($payMethods) > 1)
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500 mb-1.5 font-medium">Mètode de pagament:</p>
+                            @foreach ($payMethods as $key => $label)
+                                <label class="flex items-center justify-end gap-2 mb-1 cursor-pointer text-sm text-gray-700 hover:text-gray-900">
+                                    {{ $label }}
+                                    <input type="radio" name="payment_method" value="{{ $key }}"
+                                           {{ $loop->first ? 'checked' : '' }}
+                                           class="accent-indigo-600">
+                                </label>
+                            @endforeach
+                        </div>
+                    @elseif (count($payMethods) === 1)
+                        <input type="hidden" name="payment_method" value="{{ array_key_first($payMethods) }}">
+                    @else
+                        {{-- Curs gratuït: no cal mètode --}}
+                        <input type="hidden" name="payment_method" value="free">
+                    @endif
+
                     <button type="submit"
                             class="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                        Inscriure'm — {{ $course->price ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
+                        Inscriure'm — {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
                     </button>
                 </form>
             @else

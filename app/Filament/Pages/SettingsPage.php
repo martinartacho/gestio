@@ -51,6 +51,17 @@ class SettingsPage extends Page
     public bool $lms_enabled                = false;
     public bool $courses_learning_enabled   = false;
 
+    // Tab: Pagament manual
+    public bool   $payment_transfer_enabled = false;
+    public bool   $payment_bizum_enabled    = false;
+    public bool   $payment_cash_enabled     = false;
+    public bool   $payment_paypal_enabled   = false;
+    public string $payment_iban             = '';
+    public string $payment_bank_holder      = '';
+    public string $payment_bizum_number     = '';
+    public string $payment_paypal_email     = '';
+    public string $payment_concept_template = '{NOM} - {CURS}';
+
     // Tab: Avançat
     public string $timezone = 'Europe/Madrid';
     public string $locale   = 'ca';
@@ -86,6 +97,16 @@ class SettingsPage extends Page
         $this->lms_enabled              = (bool) $store->get('lms_enabled', false);
         $this->courses_learning_enabled = (bool) $store->get('courses_learning_enabled', false);
 
+        $this->payment_transfer_enabled = (bool)   $store->get('payment_transfer_enabled', false);
+        $this->payment_bizum_enabled    = (bool)   $store->get('payment_bizum_enabled', false);
+        $this->payment_cash_enabled     = (bool)   $store->get('payment_cash_enabled', false);
+        $this->payment_paypal_enabled   = (bool)   $store->get('payment_paypal_enabled', false);
+        $this->payment_iban             = (string) $store->get('payment_iban', '');
+        $this->payment_bank_holder      = (string) $store->get('payment_bank_holder', '');
+        $this->payment_bizum_number     = (string) $store->get('payment_bizum_number', '');
+        $this->payment_paypal_email     = (string) $store->get('payment_paypal_email', '');
+        $this->payment_concept_template = (string) $store->get('payment_concept_template', '{NOM} - {CURS}');
+
         $this->timezone = (string) $store->get('timezone', 'Europe/Madrid');
         $this->locale   = (string) $store->get('locale', 'ca');
     }
@@ -118,6 +139,16 @@ class SettingsPage extends Page
             'documents_enabled'        => $this->documents_enabled,
             'lms_enabled'              => $this->lms_enabled,
             'courses_learning_enabled' => $this->courses_learning_enabled,
+
+            'payment_transfer_enabled' => $this->payment_transfer_enabled,
+            'payment_bizum_enabled'    => $this->payment_bizum_enabled,
+            'payment_cash_enabled'     => $this->payment_cash_enabled,
+            'payment_paypal_enabled'   => $this->payment_paypal_enabled,
+            'payment_iban'             => $this->payment_iban ?: null,
+            'payment_bank_holder'      => $this->payment_bank_holder ?: null,
+            'payment_bizum_number'     => $this->payment_bizum_number ?: null,
+            'payment_paypal_email'     => $this->payment_paypal_email ?: null,
+            'payment_concept_template' => $this->payment_concept_template ?: '{NOM} - {CURS}',
 
             'timezone' => $this->timezone,
             'locale'   => $this->locale,

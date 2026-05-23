@@ -9,6 +9,7 @@
             'aparenca'  => '🎨 Aparença',
             'email'     => '✉️ Correu',
             'moduls'    => '🔧 Mòduls',
+            'pagament'  => '💳 Pagament',
             'avançat'   => '⚙️ Avançat',
         ] as $tab => $label)
         <button wire:click="$set('activeTab','{{ $tab }}')"
@@ -190,6 +191,119 @@
                 </label>
                 @endforeach
 
+            </div>
+
+        </div>
+
+        {{-- ══════════════════════════════════════════════════════════════
+             TAB: PAGAMENT
+        ══════════════════════════════════════════════════════════════ --}}
+        <div style="{{ $activeTab !== 'pagament' ? 'display:none;' : '' }}">
+
+            {{-- Stripe (llegit del .env, no editable aquí) --}}
+            @php $stripeOk = ! empty(config('services.stripe.secret')); @endphp
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1.25rem;margin-bottom:1rem;border-radius:0.75rem;border:1px solid {{ $stripeOk ? '#bbf7d0' : '#fde68a' }};background:{{ $stripeOk ? '#f0fdf4' : '#fffbeb' }};">
+                <span style="font-size:1.25rem;">💳</span>
+                <div>
+                    <span style="font-weight:600;font-size:0.9375rem;color:#111827;">Stripe (targeta bancària)</span>
+                    @if ($stripeOk)
+                        <span style="margin-left:0.5rem;font-size:0.8125rem;color:#16a34a;font-weight:500;">✓ Configurat via .env</span>
+                    @else
+                        <span style="margin-left:0.5rem;font-size:0.8125rem;color:#b45309;font-weight:500;">⚠ No configurat — afegeix STRIPE_KEY i STRIPE_SECRET al .env</span>
+                    @endif
+                    <p style="margin:0;font-size:0.75rem;color:#9ca3af;">El pagament amb targeta s'activa automàticament quan Stripe és configurat.</p>
+                </div>
+            </div>
+
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Mètodes de pagament manual</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.5rem;">
+                    Habilita els mètodes que vols oferir als alumnes. Un cop el pagament es rebi, l'admin el confirma manualment a Filament.
+                </p>
+
+                {{-- Transferència bancària --}}
+                <div style="padding:1rem 0;border-bottom:1px solid #f3f4f6;">
+                    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;margin-bottom:0.75rem;">
+                        <input type="checkbox" wire:model.live="payment_transfer_enabled"
+                               style="width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                        <span style="font-weight:600;font-size:0.9375rem;color:#111827;">🏦 Transferència bancària</span>
+                    </label>
+                    @if ($payment_transfer_enabled)
+                    <div style="margin-left:1.875rem;display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                        <div>
+                            <label style="display:block;font-size:0.8125rem;font-weight:600;color:#374151;margin-bottom:0.25rem;">IBAN</label>
+                            <input type="text" wire:model="payment_iban"
+                                   placeholder="ES76 2100 0418 40 0200051332"
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.4rem 0.75rem;font-size:0.875rem;font-family:monospace;box-sizing:border-box;">
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.8125rem;font-weight:600;color:#374151;margin-bottom:0.25rem;">Titular del compte</label>
+                            <input type="text" wire:model="payment_bank_holder"
+                                   placeholder="Associació Campus"
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
+                {{-- Bizum --}}
+                <div style="padding:1rem 0;border-bottom:1px solid #f3f4f6;">
+                    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;margin-bottom:0.75rem;">
+                        <input type="checkbox" wire:model.live="payment_bizum_enabled"
+                               style="width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                        <span style="font-weight:600;font-size:0.9375rem;color:#111827;">📱 Bizum</span>
+                    </label>
+                    @if ($payment_bizum_enabled)
+                    <div style="margin-left:1.875rem;">
+                        <label style="display:block;font-size:0.8125rem;font-weight:600;color:#374151;margin-bottom:0.25rem;">Número de telèfon Bizum</label>
+                        <input type="text" wire:model="payment_bizum_number"
+                               placeholder="612 345 678"
+                               style="width:12rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.4rem 0.75rem;font-size:0.875rem;font-family:monospace;">
+                    </div>
+                    @endif
+                </div>
+
+                {{-- Efectiu --}}
+                <div style="padding:1rem 0;border-bottom:1px solid #f3f4f6;">
+                    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;">
+                        <input type="checkbox" wire:model="payment_cash_enabled"
+                               style="width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                        <span style="font-weight:600;font-size:0.9375rem;color:#111827;">🏢 Pagament en efectiu</span>
+                    </label>
+                    <p style="margin-left:1.875rem;font-size:0.8125rem;color:#9ca3af;margin-top:0.25rem;">
+                        L'alumne paga a la secretaria. L'admin confirma el pagament manualment.
+                    </p>
+                </div>
+
+                {{-- PayPal --}}
+                <div style="padding:1rem 0;">
+                    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;margin-bottom:0.75rem;">
+                        <input type="checkbox" wire:model.live="payment_paypal_enabled"
+                               style="width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                        <span style="font-weight:600;font-size:0.9375rem;color:#111827;">🔗 PayPal</span>
+                    </label>
+                    @if ($payment_paypal_enabled)
+                    <div style="margin-left:1.875rem;">
+                        <label style="display:block;font-size:0.8125rem;font-weight:600;color:#374151;margin-bottom:0.25rem;">Adreça de correu PayPal</label>
+                        <input type="email" wire:model="payment_paypal_email"
+                               placeholder="pagaments@campus.cat"
+                               style="width:20rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.4rem 0.75rem;font-size:0.875rem;">
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Concepte --}}
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Concepte del pagament</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1rem;">
+                    Text que es mostrarà a l'alumne com a concepte de la transferència/Bizum/PayPal.
+                    Variables disponibles: <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{NOM}</code>,
+                    <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{CURS}</code>.
+                </p>
+                <input type="text" wire:model="payment_concept_template"
+                       placeholder="{NOM} - {CURS}"
+                       style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
             </div>
 
         </div>

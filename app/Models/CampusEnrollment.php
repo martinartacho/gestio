@@ -13,7 +13,7 @@ class CampusEnrollment extends Model
     protected $table = 'campus_enrollments';
 
     protected $fillable = [
-        'student_id', 'course_id', 'status', 'amount',
+        'student_id', 'course_id', 'status', 'payment_method', 'amount',
         'stripe_session_id', 'stripe_payment_intent', 'paid_at', 'notes',
         'first_name', 'last_name', 'email', 'phone', 'dni',
         'enrollment_date', 'bank_iban', 'bank_holder',
@@ -26,6 +26,15 @@ class CampusEnrollment extends Model
         'enrollment_date'  => 'date',
         'rgpd_accepted'    => 'boolean',
         'rgpd_accepted_at' => 'datetime',
+    ];
+
+    public const PAYMENT_METHODS = [
+        'stripe'   => 'Targeta (Stripe)',
+        'transfer' => 'Transferència bancària',
+        'bizum'    => 'Bizum',
+        'cash'     => 'Efectiu',
+        'paypal'   => 'PayPal',
+        'free'     => 'Gratuït',
     ];
 
     public const STATUSES = [
@@ -72,5 +81,11 @@ class CampusEnrollment extends Model
     public function isPaid(): bool
     {
         return in_array($this->status, ['paid', 'confirmed']);
+    }
+
+    /** Retorna true si el mètode de pagament requereix confirmació manual. */
+    public function isManualPayment(): bool
+    {
+        return ! in_array($this->payment_method, ['stripe', 'free', null]);
     }
 }

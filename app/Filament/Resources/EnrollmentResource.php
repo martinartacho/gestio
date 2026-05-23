@@ -137,6 +137,19 @@ class EnrollmentResource extends Resource
                     ->badge()
                     ->color(fn($state) => CampusEnrollment::STATUS_COLORS[$state] ?? 'gray'),
 
+                Tables\Columns\TextColumn::make('payment_method')
+                    ->label('Mètode')
+                    ->formatStateUsing(fn($state) => CampusEnrollment::PAYMENT_METHODS[$state] ?? '—')
+                    ->badge()
+                    ->color(fn($state) => match($state) {
+                        'stripe'   => 'blue',
+                        'transfer' => 'warning',
+                        'bizum'    => 'success',
+                        'cash'     => 'gray',
+                        'paypal'   => 'info',
+                        default    => 'gray',
+                    }),
+
                 Tables\Columns\IconColumn::make('rgpd_accepted')
                     ->label('RGPD')
                     ->boolean(),
@@ -156,8 +169,24 @@ class EnrollmentResource extends Resource
                     ->label(__('site.course'))
                     ->relationship('course', 'title')
                     ->searchable()->native(false),
+
+                Tables\Filters\SelectFilter::make('payment_method')
+                    ->label('Mètode de pagament')
+                    ->options(CampusEnrollment::PAYMENT_METHODS)
+                    ->native(false),
             ])
             ->actions([
+                Tables\Actions\Action::make('confirmar_pagament')
+                    ->label('✓ Confirmar pagament')
+                    ->color('success')
+                    ->icon('heroicon-o-check-circle')
+                    ->visible(fn($record) => $record->status === 'pending' && $record->isManualPayment())
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirmar recepció del pagament')
+                    ->modalDescription(fn($record) => "Confirmar que s'ha rebut el pagament de {$record->full_name}?")
+                    ->action(fn($record) => $record->update(['status' => 'paid', 'paid_at' => now()]))
+                    ->successNotificationTitle('Pagament confirmat'),
+
                 EditAction::make()->label(__('site.edit')),
                 DeleteAction::make()->label(__('site.delete')),
             ])
