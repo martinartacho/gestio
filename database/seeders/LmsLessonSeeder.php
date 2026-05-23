@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CampusCategory;
 use App\Models\CampusCourse;
 use App\Models\CampusEnrollment;
 use App\Models\CampusSeason;
@@ -34,22 +35,33 @@ class LmsLessonSeeder extends Seeder
             ]
         );
 
+        // ── Categoria ─────────────────────────────────────────────────────────
+        $catArts = CampusCategory::firstOrCreate(
+            ['name' => 'Arts i Humanitats'],
+            ['slug' => 'arts-i-humanitats', 'color' => 'pink', 'order' => 1, 'is_active' => true]
+        );
+
         // ── Curs LMS de demo ──────────────────────────────────────────────────
         $course = CampusCourse::firstOrCreate(
             ['code' => 'LMS-01'],
             [
-                'title'     => 'Narrativa curta: del fragment al relat',
-                'slug'      => 'lms-narrativa-curta',
-                'season_id' => $season->id,
-                'format'    => 'online',
-                'sessions'  => 8,
-                'hours'     => 8,
-                'price'     => 0,
-                'status'    => 'active',
-                'is_public' => true,
+                'title'       => 'Narrativa curta: del fragment al relat',
+                'slug'        => 'lms-narrativa-curta',
+                'season_id'   => $season->id,
+                'category_id' => $catArts->id,
+                'format'      => 'online',
+                'sessions'    => 8,
+                'hours'       => 8,
+                'price'       => 0,
+                'status'      => 'active',
+                'is_public'   => true,
                 'description' => 'Curs pràctic de narrativa curta en vuit sessions. Treballem la veu, el temps, el personatge, la tensió i l\'el·lipsi a partir de textos del projecte CAMPUS i autors de referència.',
             ]
         );
+        // Actualitza categoria si el curs ja existia sense
+        if (! $course->category_id) {
+            $course->update(['category_id' => $catArts->id]);
+        }
 
         // ── Professor de prova: Claudi Hartacho ───────────────────────────────
         $teacher = CampusTeacher::firstOrCreate(

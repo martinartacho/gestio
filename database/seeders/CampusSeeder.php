@@ -16,14 +16,18 @@ class CampusSeeder extends Seeder
 {
     public function run(): void
     {
-        // ── Categories ────────────────────────────────────────────────────
+        // ── Categories (10 categories principals) ────────────────────────
         $catDefs = [
-            ['name' => 'Salut i Infermeria',            'color' => 'red',    'order' => 1],
-            ['name' => 'Educació i Pedagogia',           'color' => 'blue',   'order' => 2],
-            ['name' => 'Ciències Socials i Humanitats',  'color' => 'purple', 'order' => 3],
-            ['name' => 'Noves Tecnologies',              'color' => 'indigo', 'order' => 4],
-            ['name' => 'Arts i Cultura',                 'color' => 'pink',   'order' => 5],
-            ['name' => 'Medi Ambient i Sostenibilitat',  'color' => 'green',  'order' => 6],
+            ['name' => 'Arts i Humanitats',                 'color' => 'pink',   'order' =>  1],
+            ['name' => 'Salut i Benestar',                  'color' => 'red',    'order' =>  2],
+            ['name' => 'Ciència i Tecnologia',              'color' => 'orange', 'order' =>  3],
+            ['name' => 'Informàtica i Competències Digitals','color' => 'indigo', 'order' =>  4],
+            ['name' => 'Empresa i Emprenedoria',            'color' => 'yellow', 'order' =>  5],
+            ['name' => 'Educació i Pedagogia',              'color' => 'blue',   'order' =>  6],
+            ['name' => 'Llengües i Comunicació',            'color' => 'purple', 'order' =>  7],
+            ['name' => 'Societat i Desenvolupament Personal','color' => 'green',  'order' =>  8],
+            ['name' => 'Oficis i Competències Pràctiques',  'color' => 'gray',   'order' =>  9],
+            ['name' => 'Activitat Física i Natura',         'color' => 'green',  'order' => 10],
         ];
         foreach ($catDefs as $d) {
             CampusCategory::firstOrCreate(
@@ -31,12 +35,14 @@ class CampusSeeder extends Seeder
                 array_merge($d, ['slug' => Str::slug($d['name']), 'is_active' => true])
             );
         }
-        $catSalut  = CampusCategory::where('name', 'Salut i Infermeria')->first();
+
+        // Àlies de compatibilitat (noms antics → nous)
+        $catArts   = CampusCategory::where('name', 'Arts i Humanitats')->first();
+        $catSalut  = CampusCategory::where('name', 'Salut i Benestar')->first();
+        $catCienc  = CampusCategory::where('name', 'Ciència i Tecnologia')->first();
+        $catTech   = CampusCategory::where('name', 'Informàtica i Competències Digitals')->first();
         $catEduc   = CampusCategory::where('name', 'Educació i Pedagogia')->first();
-        $catCienc  = CampusCategory::where('name', 'Ciències Socials i Humanitats')->first();
-        $catTech   = CampusCategory::where('name', 'Noves Tecnologies')->first();
-        $catArts   = CampusCategory::where('name', 'Arts i Cultura')->first();
-        $catMedi   = CampusCategory::where('name', 'Medi Ambient i Sostenibilitat')->first();
+        $catMedi   = CampusCategory::where('name', 'Activitat Física i Natura')->first();
 
         // ── Espais ────────────────────────────────────────────────────────
         $spacesDefs = [
@@ -512,7 +518,7 @@ class CampusSeeder extends Seeder
 
         $n  = 3 + 6 + 8 + 4 + 5 + 9;
         $nc = 5 + 4 + 6 + 3 + 4;
-        $this->command->info("✅ CampusSeeder completat: 5 temporades amb dates inscripció, 6 categories, 8 espais, 9 franges, 8 professors, {$n} cursos, {$nc} liquidacions.");
+        $this->command->info("✅ CampusSeeder completat: 5 temporades amb dates inscripció, 10 categories, 8 espais, 9 franges, 8 professors, {$n} cursos, {$nc} liquidacions.");
     }
 
     private function seedPayment(

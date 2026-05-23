@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CampusCategory;
 use App\Models\CampusCourse;
 use App\Models\CampusEnrollment;
 use App\Models\CampusSeason;
@@ -32,6 +33,12 @@ class LmsArtMedicinaSeeder extends Seeder
             ]
         );
 
+        // ── Categoria ─────────────────────────────────────────────────────────
+        $catArts = CampusCategory::firstOrCreate(
+            ['name' => 'Arts i Humanitats'],
+            ['slug' => 'arts-i-humanitats', 'color' => 'pink', 'order' => 1, 'is_active' => true]
+        );
+
         // ── Curs ART-01 ────────────────────────────────────────────────────────
         $course = CampusCourse::firstOrCreate(
             ['code' => 'ART-01'],
@@ -39,6 +46,7 @@ class LmsArtMedicinaSeeder extends Seeder
                 'title'       => 'Art i Medicina',
                 'slug'        => 'art-i-medicina',
                 'season_id'   => $season->id,
+                'category_id' => $catArts->id,
                 'format'      => 'online',
                 'sessions'    => 8,
                 'hours'       => 8,
@@ -48,6 +56,9 @@ class LmsArtMedicinaSeeder extends Seeder
                 'description' => 'El cos, la malaltia i la cura a través de la història de l\'art · 8 sessions de 45–60 min. Un curs que no és ni d\'art ni de medicina, sinó de la mirada humana davant del dolor, la fragilitat i l\'esperança. Cada sessió parteix d\'una obra, arriba a un concepte i acaba amb una reflexió que podria ser mèdica, filosòfica o artística — o les tres alhora.',
             ]
         );
+        if (! $course->category_id) {
+            $course->update(['category_id' => $catArts->id]);
+        }
 
         // ── Professor ──────────────────────────────────────────────────────────
         $teacher = CampusTeacher::firstOrCreate(

@@ -88,11 +88,20 @@
                     </div>
                 @endif
 
+                @php
+                    $catHex  = $course->category?->color_hex ?? '#6b7280';
+                    $catBg   = $catHex . '22';
+                    $catName = $course->category?->name ?? null;
+                @endphp
                 <div class="flex items-start justify-between mb-3">
-                    <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
-                          style="background-color: {{ $course->category->color ?? '#e5e7eb' }}22; color: {{ $course->category->color ?? '#6b7280' }}">
-                        {{ $course->category->name ?? '—' }}
-                    </span>
+                    @if ($catName)
+                        <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
+                              style="background-color:{{ $catBg }};color:{{ $catHex }}">
+                            {{ $catName }}
+                        </span>
+                    @else
+                        <span></span>
+                    @endif
                     <span class="text-xs text-gray-400">{{ $course->code }}</span>
                 </div>
                 <h2 class="font-semibold text-gray-900 text-base mb-2 flex-1">{{ $course->title }}</h2>
@@ -102,17 +111,18 @@
                             @if ($course->end_date) — {{ $course->end_date->format('d/m/Y') }} @endif
                         </div>
                     @endif
-                    @if ($course->space || $course->format)
-                        <div>
-                            {{ $course->space->name ?? '—' }}
-                            @if ($course->format)
-                                · {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}
-                            @endif
-                        </div>
-                    @endif
+                    <div>
+                        @if ($course->space)
+                            {{ $course->space->name }}
+                            @if ($course->format) · @endif
+                        @endif
+                        @if ($course->format)
+                            {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}
+                        @endif
+                    </div>
                     <div class="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
                         <span class="text-indigo-700 font-bold text-base">
-                            {{ $course->price ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
+                            {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
                         </span>
                         @if ($course->sessions)
                             <span class="text-xs text-gray-400">{{ $course->sessions }} sessions</span>

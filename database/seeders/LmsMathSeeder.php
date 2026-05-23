@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CampusCategory;
 use App\Models\CampusCourse;
 use App\Models\CampusEnrollment;
 use App\Models\CampusSeason;
@@ -33,6 +34,12 @@ class LmsMathSeeder extends Seeder
             ]
         );
 
+        // ── Categoria ─────────────────────────────────────────────────────────
+        $catCiencia = CampusCategory::firstOrCreate(
+            ['name' => 'Ciència i Tecnologia'],
+            ['slug' => 'ciencia-i-tecnologia', 'color' => 'orange', 'order' => 3, 'is_active' => true]
+        );
+
         // ── Curs MAT-01 ────────────────────────────────────────────────────────
         $course = CampusCourse::firstOrCreate(
             ['code' => 'MAT-01'],
@@ -40,6 +47,7 @@ class LmsMathSeeder extends Seeder
                 'title'       => 'Matemàtica elemental',
                 'slug'        => 'mat-matematica-elemental',
                 'season_id'   => $season->id,
+                'category_id' => $catCiencia->id,
                 'format'      => 'online',
                 'sessions'    => 8,
                 'hours'       => 8,
@@ -49,6 +57,9 @@ class LmsMathSeeder extends Seeder
                 'description' => '6è de Primària · Curs de preparació per a l\'ESO · 8 sessions de 45–60 min. Un curs que repassa i consolida els conceptes clau de sisè abans de fer el salt a l\'ESO. Cada sessió parteix d\'una situació real i acaba amb un exercici pràctic sense calculadora.',
             ]
         );
+        if (! $course->category_id) {
+            $course->update(['category_id' => $catCiencia->id]);
+        }
 
         // ── Professor ──────────────────────────────────────────────────────────
         $teacher = CampusTeacher::firstOrCreate(
