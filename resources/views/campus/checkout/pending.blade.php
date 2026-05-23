@@ -7,12 +7,12 @@
 
     {{-- Capçalera --}}
     <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
+            <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
             </svg>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900">Sol·licitud enviada!</h1>
+        <h1 class="text-2xl font-bold text-gray-900">Sol·licitud enviada — <span class="text-amber-600">pendent de pagament</span></h1>
         <p class="text-gray-500 mt-1">Inscripció a <strong>{{ $course->title }}</strong></p>
     </div>
 

@@ -51,6 +51,7 @@ class CatalogController extends Controller
         $myEnrollments = $student
             ? $student->enrollments()
                       ->whereIn('course_id', $courses->pluck('id'))
+                      ->whereNotIn('status', ['cancelled', 'refunded'])
                       ->get()
                       ->keyBy('course_id')
             : collect();
@@ -74,8 +75,12 @@ class CatalogController extends Controller
             ->firstOrFail();
 
         $student      = auth('student')->user();
+        // Cancel·lada/retornada = pot tornar a inscriure's; no compten com a "ja inscrit"
         $myEnrollment = $student
-            ? $student->enrollments()->where('course_id', $course->id)->first()
+            ? $student->enrollments()
+                      ->where('course_id', $course->id)
+                      ->whereNotIn('status', ['cancelled', 'refunded'])
+                      ->first()
             : null;
         $alreadyEnrolled = $myEnrollment !== null;
 

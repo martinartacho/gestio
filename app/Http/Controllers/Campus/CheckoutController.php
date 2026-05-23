@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
+use App\Mail\Campus\ManualPaymentPendingMail;
 use App\Models\CampusCourse;
 use App\Models\CampusEnrollment;
 use App\Settings\SettingStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Stripe;
@@ -101,6 +103,9 @@ class CheckoutController extends Controller
                     'payment_expires_at'  => $expiresAt,
                 ]
             );
+
+            Mail::to($student->email)
+                ->send(new ManualPaymentPendingMail($student, $course, $enrollment, $method));
 
             return view('campus.checkout.pending', compact('course', 'student', 'enrollment', 'method', 'settings'));
         }

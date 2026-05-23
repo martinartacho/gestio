@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         // Cancel·la matrícules manuals pendents que han superat el termini (execució diària a les 08:00)
         $schedule->command('enrollments:expire')->dailyAt('08:00');
+        // Recordatori 1 hora abans de la caducitat (execució cada 15 min)
+        $schedule->command('enrollments:remind')->everyFifteenMinutes();
     })
     ->withProviders([
         App\Providers\Filament\AdminPanelProvider::class,

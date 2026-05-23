@@ -14,8 +14,9 @@ class CampusEnrollment extends Model
 
     protected $fillable = [
         'student_id', 'course_id', 'status', 'payment_method', 'amount',
-        'payment_reference', 'payment_expires_at',
-        'stripe_session_id', 'stripe_payment_intent', 'paid_at', 'notes',
+        'payment_reference', 'payment_expires_at', 'reminder_sent_at',
+        'stripe_session_id', 'stripe_payment_intent', 'stripe_refund_id',
+        'paid_at', 'refunded_amount', 'refunded_at', 'refund_notes', 'notes',
         'first_name', 'last_name', 'email', 'phone', 'dni',
         'enrollment_date', 'bank_iban', 'bank_holder',
         'rgpd_accepted', 'rgpd_accepted_at',
@@ -24,7 +25,10 @@ class CampusEnrollment extends Model
     protected $casts = [
         'amount'              => 'decimal:2',
         'paid_at'             => 'datetime',
+        'refunded_amount'     => 'decimal:2',
+        'refunded_at'         => 'datetime',
         'payment_expires_at'  => 'datetime',
+        'reminder_sent_at'    => 'datetime',
         'enrollment_date'     => 'date',
         'rgpd_accepted'       => 'boolean',
         'rgpd_accepted_at'    => 'datetime',
