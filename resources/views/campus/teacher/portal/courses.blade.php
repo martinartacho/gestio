@@ -3,7 +3,15 @@
 @section('title', 'Els meus cursos')
 
 @section('content')
-<h1 class="text-2xl font-bold text-gray-900 mb-6">Els meus cursos</h1>
+<div class="flex items-center justify-between mb-6 gap-4 flex-wrap">
+    <h1 class="text-2xl font-bold text-gray-900">Els meus cursos</h1>
+    @if (setting('lms_enabled'))
+        <a href="{{ route('teacher.lms.wizard.step1') }}"
+           class="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition">
+            + Crear nou curs
+        </a>
+    @endif
+</div>
 
 @if ($courses->isEmpty())
     <div class="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500">

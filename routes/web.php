@@ -5,6 +5,7 @@ use App\Http\Controllers\Campus\CheckoutController;
 use App\Http\Controllers\Campus\LmsPreviewController;
 use App\Http\Controllers\Campus\LmsStudentController;
 use App\Http\Controllers\Campus\LmsTeacherController;
+use App\Http\Controllers\Campus\LmsTeacherWizardController;
 use App\Http\Controllers\Campus\PortalController;
 use App\Http\Controllers\Campus\StudentAuthController;
 use App\Http\Controllers\Campus\StripeWebhookController;
@@ -77,6 +78,14 @@ Route::prefix('portal/lms')->name('campus.lms.')
 Route::prefix('professorat/portal/lms')->name('teacher.lms.')
     ->middleware([\App\Http\Middleware\AuthenticateTeacher::class, 'feature:lms_enabled'])
     ->group(function () {
+        // Wizard: Crear curs
+        Route::get('/crear',            [LmsTeacherWizardController::class, 'step1'])->name('wizard.step1');
+        Route::post('/crear/pas-1',     [LmsTeacherWizardController::class, 'storeStep1'])->name('wizard.store1');
+        Route::get('/crear/sessions',   [LmsTeacherWizardController::class, 'step2'])->name('wizard.step2');
+        Route::post('/crear/pas-2',     [LmsTeacherWizardController::class, 'storeStep2'])->name('wizard.store2');
+        Route::get('/crear/revisio',    [LmsTeacherWizardController::class, 'step3'])->name('wizard.step3');
+        Route::post('/crear/confirmar', [LmsTeacherWizardController::class, 'confirm'])->name('wizard.confirm');
+
         Route::get('/curs/{slug}', [LmsTeacherController::class, 'index'])->name('course');
         Route::get('/curs/{slug}/sessio/{lesson}', [LmsTeacherController::class, 'show'])->name('lesson');
 
