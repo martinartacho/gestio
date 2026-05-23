@@ -23,17 +23,18 @@ class CampusCourse extends Model
         'sessions', 'hours',
         'format', 'max_students', 'price',
         'description', 'objectives', 'requirements',
-        'status', 'is_public', 'created_by',
+        'status', 'is_public', 'open_enrollment', 'created_by',
     ];
 
     protected $casts = [
-        'start_date'   => 'date',
-        'end_date'     => 'date',
-        'sessions'     => 'integer',
-        'hours'        => 'integer',
-        'max_students' => 'integer',
-        'price'        => 'decimal:2',
-        'is_public'    => 'boolean',
+        'start_date'      => 'date',
+        'end_date'        => 'date',
+        'sessions'        => 'integer',
+        'hours'           => 'integer',
+        'max_students'    => 'integer',
+        'price'           => 'decimal:2',
+        'is_public'       => 'boolean',
+        'open_enrollment' => 'boolean',
     ];
 
     // ── Constants ──────────────────────────────────────────────────────────

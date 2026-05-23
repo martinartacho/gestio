@@ -30,7 +30,7 @@
 
     <div class="bg-white rounded-xl border shadow-sm p-8
                 {{ $isPreview && (! $course->is_public || $course->status !== 'active') ? 'border-amber-200' : 'border-gray-200' }}">
-        <div class="flex items-center gap-3 mb-2">
+        <div class="flex items-center gap-3 mb-2 flex-wrap">
             @if ($course->category)
                 <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
                       style="background-color: {{ $course->category->color ?? '#e5e7eb' }}22; color: {{ $course->category->color ?? '#6b7280' }}">
@@ -40,6 +40,11 @@
             <span class="text-xs text-gray-400">{{ $course->code }}</span>
             @if ($course->season)
                 <span class="text-xs text-gray-400">· {{ $course->season->name }}</span>
+            @endif
+            @if ($course->open_enrollment)
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    ∞ Inscripció oberta
+                </span>
             @endif
         </div>
 

@@ -32,7 +32,11 @@ class CatalogController extends Controller
 
         $courses = CampusCourse::with(['category', 'space', 'teachers'])
             ->when(! $isPreview, fn($q) => $q->where('status', 'active')->where('is_public', true))
-            ->when($selectedSeason, fn($q) => $q->where('season_id', $selectedSeason->id))
+            ->when($selectedSeason, fn($q) => $q->where(function ($inner) use ($selectedSeason) {
+                // Mostra cursos de la temporada seleccionada + cursos amb inscripció sempre oberta
+                $inner->where('season_id', $selectedSeason->id)
+                      ->orWhere('open_enrollment', true);
+            }))
             ->orderBy('start_date')
             ->get();
 
@@ -51,13 +55,17 @@ class CatalogController extends Controller
         $student = auth('student')->user();
 
         $alreadyEnrolled = $student
-            ? $student->courses()->where('campus_courses.id', $course->id)->exists()
+            ? $student->enrollments()->where('course_id', $course->id)->exists()
             : false;
 
-        $season          = $course->season;
-        $enrollmentOpen  = $season?->enrollmentIsOpen() && $season?->isActive();
-        $seasonIsPast    = $season?->isClosed() || $season?->isPast();
-        $seasonIsFuture  = $season?->isDraft() || $season?->isFuture();
+        $season         = $course->season;
+        $openEnrollment = $course->open_enrollment;
+
+        // Cursos amb open_enrollment bypassen totes les restriccions de temporada i dates
+        $enrollmentOpen = $openEnrollment
+            || ($season?->enrollmentIsOpen() && $season?->isActive());
+        $seasonIsPast   = ! $openEnrollment && ($season?->isClosed() || $season?->isPast());
+        $seasonIsFuture = ! $openEnrollment && ($season?->isDraft() || $season?->isFuture());
 
         return view('campus.catalog.show', compact(
             'course', 'alreadyEnrolled', 'enrollmentOpen', 'seasonIsPast', 'seasonIsFuture', 'isPreview'

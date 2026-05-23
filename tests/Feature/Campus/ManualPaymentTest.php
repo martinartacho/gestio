@@ -27,13 +27,19 @@ class ManualPaymentTest extends TestCase
 
         $this->student = CampusStudent::factory()->create();
 
-        $season = CampusSeason::factory()->create(['status' => 'active']);
+        // Temporada activa amb dates presents/futures per evitar que isPast() bloquegi
+        $season = CampusSeason::factory()->create([
+            'status'     => 'active',
+            'start_date' => now()->subMonth()->format('Y-m-d'),
+            'end_date'   => now()->addMonths(6)->format('Y-m-d'),
+        ]);
 
         $this->course = CampusCourse::factory()->create([
-            'season_id' => $season->id,
-            'status'    => 'active',
-            'is_public' => true,
-            'price'     => 120.00,
+            'season_id'       => $season->id,
+            'status'          => 'active',
+            'is_public'       => true,
+            'price'           => 120.00,
+            'open_enrollment' => false,
         ]);
     }
 

@@ -25,6 +25,15 @@ class CheckoutController extends Controller
                 ->with('info', 'Ja estàs inscrit/a a aquest curs.');
         }
 
+        // Verificar que les inscripcions estan obertes (tret que el curs ho permeti sempre)
+        if (! $course->open_enrollment) {
+            $season = $course->season;
+            if (! $season || ! $season->isActive() || ! $season->enrollmentIsOpen()) {
+                return redirect()->route('campus.catalog.show', $slug)
+                    ->with('error', 'Les inscripcions per a aquest curs no estan obertes.');
+            }
+        }
+
         $studentData = [
             'first_name'      => $student->first_name,
             'last_name'       => $student->last_name,
