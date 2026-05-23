@@ -122,6 +122,7 @@
                     </div>
                     @php
                         $courseEnrollOpen = $course->open_enrollment || $enrollmentOpen;
+                        $myEnrollment     = $myEnrollments[$course->id] ?? null;
                     @endphp
                     <div class="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
                         <span class="text-indigo-700 font-bold text-base">
@@ -131,7 +132,29 @@
                             @if ($course->sessions)
                                 <span class="text-xs text-gray-400">{{ $course->sessions }} sessions</span>
                             @endif
-                            @if ($course->open_enrollment)
+
+                            @if ($myEnrollment)
+                                @php
+                                    $eStatus = $myEnrollment->status;
+                                    $ePill = match(\App\Models\CampusEnrollment::STATUS_COLORS[$eStatus] ?? 'gray') {
+                                        'warning' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                        'success' => 'bg-green-50 text-green-700 border-green-200',
+                                        'danger'  => 'bg-red-50 text-red-600 border-red-200',
+                                        default   => 'bg-gray-100 text-gray-500 border-gray-200',
+                                    };
+                                    $eIcon = match($eStatus) {
+                                        'paid', 'confirmed' => '✓',
+                                        'pending'           => '⏳',
+                                        'cancelled'         => '✕',
+                                        'refunded'          => '↩',
+                                        default             => '•',
+                                    };
+                                    $eLabel = \App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus;
+                                @endphp
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded border {{ $ePill }}">
+                                    {{ $eIcon }} {{ $eLabel }}
+                                </span>
+                            @elseif ($course->open_enrollment)
                                 <span class="text-xs font-semibold text-emerald-600">∞ Inscripció oberta</span>
                             @elseif ($courseEnrollOpen)
                                 <span class="text-xs font-medium text-green-600">Inscripcions obertes</span>

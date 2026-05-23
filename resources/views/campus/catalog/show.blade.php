@@ -99,9 +99,33 @@
                     Previsualització — inscripció desactivada
                 </span>
             @elseif ($alreadyEnrolled)
-                <span class="bg-green-100 text-green-800 text-sm font-medium px-4 py-2 rounded-lg">
-                    Ja estàs inscrit/a
-                </span>
+                @php
+                    $eStatus = $myEnrollment->status;
+                    $eLabel  = \App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus;
+                    $eCss = match(\App\Models\CampusEnrollment::STATUS_COLORS[$eStatus] ?? 'gray') {
+                        'warning' => 'bg-yellow-50 text-yellow-800 border border-yellow-200',
+                        'success' => 'bg-green-100 text-green-800 border border-green-200',
+                        'danger'  => 'bg-red-50 text-red-700 border border-red-200',
+                        default   => 'bg-gray-100 text-gray-600 border border-gray-200',
+                    };
+                    $eIcon = match($eStatus) {
+                        'paid', 'confirmed' => '✓',
+                        'pending'           => '⏳',
+                        'cancelled'         => '✕',
+                        'refunded'          => '↩',
+                        default             => '•',
+                    };
+                @endphp
+                <div class="flex flex-col items-end gap-1.5">
+                    <span class="{{ $eCss }} text-sm font-semibold px-4 py-2 rounded-lg">
+                        {{ $eIcon }} {{ $eLabel }}
+                    </span>
+                    @if ($eStatus === 'pending' && $myEnrollment->payment_method && $myEnrollment->payment_method !== 'stripe')
+                        <span class="text-xs text-gray-400">Esperant confirmació de pagament</span>
+                    @elseif ($eStatus === 'paid' || $eStatus === 'confirmed')
+                        <span class="text-xs text-green-600">Accés al curs garantit</span>
+                    @endif
+                </div>
             @elseif ($seasonIsPast)
                 <span class="bg-gray-100 text-gray-500 text-sm font-medium px-4 py-2 rounded-lg">
                     Curs finalitzat

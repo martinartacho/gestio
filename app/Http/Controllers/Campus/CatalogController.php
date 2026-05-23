@@ -33,7 +33,6 @@ class CatalogController extends Controller
         $courses = CampusCourse::with(['category', 'space', 'teachers'])
             ->when(! $isPreview, fn($q) => $q->where('status', 'active')->where('is_public', true))
             ->when($selectedSeason, fn($q) => $q->where(function ($inner) use ($selectedSeason) {
-                // Mostra cursos de la temporada seleccionada + cursos amb inscripció sempre oberta
                 $inner->where('season_id', $selectedSeason->id)
                       ->orWhere('open_enrollment', true);
             }))
@@ -44,7 +43,19 @@ class CatalogController extends Controller
             ? ($selectedSeason->enrollmentIsOpen() && $selectedSeason->isActive())
             : false;
 
-        return view('campus.catalog.index', compact('courses', 'seasons', 'activeSeason', 'selectedSeason', 'isPreview', 'enrollmentOpen'));
+        // Matrícules de l'alumne autenticat per als cursos mostrats (una sola query)
+        $student       = auth('student')->user();
+        $myEnrollments = $student
+            ? $student->enrollments()
+                      ->whereIn('course_id', $courses->pluck('id'))
+                      ->get()
+                      ->keyBy('course_id')
+            : collect();
+
+        return view('campus.catalog.index', compact(
+            'courses', 'seasons', 'activeSeason', 'selectedSeason',
+            'isPreview', 'enrollmentOpen', 'myEnrollments'
+        ));
     }
 
     public function show(Request $request, string $slug)
@@ -56,23 +67,23 @@ class CatalogController extends Controller
             ->when(! $isPreview, fn($q) => $q->where('is_public', true))
             ->firstOrFail();
 
-        $student = auth('student')->user();
-
-        $alreadyEnrolled = $student
-            ? $student->enrollments()->where('course_id', $course->id)->exists()
-            : false;
+        $student      = auth('student')->user();
+        $myEnrollment = $student
+            ? $student->enrollments()->where('course_id', $course->id)->first()
+            : null;
+        $alreadyEnrolled = $myEnrollment !== null;
 
         $season         = $course->season;
         $openEnrollment = $course->open_enrollment;
 
-        // Cursos amb open_enrollment bypassen totes les restriccions de temporada i dates
         $enrollmentOpen = $openEnrollment
             || ($season?->enrollmentIsOpen() && $season?->isActive());
         $seasonIsPast   = ! $openEnrollment && ($season?->isClosed() || $season?->isPast());
         $seasonIsFuture = ! $openEnrollment && ($season?->isDraft() || $season?->isFuture());
 
         return view('campus.catalog.show', compact(
-            'course', 'alreadyEnrolled', 'enrollmentOpen', 'seasonIsPast', 'seasonIsFuture', 'isPreview'
+            'course', 'myEnrollment', 'alreadyEnrolled',
+            'enrollmentOpen', 'seasonIsPast', 'seasonIsFuture', 'isPreview'
         ));
     }
 }
