@@ -179,7 +179,12 @@ class LmsStudentController extends Controller
             $responseData
         );
 
-        return back()->with('success', '✓ Resposta desada.');
+        $lessonUrl = route('campus.lms.lesson', [
+            'slug'   => $lesson->course->slug,
+            'lesson' => $lesson->id,
+        ]) . '#q-' . $questionIndex;
+
+        return redirect($lessonUrl)->with('success', '✓ Resposta desada.');
     }
 
     // ─── Certificat d'un curs ─────────────────────────────────────────────────

@@ -15,7 +15,7 @@
     $hasResp  = $response && $response->hasResponse();
 @endphp
 
-<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.625rem;padding:1rem 1.25rem;margin-bottom:1rem;">
+<div id="q-{{ $qIndex }}" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.625rem;padding:1rem 1.25rem;margin-bottom:1rem;scroll-margin-top:1.5rem;">
 
     {{-- Enunciat --}}
     <p style="font-size:0.9rem;font-weight:600;color:#1e293b;margin:0 0 0.75rem 0;">
