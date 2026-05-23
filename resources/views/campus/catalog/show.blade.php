@@ -140,8 +140,20 @@
                     <span class="{{ $eCss }} text-sm font-semibold px-4 py-2 rounded-lg">
                         {{ $eIcon }} {{ $eLabel }}
                     </span>
-                    @if ($eStatus === 'pending' && $myEnrollment->payment_method && $myEnrollment->payment_method !== 'stripe')
-                        <span class="text-xs text-gray-400">Esperant confirmació de pagament</span>
+                    @if ($eStatus === 'pending')
+                        @if ($myEnrollment->payment_method && $myEnrollment->payment_method !== 'stripe')
+                            <span class="text-xs text-gray-400">Esperant confirmació de pagament</span>
+                        @endif
+                        {{-- Botó de cancel·lació: permet canviar de mètode de pagament --}}
+                        <form method="POST"
+                              action="{{ route('campus.checkout.cancel-enrollment', $course->slug) }}"
+                              onsubmit="return confirm('Segur que vols cancel·lar la inscripció? Podràs tornar a inscriure\'t amb un altre mètode.')">
+                            @csrf
+                            <button type="submit"
+                                    class="text-xs text-gray-400 hover:text-red-600 underline transition">
+                                Cancel·lar inscripció
+                            </button>
+                        </form>
                     @elseif ($eStatus === 'paid' || $eStatus === 'confirmed')
                         <span class="text-xs text-green-600">Accés al curs garantit</span>
                     @endif

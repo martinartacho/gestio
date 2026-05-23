@@ -34,6 +34,7 @@ Route::prefix('portal')->name('campus.')->group(function () {
     Route::middleware(\App\Http\Middleware\AuthenticateStudent::class)->group(function () {
         Route::get('/meus-cursos', [PortalController::class, 'courses'])->name('portal.courses');
         Route::post('/checkout/{slug}', [CheckoutController::class, 'create'])->name('checkout.create');
+        Route::post('/checkout/{slug}/cancel-enrollment', [CheckoutController::class, 'cancelEnrollment'])->name('checkout.cancel-enrollment');
         Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
         Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
     });

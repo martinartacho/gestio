@@ -19,8 +19,11 @@ class CheckoutController extends Controller
         $course  = CampusCourse::where('slug', $slug)->where('is_public', true)->firstOrFail();
         $student = auth('student')->user();
 
-        // Evitar doble inscripció
-        if ($student->enrollments()->where('course_id', $course->id)->exists()) {
+        // Evitar doble inscripció (les cancel·lades i retornades permeten re-inscripció)
+        if ($student->enrollments()
+                    ->where('course_id', $course->id)
+                    ->whereNotIn('status', ['cancelled', 'refunded'])
+                    ->exists()) {
             return redirect()->route('campus.catalog.show', $slug)
                 ->with('info', 'Ja estàs inscrit/a a aquest curs.');
         }
@@ -139,6 +142,31 @@ class CheckoutController extends Controller
         );
 
         return redirect($stripeSession->url);
+    }
+
+    /**
+     * Cancel·la una matrícula pendent de l'alumne autenticat.
+     * Permet al curs tornar a acceptar inscripcions (re-inscripció amb altre mètode).
+     */
+    public function cancelEnrollment(Request $request, string $slug): RedirectResponse
+    {
+        $course  = CampusCourse::where('slug', $slug)->where('is_public', true)->firstOrFail();
+        $student = auth('student')->user();
+
+        $enrollment = $student->enrollments()
+            ->where('course_id', $course->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if (! $enrollment) {
+            return redirect()->route('campus.catalog.show', $slug)
+                ->with('error', 'No s\'ha trobat cap inscripció pendent per cancel·lar.');
+        }
+
+        $enrollment->update(['status' => 'cancelled']);
+
+        return redirect()->route('campus.catalog.show', $slug)
+            ->with('success', 'Inscripció cancel·lada. Ara pots tornar a inscriure\'t amb el mètode que prefereixis.');
     }
 
     public function success(Request $request): View
