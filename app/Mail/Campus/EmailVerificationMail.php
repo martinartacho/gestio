@@ -7,28 +7,22 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\URL;
 
 class EmailVerificationMail extends Mailable
 {
     use SerializesModels;
 
-    public readonly string $verificationUrl;
+    public readonly string $otp;
 
     public function __construct(public readonly CampusStudent $student)
     {
-        // URL signada vàlida 72 hores
-        $this->verificationUrl = URL::temporarySignedRoute(
-            'campus.verification.verify',
-            now()->addHours(72),
-            ['id' => $student->id, 'hash' => $student->verificationHash()],
-        );
+        $this->otp = $student->generateOtp();
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirma el teu correu electrònic — ' . config('app.name'),
+            subject: 'El teu codi de verificació — ' . config('app.name'),
         );
     }
 

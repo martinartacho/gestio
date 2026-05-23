@@ -103,23 +103,43 @@ class StudentAuthController extends Controller
         return view('campus.auth.verify-email');
     }
 
-    public function verify(Request $request, int $id, string $hash): RedirectResponse
+    public function verifyCode(Request $request): RedirectResponse
     {
-        $student = CampusStudent::findOrFail($id);
+        $student = auth('student')->user();
 
-        // Valida la signatura de la URL i el hash de l'email
-        if (! $request->hasValidSignature() || $hash !== $student->verificationHash()) {
-            abort(403, 'Enllaç de verificació no vàlid o caducat.');
+        if ($student->hasVerifiedEmail()) {
+            return redirect()->route('campus.portal.courses');
         }
 
-        if (! $student->hasVerifiedEmail()) {
-            $student->update(['email_verified_at' => now()]);
+        $code = strtoupper(trim($request->input('code', '')));
+
+        // Incrementar intents sempre (abans de validar)
+        $student->increment('verification_attempts');
+
+        if (! $student->isValidOtp($code)) {
+            $attemptsLeft = max(0, 3 - $student->fresh()->verification_attempts);
+
+            if ($attemptsLeft === 0) {
+                // Codi exhaurit → regenerar automàticament
+                Mail::to($student->email)->send(new EmailVerificationMail($student));
+                return back()->withErrors(['code' =>
+                    'Massa intents incorrectes. Hem enviat un nou codi al vostre correu.'
+                ]);
+            }
+
+            return back()->withErrors(['code' =>
+                'Codi incorrecte o caducat. Us queden ' . $attemptsLeft . ' ' .
+                ($attemptsLeft === 1 ? 'intent' : 'intents') . '.'
+            ])->withInput();
         }
 
-        // Autenticar automàticament si no ho estava
-        if (! auth('student')->check()) {
-            Auth::guard('student')->login($student);
-        }
+        // Codi correcte → verificar
+        $student->update([
+            'email_verified_at'            => now(),
+            'verification_code'            => null,
+            'verification_code_expires_at' => null,
+            'verification_attempts'        => 0,
+        ]);
 
         return redirect()->route('campus.portal.courses')
             ->with('success', '✓ Correu verificat correctament. Ja pots inscriure\'t als cursos!');
@@ -135,6 +155,6 @@ class StudentAuthController extends Controller
 
         Mail::to($student->email)->send(new EmailVerificationMail($student));
 
-        return back()->with('info', 'Hem reenviat el correu de verificació a ' . $student->email . '.');
+        return back()->with('info', 'Hem enviat un nou codi a ' . $student->email . '. Comproveu la safata d\'entrada.');
     }
 }

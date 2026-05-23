@@ -30,14 +30,14 @@ Route::prefix('portal')->name('campus.')->group(function () {
     Route::post('/registre', [StudentAuthController::class, 'register'])->middleware('throttle:register')->name('register.post');
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
 
-    // ── Verificació d'email ───────────────────────────────────────────────────
+    // ── Verificació d'email per OTP ───────────────────────────────────────────
     Route::get('/verificar-email', [StudentAuthController::class, 'verificationNotice'])
         ->middleware(\App\Http\Middleware\AuthenticateStudent::class)
         ->name('verification.notice');
 
-    Route::get('/verificar-email/{id}/{hash}', [StudentAuthController::class, 'verify'])
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
+    Route::post('/verificar-email/codi', [StudentAuthController::class, 'verifyCode'])
+        ->middleware([\App\Http\Middleware\AuthenticateStudent::class, 'throttle:10,5'])
+        ->name('verification.code');
 
     Route::post('/reenviar-verificacio', [StudentAuthController::class, 'resendVerification'])
         ->middleware([\App\Http\Middleware\AuthenticateStudent::class, 'throttle:3,10'])

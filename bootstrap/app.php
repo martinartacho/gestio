@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'feature' => \App\Http\Middleware\FeatureEnabled::class,
         ]);
+        // Bloqueig per IP aplicat a totes les peticions web
+        $middleware->prependToGroup('web', \App\Http\Middleware\BlockSuspiciousIp::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
