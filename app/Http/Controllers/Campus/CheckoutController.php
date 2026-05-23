@@ -25,6 +25,12 @@ class CheckoutController extends Controller
                 ->with('info', 'Ja estàs inscrit/a a aquest curs.');
         }
 
+        // Verificar capacitat (pending + paid + confirmed + completed compten)
+        if ($course->isFull()) {
+            return redirect()->route('campus.catalog.show', $slug)
+                ->with('error', 'Ho sentim, el curs ja no té places disponibles.');
+        }
+
         // Verificar que les inscripcions estan obertes (tret que el curs ho permeti sempre)
         if (! $course->open_enrollment) {
             $season = $course->season;

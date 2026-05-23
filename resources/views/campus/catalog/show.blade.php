@@ -73,6 +73,19 @@
             @if ($course->format)
                 <div><span class="font-medium text-gray-800">Format:</span> {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}</div>
             @endif
+            @if (! $course->hasUnlimitedPlaces())
+                @php $slots = $course->availableSlots(); @endphp
+                <div>
+                    <span class="font-medium text-gray-800">Places:</span>
+                    @if ($slots <= 0)
+                        <span class="text-red-600 font-semibold">Complet</span>
+                    @elseif ($slots <= 3)
+                        <span class="text-orange-600 font-semibold">{{ $slots }} {{ $slots === 1 ? 'lloc disponible' : 'llocs disponibles' }}</span>
+                    @else
+                        {{ $slots }} disponibles / {{ $course->max_students }}
+                    @endif
+                </div>
+            @endif
         </div>
 
         @if ($course->objectives)
@@ -98,6 +111,13 @@
                 <span class="bg-amber-50 text-amber-700 border border-amber-200 text-sm font-medium px-4 py-2 rounded-lg">
                     Previsualització — inscripció desactivada
                 </span>
+            @elseif (! $alreadyEnrolled && $course->isFull())
+                <div class="flex flex-col items-end gap-1">
+                    <span class="bg-red-50 text-red-700 border border-red-200 text-sm font-semibold px-4 py-2 rounded-lg">
+                        Curs complet
+                    </span>
+                    <span class="text-xs text-gray-400">No hi ha places disponibles</span>
+                </div>
             @elseif ($alreadyEnrolled)
                 @php
                     $eStatus = $myEnrollment->status;

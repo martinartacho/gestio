@@ -154,6 +154,8 @@
                                 <span class="text-xs font-semibold px-2 py-0.5 rounded border {{ $ePill }}">
                                     {{ $eIcon }} {{ $eLabel }}
                                 </span>
+                            @elseif ($course->isFull())
+                                <span class="text-xs font-semibold text-red-600">Complet</span>
                             @elseif ($course->open_enrollment)
                                 <span class="text-xs font-semibold text-emerald-600">∞ Inscripció oberta</span>
                             @elseif ($courseEnrollOpen)

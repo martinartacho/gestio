@@ -201,6 +201,48 @@ class CampusCourse extends Model
         return is_null($this->max_students);
     }
 
+    /**
+     * Estàtus que reserven plaça.
+     * Exclou 'cancelled' i 'refunded' perquè alliberen el lloc.
+     */
+    public const ACTIVE_STATUSES = ['pending', 'paid', 'confirmed', 'completed'];
+
+    /**
+     * Nombre de matrícules actives (pending+paid+confirmed+completed).
+     * Usa `active_enrollments_count` si l'has carregat amb withCount().
+     */
+    public function activeEnrollmentsCount(): int
+    {
+        // Aprofita el withCount si ja existeix per evitar queries extra
+        if (isset($this->attributes['active_enrollments_count'])) {
+            return (int) $this->attributes['active_enrollments_count'];
+        }
+
+        return $this->enrollments()
+                    ->whereIn('status', self::ACTIVE_STATUSES)
+                    ->count();
+    }
+
+    /** Places disponibles: null si el curs no té límit. */
+    public function availableSlots(): ?int
+    {
+        if ($this->hasUnlimitedPlaces()) {
+            return null;
+        }
+
+        return max(0, $this->max_students - $this->activeEnrollmentsCount());
+    }
+
+    /** Retorna true si el curs ha assolit el màxim d'alumnes permesos. */
+    public function isFull(): bool
+    {
+        if ($this->hasUnlimitedPlaces()) {
+            return false;
+        }
+
+        return $this->activeEnrollmentsCount() >= $this->max_students;
+    }
+
     public function getStatusColorAttribute(): string
     {
         return self::STATUS_COLORS[$this->status] ?? 'gray';

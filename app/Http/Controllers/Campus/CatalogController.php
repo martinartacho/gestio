@@ -31,6 +31,9 @@ class CatalogController extends Controller
         $selectedSeason ??= $activeSeason;
 
         $courses = CampusCourse::with(['category', 'space', 'teachers'])
+            ->withCount(['enrollments as active_enrollments_count' => fn($q) =>
+                $q->whereIn('status', CampusCourse::ACTIVE_STATUSES)
+            ])
             ->when(! $isPreview, fn($q) => $q->where('status', 'active')->where('is_public', true))
             ->when($selectedSeason, fn($q) => $q->where(function ($inner) use ($selectedSeason) {
                 $inner->where('season_id', $selectedSeason->id)
@@ -63,6 +66,9 @@ class CatalogController extends Controller
         $isPreview = $request->boolean('preview') && $this->canPreview();
 
         $course = CampusCourse::with(['category', 'space', 'teachers', 'season'])
+            ->withCount(['enrollments as active_enrollments_count' => fn($q) =>
+                $q->whereIn('status', CampusCourse::ACTIVE_STATUSES)
+            ])
             ->where('slug', $slug)
             ->when(! $isPreview, fn($q) => $q->where('is_public', true))
             ->firstOrFail();
