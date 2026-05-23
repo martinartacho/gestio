@@ -37,8 +37,13 @@ class StudentAuthController extends Controller
 
     public function register(Request $request)
     {
+        // Honeypot: si el camp ocult ve omplert és un bot → falla silenciosa
+        if ($request->filled('website')) {
+            return redirect()->route('campus.register')
+                ->with('success', 'Compte creat correctament. Podeu accedir ara.');
+        }
+
         $data = $request->validate([
-            'website'      => ['size:0'],           // honeypot: bots l'omplen, humans no
             'first_name'   => ['required', 'string', 'max:100'],
             'last_name'    => ['required', 'string', 'max:100'],
             'email'        => ['required', 'email', 'unique:campus_students,email'],
