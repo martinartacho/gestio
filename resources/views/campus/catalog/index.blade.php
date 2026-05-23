@@ -120,13 +120,25 @@
                             {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}
                         @endif
                     </div>
+                    @php
+                        $courseEnrollOpen = $course->open_enrollment || $enrollmentOpen;
+                    @endphp
                     <div class="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
                         <span class="text-indigo-700 font-bold text-base">
                             {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
                         </span>
-                        @if ($course->sessions)
-                            <span class="text-xs text-gray-400">{{ $course->sessions }} sessions</span>
-                        @endif
+                        <div class="flex flex-col items-end gap-0.5">
+                            @if ($course->sessions)
+                                <span class="text-xs text-gray-400">{{ $course->sessions }} sessions</span>
+                            @endif
+                            @if ($course->open_enrollment)
+                                <span class="text-xs font-semibold text-emerald-600">∞ Inscripció oberta</span>
+                            @elseif ($courseEnrollOpen)
+                                <span class="text-xs font-medium text-green-600">Inscripcions obertes</span>
+                            @else
+                                <span class="text-xs text-gray-400">Inscripcions tancades</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </a>

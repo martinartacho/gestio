@@ -40,7 +40,11 @@ class CatalogController extends Controller
             ->orderBy('start_date')
             ->get();
 
-        return view('campus.catalog.index', compact('courses', 'seasons', 'activeSeason', 'selectedSeason', 'isPreview'));
+        $enrollmentOpen = $selectedSeason
+            ? ($selectedSeason->enrollmentIsOpen() && $selectedSeason->isActive())
+            : false;
+
+        return view('campus.catalog.index', compact('courses', 'seasons', 'activeSeason', 'selectedSeason', 'isPreview', 'enrollmentOpen'));
     }
 
     public function show(Request $request, string $slug)
