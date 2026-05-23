@@ -16,13 +16,34 @@
         <p class="text-gray-500 mt-1">Inscripció a <strong>{{ $course->title }}</strong></p>
     </div>
 
+    {{-- Referència de pagament --}}
+    @if ($enrollment->payment_reference)
+    <div class="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-5 py-4 mb-6">
+        <div>
+            <p class="text-xs font-semibold text-indigo-500 uppercase tracking-wide mb-0.5">Referència de pagament</p>
+            <p class="font-mono text-2xl font-bold text-indigo-800 tracking-widest select-all">
+                {{ $enrollment->payment_reference }}
+            </p>
+        </div>
+        @if ($enrollment->payment_expires_at)
+        <div class="text-right">
+            <p class="text-xs text-indigo-400 mb-0.5">Vàlid fins a</p>
+            <p class="text-sm font-semibold text-indigo-700">
+                {{ $enrollment->payment_expires_at->format('d/m/Y') }}
+            </p>
+            <p class="text-xs text-indigo-400">{{ $enrollment->payment_expires_at->format('H:i') }} h</p>
+        </div>
+        @endif
+    </div>
+    @endif
+
     {{-- Targeta d'instruccions --}}
     <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
 
         @php
             $concept = str_replace(
-                ['{NOM}', '{CURS}'],
-                [$student->full_name, $course->title],
+                ['{NOM}', '{CURS}', '{REFERENCIA}'],
+                [$student->full_name, $course->title, $enrollment->payment_reference ?? '—'],
                 $settings->get('payment_concept_template', '{NOM} - {CURS}')
             );
         @endphp
@@ -47,7 +68,7 @@
                 @endif
                 <div class="flex justify-between py-2 border-b border-gray-100">
                     <span class="text-gray-500 font-medium">Concepte</span>
-                    <span class="text-gray-900 font-medium">{{ $concept }}</span>
+                    <span class="text-gray-900 font-medium select-all">{{ $concept }}</span>
                 </div>
                 <div class="flex justify-between py-2">
                     <span class="text-gray-500 font-medium">Import</span>
@@ -69,7 +90,7 @@
                 @endif
                 <div class="flex justify-between py-2 border-b border-gray-100">
                     <span class="text-gray-500 font-medium">Concepte</span>
-                    <span class="text-gray-900 font-medium">{{ $concept }}</span>
+                    <span class="text-gray-900 font-medium select-all">{{ $concept }}</span>
                 </div>
                 <div class="flex justify-between py-2">
                     <span class="text-gray-500 font-medium">Import</span>
@@ -104,7 +125,7 @@
                 @endif
                 <div class="flex justify-between py-2 border-b border-gray-100">
                     <span class="text-gray-500 font-medium">Concepte</span>
-                    <span class="text-gray-900 font-medium">{{ $concept }}</span>
+                    <span class="text-gray-900 font-medium select-all">{{ $concept }}</span>
                 </div>
                 <div class="flex justify-between py-2">
                     <span class="text-gray-500 font-medium">Import</span>
@@ -117,7 +138,10 @@
     {{-- Nota informativa --}}
     <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-700 mb-6">
         ℹ️ L'equip us confirmarà la plaça per correu electrònic un cop rebut el pagament.
-        La vostra plaça quedarà reservada durant 5 dies hàbils.
+        @if ($enrollment->payment_expires_at)
+            La vostra plaça quedarà reservada fins al
+            <strong>{{ $enrollment->payment_expires_at->format('d/m/Y') }}</strong>.
+        @endif
     </div>
 
     {{-- Accions --}}

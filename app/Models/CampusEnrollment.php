@@ -14,6 +14,7 @@ class CampusEnrollment extends Model
 
     protected $fillable = [
         'student_id', 'course_id', 'status', 'payment_method', 'amount',
+        'payment_reference', 'payment_expires_at',
         'stripe_session_id', 'stripe_payment_intent', 'paid_at', 'notes',
         'first_name', 'last_name', 'email', 'phone', 'dni',
         'enrollment_date', 'bank_iban', 'bank_holder',
@@ -21,11 +22,12 @@ class CampusEnrollment extends Model
     ];
 
     protected $casts = [
-        'amount'           => 'decimal:2',
-        'paid_at'          => 'datetime',
-        'enrollment_date'  => 'date',
-        'rgpd_accepted'    => 'boolean',
-        'rgpd_accepted_at' => 'datetime',
+        'amount'              => 'decimal:2',
+        'paid_at'             => 'datetime',
+        'payment_expires_at'  => 'datetime',
+        'enrollment_date'     => 'date',
+        'rgpd_accepted'       => 'boolean',
+        'rgpd_accepted_at'    => 'datetime',
     ];
 
     public const PAYMENT_METHODS = [
@@ -54,6 +56,29 @@ class CampusEnrollment extends Model
         'completed' => 'gray',
         'refunded'  => 'gray',
     ];
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /**
+     * Genera una referència alfanumèrica única (8 caràcters majúscules).
+     * Reintenta fins a trobar una de lliure.
+     */
+    public static function generateReference(): string
+    {
+        do {
+            $ref = strtoupper(\Illuminate\Support\Str::random(8));
+        } while (static::where('payment_reference', $ref)->exists());
+
+        return $ref;
+    }
+
+    /** Retorna true si el temps per pagar ha expirat i l'estat continua pendent. */
+    public function isExpired(): bool
+    {
+        return $this->status === 'pending'
+            && $this->payment_expires_at !== null
+            && now()->gt($this->payment_expires_at);
+    }
 
     public function student(): BelongsTo
     {

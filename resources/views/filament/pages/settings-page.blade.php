@@ -293,17 +293,38 @@
                 </div>
             </div>
 
-            {{-- Concepte --}}
+            {{-- Concepte i referència --}}
             <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
                 <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Concepte del pagament</h2>
                 <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1rem;">
                     Text que es mostrarà a l'alumne com a concepte de la transferència/Bizum/PayPal.
-                    Variables disponibles: <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{NOM}</code>,
-                    <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{CURS}</code>.
+                    Variables: <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{NOM}</code>,
+                    <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{CURS}</code>,
+                    <code style="background:#eef2ff;color:#4f46e5;padding:0.1rem 0.4rem;border-radius:0.25rem;">{REFERENCIA}</code>
+                    <span style="font-size:0.75rem;color:#9ca3af;">(codi únic per matriculació)</span>.
                 </p>
                 <input type="text" wire:model="payment_concept_template"
-                       placeholder="{NOM} - {CURS}"
+                       placeholder="{NOM} - {CURS} - {REFERENCIA}"
                        style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+            </div>
+
+            {{-- Caducitat --}}
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Termini per completar el pagament</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1rem;">
+                    Dies naturals que té l'alumne per realitzar el pagament manual des del moment de la inscripció.
+                    Un cop superat aquest termini, la plaça pot ser alliberada.
+                    Poseu <strong>0</strong> per no establir cap termini.
+                </p>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <input type="number" wire:model="payment_expiry_days"
+                           min="0" max="90"
+                           style="width:6rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                    <span style="font-size:0.875rem;color:#6b7280;">dies naturals</span>
+                </div>
+                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.5rem;">
+                    Actual: {{ $payment_expiry_days > 0 ? $payment_expiry_days . ' dies' : 'Sense límit' }}
+                </p>
             </div>
 
         </div>

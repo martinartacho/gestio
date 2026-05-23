@@ -61,6 +61,7 @@ class SettingsPage extends Page
     public string $payment_bizum_number     = '';
     public string $payment_paypal_email     = '';
     public string $payment_concept_template = '{NOM} - {CURS}';
+    public int    $payment_expiry_days      = 5;
 
     // Tab: Avançat
     public string $timezone = 'Europe/Madrid';
@@ -106,6 +107,7 @@ class SettingsPage extends Page
         $this->payment_bizum_number     = (string) $store->get('payment_bizum_number', '');
         $this->payment_paypal_email     = (string) $store->get('payment_paypal_email', '');
         $this->payment_concept_template = (string) $store->get('payment_concept_template', '{NOM} - {CURS}');
+        $this->payment_expiry_days      = (int)    $store->get('payment_expiry_days', 5);
 
         $this->timezone = (string) $store->get('timezone', 'Europe/Madrid');
         $this->locale   = (string) $store->get('locale', 'ca');
@@ -149,6 +151,7 @@ class SettingsPage extends Page
             'payment_bizum_number'     => $this->payment_bizum_number ?: null,
             'payment_paypal_email'     => $this->payment_paypal_email ?: null,
             'payment_concept_template' => $this->payment_concept_template ?: '{NOM} - {CURS}',
+            'payment_expiry_days'      => max(0, $this->payment_expiry_days),
 
             'timezone' => $this->timezone,
             'locale'   => $this->locale,

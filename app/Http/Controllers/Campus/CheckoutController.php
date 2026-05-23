@@ -75,18 +75,22 @@ class CheckoutController extends Controller
                     ->with('error', 'El mètode de pagament seleccionat no està disponible.');
             }
 
-            CampusEnrollment::updateOrCreate(
+            $settings    = app(SettingStore::class);
+            $expiryDays  = (int) $settings->get('payment_expiry_days', 5);
+            $expiresAt   = $expiryDays > 0 ? now()->addDays($expiryDays) : null;
+
+            $enrollment = CampusEnrollment::updateOrCreate(
                 ['student_id' => $student->id, 'course_id' => $course->id],
                 $studentData + [
-                    'status'         => 'pending',
-                    'payment_method' => $method,
-                    'amount'         => $course->price,
+                    'status'              => 'pending',
+                    'payment_method'      => $method,
+                    'amount'              => $course->price,
+                    'payment_reference'   => CampusEnrollment::generateReference(),
+                    'payment_expires_at'  => $expiresAt,
                 ]
             );
 
-            $settings = app(SettingStore::class);
-
-            return view('campus.checkout.pending', compact('course', 'student', 'method', 'settings'));
+            return view('campus.checkout.pending', compact('course', 'student', 'enrollment', 'method', 'settings'));
         }
 
         // ── Stripe ────────────────────────────────────────────────────────────

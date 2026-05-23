@@ -45,6 +45,7 @@ class SiteSettingsSeeder extends Seeder
             'payment_bizum_number'     => null,
             'payment_paypal_email'     => null,
             'payment_concept_template' => '{NOM} - {CURS}',
+            'payment_expiry_days'      => 5,
 
             // ── Avançat ──────────────────────────────────────────────────────
             'timezone'              => 'Europe/Madrid',

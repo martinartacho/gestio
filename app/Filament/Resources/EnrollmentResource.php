@@ -137,6 +137,13 @@ class EnrollmentResource extends Resource
                     ->badge()
                     ->color(fn($state) => CampusEnrollment::STATUS_COLORS[$state] ?? 'gray'),
 
+                Tables\Columns\TextColumn::make('payment_reference')
+                    ->label('Ref.')
+                    ->fontFamily('mono')
+                    ->copyable()
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Mètode')
                     ->formatStateUsing(fn($state) => CampusEnrollment::PAYMENT_METHODS[$state] ?? '—')

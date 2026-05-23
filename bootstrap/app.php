@@ -10,6 +10,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        // Cancel·la matrícules manuals pendents que han superat el termini (execució diària a les 08:00)
+        $schedule->command('enrollments:expire')->dailyAt('08:00');
+    })
     ->withProviders([
         App\Providers\Filament\AdminPanelProvider::class,
     ])
