@@ -30,10 +30,25 @@ Route::prefix('portal')->name('campus.')->group(function () {
     Route::post('/registre', [StudentAuthController::class, 'register'])->middleware('throttle:register')->name('register.post');
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
 
+    // ── Verificació d'email ───────────────────────────────────────────────────
+    Route::get('/verificar-email', [StudentAuthController::class, 'verificationNotice'])
+        ->middleware(\App\Http\Middleware\AuthenticateStudent::class)
+        ->name('verification.notice');
+
+    Route::get('/verificar-email/{id}/{hash}', [StudentAuthController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+
+    Route::post('/reenviar-verificacio', [StudentAuthController::class, 'resendVerification'])
+        ->middleware([\App\Http\Middleware\AuthenticateStudent::class, 'throttle:3,10'])
+        ->name('verification.resend');
+
     // ── Portal alumne (requereix auth) ────────────────────────────────────────
     Route::middleware(\App\Http\Middleware\AuthenticateStudent::class)->group(function () {
         Route::get('/meus-cursos', [PortalController::class, 'courses'])->name('portal.courses');
-        Route::post('/checkout/{slug}', [CheckoutController::class, 'create'])->middleware('throttle:checkout')->name('checkout.create');
+        Route::post('/checkout/{slug}', [CheckoutController::class, 'create'])
+            ->middleware(['throttle:checkout', \App\Http\Middleware\EnsureStudentEmailIsVerified::class])
+            ->name('checkout.create');
         Route::post('/checkout/{slug}/cancel-enrollment', [CheckoutController::class, 'cancelEnrollment'])->middleware('throttle:checkout')->name('checkout.cancel-enrollment');
         Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
         Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');

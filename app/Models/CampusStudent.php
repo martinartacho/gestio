@@ -18,15 +18,34 @@ class CampusStudent extends Authenticatable
     protected $fillable = [
         'first_name', 'last_name', 'email', 'password',
         'phone', 'dni', 'address', 'postal_code', 'city', 'data_consent',
+        'email_verified_at', 'suspended_at', 'suspension_reason',
     ];
 
     protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
-        'dni'          => 'encrypted',
-        'data_consent' => 'boolean',
-        'password'     => 'hashed',
+        'dni'               => 'encrypted',
+        'data_consent'      => 'boolean',
+        'password'          => 'hashed',
+        'email_verified_at' => 'datetime',
+        'suspended_at'      => 'datetime',
     ];
+
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
+    }
+
+    /** Hash per a l'URL de verificació (SHA1 de l'email). */
+    public function verificationHash(): string
+    {
+        return sha1($this->email);
+    }
 
     public function enrollments(): HasMany
     {

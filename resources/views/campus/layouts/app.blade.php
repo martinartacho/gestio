@@ -33,6 +33,22 @@
         </div>
     </nav>
 
+    {{-- Banner verificació email --}}
+    @auth('student')
+        @if (! auth('student')->user()->hasVerifiedEmail() && ! request()->routeIs('campus.verification.*'))
+        <div class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-sm text-amber-800 flex items-center justify-between gap-4">
+            <span>
+                ⚠️ Cal verificar el correu electrònic per poder inscriure's als cursos.
+                <a href="{{ route('campus.verification.notice') }}" class="underline font-medium hover:no-underline ml-1">Veure instruccions</a>
+            </span>
+            <form method="POST" action="{{ route('campus.verification.resend') }}" class="shrink-0">
+                @csrf
+                <button type="submit" class="text-xs text-amber-700 underline hover:no-underline">Reenviar correu</button>
+            </form>
+        </div>
+        @endif
+    @endauth
+
     <main class="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
         @if (session('success'))
             <div class="mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm">{{ session('success') }}</div>

@@ -25,6 +25,12 @@ class CheckoutController extends Controller
         $course  = CampusCourse::where('slug', $slug)->where('is_public', true)->firstOrFail();
         $student = auth('student')->user();
 
+        // ── Compte suspès ────────────────────────────────────────────────────────
+        if ($student->isSuspended()) {
+            return redirect()->route('campus.catalog.show', $slug)
+                ->with('error', 'El compte ha estat suspès. Contacteu amb l\'administració.');
+        }
+
         // ── Evitar doble inscripció (cancel·lades/retornades permeten re-inscripció) ─
         if ($student->enrollments()
                     ->where('course_id', $course->id)
