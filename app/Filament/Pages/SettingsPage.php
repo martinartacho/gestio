@@ -61,7 +61,8 @@ class SettingsPage extends Page
     public string $payment_bizum_number     = '';
     public string $payment_paypal_email     = '';
     public string $payment_concept_template = '{NOM} - {CURS}';
-    public int    $payment_expiry_days      = 5;
+    public int    $payment_expiry_value     = 5;
+    public string $payment_expiry_unit      = 'days';
 
     // Tab: Avançat
     public string $timezone = 'Europe/Madrid';
@@ -107,7 +108,8 @@ class SettingsPage extends Page
         $this->payment_bizum_number     = (string) $store->get('payment_bizum_number', '');
         $this->payment_paypal_email     = (string) $store->get('payment_paypal_email', '');
         $this->payment_concept_template = (string) $store->get('payment_concept_template', '{NOM} - {CURS}');
-        $this->payment_expiry_days      = (int)    $store->get('payment_expiry_days', 5);
+        $this->payment_expiry_value     = (int)    $store->get('payment_expiry_value', 5);
+        $this->payment_expiry_unit      = (string) $store->get('payment_expiry_unit', 'days');
 
         $this->timezone = (string) $store->get('timezone', 'Europe/Madrid');
         $this->locale   = (string) $store->get('locale', 'ca');
@@ -151,7 +153,10 @@ class SettingsPage extends Page
             'payment_bizum_number'     => $this->payment_bizum_number ?: null,
             'payment_paypal_email'     => $this->payment_paypal_email ?: null,
             'payment_concept_template' => $this->payment_concept_template ?: '{NOM} - {CURS}',
-            'payment_expiry_days'      => max(0, $this->payment_expiry_days),
+            'payment_expiry_value'     => max(0, $this->payment_expiry_value),
+            'payment_expiry_unit'      => in_array($this->payment_expiry_unit, ['hours', 'days'])
+                                            ? $this->payment_expiry_unit
+                                            : 'days',
 
             'timezone' => $this->timezone,
             'locale'   => $this->locale,

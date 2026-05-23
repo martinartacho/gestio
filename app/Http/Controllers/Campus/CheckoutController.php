@@ -81,9 +81,12 @@ class CheckoutController extends Controller
                     ->with('error', 'El mètode de pagament seleccionat no està disponible.');
             }
 
-            $settings    = app(SettingStore::class);
-            $expiryDays  = (int) $settings->get('payment_expiry_days', 5);
-            $expiresAt   = $expiryDays > 0 ? now()->addDays($expiryDays) : null;
+            $settings     = app(SettingStore::class);
+            $expiryValue  = (int)    $settings->get('payment_expiry_value', 5);
+            $expiryUnit   = (string) $settings->get('payment_expiry_unit', 'days');
+            $expiresAt    = $expiryValue > 0
+                ? ($expiryUnit === 'hours' ? now()->addHours($expiryValue) : now()->addDays($expiryValue))
+                : null;
 
             $enrollment = CampusEnrollment::updateOrCreate(
                 ['student_id' => $student->id, 'course_id' => $course->id],

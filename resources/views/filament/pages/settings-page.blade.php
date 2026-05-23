@@ -312,18 +312,41 @@
             <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
                 <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Termini per completar el pagament</h2>
                 <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1rem;">
-                    Dies naturals que té l'alumne per realitzar el pagament manual des del moment de la inscripció.
-                    Un cop superat aquest termini, la plaça pot ser alliberada.
-                    Poseu <strong>0</strong> per no establir cap termini.
+                    Temps que té l'alumne per realitzar el pagament manual des del moment de la inscripció.
+                    Un cop superat, la plaça pot ser alliberada. Poseu <strong>0</strong> per no establir cap termini.
                 </p>
-                <div style="display:flex;align-items:center;gap:0.75rem;">
-                    <input type="number" wire:model="payment_expiry_days"
-                           min="0" max="90"
-                           style="width:6rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
-                    <span style="font-size:0.875rem;color:#6b7280;">dies naturals</span>
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                    <input type="number" wire:model="payment_expiry_value"
+                           min="0" max="720"
+                           style="width:5.5rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                    <div style="display:flex;gap:0.25rem;">
+                        <label style="display:flex;align-items:center;gap:0.375rem;cursor:pointer;padding:0.4rem 0.75rem;border:1px solid #d1d5db;border-radius:0.5rem 0 0 0.5rem;font-size:0.875rem;background:{{ $payment_expiry_unit === 'hours' ? '#eef2ff' : '#fff' }};color:{{ $payment_expiry_unit === 'hours' ? '#4f46e5' : '#374151' }};">
+                            <input type="radio" wire:model.live="payment_expiry_unit" value="hours" style="accent-color:#4f46e5;">
+                            hores
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.375rem;cursor:pointer;padding:0.4rem 0.75rem;border:1px solid #d1d5db;border-left:none;border-radius:0 0.5rem 0.5rem 0;font-size:0.875rem;background:{{ $payment_expiry_unit === 'days' ? '#eef2ff' : '#fff' }};color:{{ $payment_expiry_unit === 'days' ? '#4f46e5' : '#374151' }};">
+                            <input type="radio" wire:model.live="payment_expiry_unit" value="days" style="accent-color:#4f46e5;">
+                            dies
+                        </label>
+                    </div>
+                    @if ($payment_expiry_value > 0)
+                        <span style="font-size:0.8125rem;color:#6b7280;">
+                            @if ($payment_expiry_unit === 'hours')
+                                ≈ {{ round($payment_expiry_value / 24, 1) }} dies
+                            @else
+                                = {{ $payment_expiry_value * 24 }} hores
+                            @endif
+                        </span>
+                    @endif
                 </div>
-                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.5rem;">
-                    Actual: {{ $payment_expiry_days > 0 ? $payment_expiry_days . ' dies' : 'Sense límit' }}
+                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.625rem;">
+                    @if ($payment_expiry_value > 0)
+                        Les matrícules pendents caduquen al cap de
+                        <strong>{{ $payment_expiry_value }} {{ $payment_expiry_unit === 'hours' ? 'h' : 'dies' }}</strong>
+                        · <code style="background:#f3f4f6;padding:0.1rem 0.3rem;border-radius:0.2rem;">php artisan enrollments:expire</code>
+                    @else
+                        Sense límit de temps.
+                    @endif
                 </p>
             </div>
 
