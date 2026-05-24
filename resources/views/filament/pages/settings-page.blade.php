@@ -9,6 +9,8 @@
             'aparenca'  => '🎨 Aparença',
             'email'     => '✉️ Correu',
             'moduls'    => '🔧 Mòduls',
+            'pagament'  => '💳 Pagament',
+            'cua'       => '🎟 Cua',
             'avançat'   => '⚙️ Avançat',
         ] as $tab => $label)
         <button wire:click="$set('activeTab','{{ $tab }}')"
@@ -189,6 +191,274 @@
                     </div>
                 </label>
                 @endforeach
+
+            </div>
+
+        </div>
+
+        {{-- ══════════════════════════════════════════════════════════════
+             TAB: PAGAMENT
+        ══════════════════════════════════════════════════════════════ --}}
+        <div style="{{ $activeTab !== 'pagament' ? 'display:none;' : '' }}">
+
+            {{-- Stripe (llegit del .env, no editable aquí) --}}
+            @php $stripeOk = ! empty(config('services.stripe.secret')); @endphp
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1.25rem;margin-bottom:1rem;border-radius:0.75rem;border:1px solid {{ $stripeOk ? '#bbf7d0' : '#fde68a' }};background:{{ $stripeOk ? '#f0fdf4' : '#fffbeb' }};">
+                <span style="font-size:1.25rem;">💳</span>
+                <div>
+                    <span style="font-weight:600;font-size:0.9375rem;color:#111827;">Stripe (targeta bancària)</span>
+                    @if ($stripeOk)
+                        <span style="margin-left:0.5rem;font-size:0.8125rem;color:#16a34a;font-weight:500;">✓ Configurat via .env</span>
+                    @else
+                        <span style="margin-left:0.5rem;font-size:0.8125rem;color:#b45309;font-weight:500;">⚠ No configurat — afegeix STRIPE_KEY i STRIPE_SECRET al .env</span>
+                    @endif
+                    <p style="margin:0;font-size:0.75rem;color:#9ca3af;">El pagament amb targeta s'activa automàticament quan Stripe és configurat.</p>
+                </div>
+            </div>
+
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Mètodes de pagament manual</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.5rem;">
+                    Habilita els mètodes que vols oferir als alumnes. Un cop el pagament es rebi, l'admin el confirma manualment a Filament.
+                </p>
+
+                {{-- Transferència bancària --}}
+                <div style="padding:1rem 0;border-bottom:1px solid #f3f4f6;">
+                    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;margin-bottom:0.75rem;">
+                        <input type="checkbox" wire:model.live="payment_transfer_enabled"
+                               style="width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                        <span style="font-weight:600;font-size:0.9375rem;color:#111827;">🏦 Transferència bancària</span>
+                    </label>
+                    @if ($payment_transfer_enabled)
+                    <div style="margin-left:1.875rem;display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                        <div>
+                            <label style="display:block;font-size:0.8125rem;font-weight:600;color:#374151;margin-bottom:0.25rem;">IBAN</label>
+                            <input type="text" wire:model="payment_iban"
+                                   placeholder="ES76 2100 0418 40 0200051332"
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.4rem 0.75rem;font-size:0.875rem;font-family:monospace;box-sizing:border-box;">
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.8125rem;font-weight:600;color:#374151;margin-bottom:0.25rem;">Titular del compte</label>
+                            <input type="text" wire:model="payment_bank_holder"
+                                   placeholder="Associació Campus"
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
+                {{-- Bizum --}}
+                <div style="padding:1rem 0;border-bottom:1px solid #f3f4f6;">
+                    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;margin-bottom:0.75rem;">
+                        <input type="checkbox" wire:model.live="payment_bizum_enabled"
+                               style="width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                        <span style="font-weight:600;font-size:0.9375rem;color:#111827;">📱 Bizum</span>
+                    </label>
+                    @if ($payment_bizum_enabled)
+                    <div style="margin-left:1.875rem;">
+                        <label style="display:block;font-size:0.8125rem;font-weight:600;color:#374151;margin-bottom:0.25rem;">Número de telèfon Bizum</label>
+                        <input type="text" wire:model="payment_bizum_number"
+                               placeholder="612 345 678"
+                               style="width:12rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.4rem 0.75rem;font-size:0.875rem;font-family:monospace;">
+                    </div>
+                    @endif
+                </div>
+
+                {{-- Efectiu --}}
+                <div style="padding:1rem 0;border-bottom:1px solid #f3f4f6;">
+                    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;">
+                        <input type="checkbox" wire:model="payment_cash_enabled"
+                               style="width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                        <span style="font-weight:600;font-size:0.9375rem;color:#111827;">🏢 Pagament en efectiu</span>
+                    </label>
+                    <p style="margin-left:1.875rem;font-size:0.8125rem;color:#9ca3af;margin-top:0.25rem;">
+                        L'alumne paga a la secretaria. L'admin confirma el pagament manualment.
+                    </p>
+                </div>
+
+                {{-- PayPal --}}
+                <div style="padding:1rem 0;">
+                    <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;margin-bottom:0.75rem;">
+                        <input type="checkbox" wire:model.live="payment_paypal_enabled"
+                               style="width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                        <span style="font-weight:600;font-size:0.9375rem;color:#111827;">🔗 PayPal</span>
+                    </label>
+                    @if ($payment_paypal_enabled)
+                    <div style="margin-left:1.875rem;">
+                        <label style="display:block;font-size:0.8125rem;font-weight:600;color:#374151;margin-bottom:0.25rem;">Adreça de correu PayPal</label>
+                        <input type="email" wire:model="payment_paypal_email"
+                               placeholder="pagaments@campus.cat"
+                               style="width:20rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.4rem 0.75rem;font-size:0.875rem;">
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Concepte i referència --}}
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Concepte del pagament</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1rem;">
+                    Text que es mostrarà a l'alumne com a concepte de la transferència/Bizum/PayPal.
+                    Variables: <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{NOM}</code>,
+                    <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{CURS}</code>,
+                    <code style="background:#eef2ff;color:#4f46e5;padding:0.1rem 0.4rem;border-radius:0.25rem;">{REFERENCIA}</code>
+                    <span style="font-size:0.75rem;color:#9ca3af;">(codi únic per matriculació)</span>.
+                </p>
+                <input type="text" wire:model="payment_concept_template"
+                       placeholder="{NOM} - {CURS} - {REFERENCIA}"
+                       style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+            </div>
+
+            {{-- Caducitat --}}
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Termini per completar el pagament</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1rem;">
+                    Temps que té l'alumne per realitzar el pagament manual des del moment de la inscripció.
+                    Un cop superat, la plaça pot ser alliberada. Poseu <strong>0</strong> per no establir cap termini.
+                </p>
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                    <input type="number" wire:model="payment_expiry_value"
+                           min="0" max="720"
+                           style="width:5.5rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                    <div style="display:flex;gap:0.25rem;">
+                        <label style="display:flex;align-items:center;gap:0.375rem;cursor:pointer;padding:0.4rem 0.75rem;border:1px solid #d1d5db;border-radius:0.5rem 0 0 0.5rem;font-size:0.875rem;background:{{ $payment_expiry_unit === 'hours' ? '#eef2ff' : '#fff' }};color:{{ $payment_expiry_unit === 'hours' ? '#4f46e5' : '#374151' }};">
+                            <input type="radio" wire:model.live="payment_expiry_unit" value="hours" style="accent-color:#4f46e5;">
+                            hores
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.375rem;cursor:pointer;padding:0.4rem 0.75rem;border:1px solid #d1d5db;border-left:none;border-radius:0 0.5rem 0.5rem 0;font-size:0.875rem;background:{{ $payment_expiry_unit === 'days' ? '#eef2ff' : '#fff' }};color:{{ $payment_expiry_unit === 'days' ? '#4f46e5' : '#374151' }};">
+                            <input type="radio" wire:model.live="payment_expiry_unit" value="days" style="accent-color:#4f46e5;">
+                            dies
+                        </label>
+                    </div>
+                    @if ($payment_expiry_value > 0)
+                        <span style="font-size:0.8125rem;color:#6b7280;">
+                            @if ($payment_expiry_unit === 'hours')
+                                ≈ {{ round($payment_expiry_value / 24, 1) }} dies
+                            @else
+                                = {{ $payment_expiry_value * 24 }} hores
+                            @endif
+                        </span>
+                    @endif
+                </div>
+                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.625rem;">
+                    @if ($payment_expiry_value > 0)
+                        Les matrícules pendents caduquen al cap de
+                        <strong>{{ $payment_expiry_value }} {{ $payment_expiry_unit === 'hours' ? 'h' : 'dies' }}</strong>
+                        · <code style="background:#f3f4f6;padding:0.1rem 0.3rem;border-radius:0.2rem;">php artisan enrollments:expire</code>
+                    @else
+                        Sense límit de temps.
+                    @endif
+                </p>
+            </div>
+
+        </div>
+
+        {{-- ══════════════════════════════════════════════════════════════
+             TAB: CUA D'INSCRIPCIONS
+        ══════════════════════════════════════════════════════════════ --}}
+        <div style="{{ $activeTab !== 'cua' ? 'display:none;' : '' }}">
+
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Cua d'inscripcions</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">
+                    Quan hi ha molta demanda, la cua garanteix un accés ordenat al catàleg.
+                    Cada alumne rep un número de torn i una hora estimada d'accés.
+                </p>
+
+                {{-- Toggle principal --}}
+                <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;padding:1rem;background:#f9fafb;border-radius:0.5rem;margin-bottom:1.25rem;">
+                    <input type="checkbox" wire:model.live="queue_enabled"
+                           style="width:1.25rem;height:1.25rem;border-radius:0.25rem;cursor:pointer;accent-color:#4f46e5;">
+                    <div>
+                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0;">Activar la cua d'inscripcions</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">
+                            Quan és activa, els alumnes han d'entrar a la cua per accedir al catàleg de cursos.
+                        </p>
+                    </div>
+                </label>
+
+                @if ($queue_enabled)
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+
+                    {{-- Data i hora d'obertura --}}
+                    <div style="grid-column:span 2;">
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Data i hora d'inici de la cua
+                        </label>
+                        <input type="datetime-local" wire:model="queue_start_at"
+                               style="width:100%;max-width:20rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Fins a aquesta hora, el catàleg és accessible sense restriccions.
+                            Deixeu en blanc per activar la cua immediatament.
+                        </p>
+                    </div>
+
+                    {{-- Mida del lot --}}
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Alumnes per torn (lot)
+                        </label>
+                        <input type="number" wire:model="queue_batch_size"
+                               min="1" max="500"
+                               style="width:7rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Quants alumnes accedeixen al mateix temps (en el mateix slot horari).
+                        </p>
+                    </div>
+
+                    {{-- Durada del slot --}}
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Durada de cada slot (minuts)
+                        </label>
+                        <input type="number" wire:model="queue_slot_minutes"
+                               min="1" max="240"
+                               style="width:7rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Cada quants minuts s'obre el torn al grup següent.
+                        </p>
+                    </div>
+
+                    {{-- Finestra d'accés --}}
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Temps per usar el codi (minuts)
+                        </label>
+                        <input type="number" wire:model="queue_access_window_minutes"
+                               min="5" max="120"
+                               style="width:7rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Minuts que té l'alumne per entrar el codi un cop notificat.
+                        </p>
+                    </div>
+
+                    {{-- Resum --}}
+                    @if ($queue_batch_size > 0 && $queue_slot_minutes > 0)
+                    <div style="grid-column:span 2;padding:0.875rem;background:#eef2ff;border:1px solid #c7d2fe;border-radius:0.5rem;">
+                        <p style="font-size:0.8125rem;color:#3730a3;margin:0;">
+                            📊 Cada <strong>{{ $queue_slot_minutes }} min</strong> accediran
+                            <strong>{{ $queue_batch_size }}</strong> alumnes.
+                            Exemple: 100 apuntats → l'últim accedeix al cap de
+                            <strong>{{ round(ceil(100 / $queue_batch_size) * $queue_slot_minutes) }} min</strong>.
+                        </p>
+                    </div>
+                    @endif
+
+                </div>
+
+                {{-- Instruccions scheduler --}}
+                <div style="margin-top:1.25rem;padding:0.875rem 1rem;background:#fefce8;border:1px solid #fef08a;border-radius:0.5rem;">
+                    <p style="font-size:0.8125rem;color:#713f12;margin:0 0 0.25rem;"><strong>⚙️ Scheduler</strong></p>
+                    <p style="font-size:0.8125rem;color:#92400e;margin:0;">
+                        Cal que el scheduler de Laravel estigui en marxa:
+                        <code style="background:#fef9c3;padding:0.1rem 0.4rem;border-radius:0.25rem;">php artisan schedule:run</code>
+                        cada minut via cron, o bé
+                        <code style="background:#fef9c3;padding:0.1rem 0.4rem;border-radius:0.25rem;">php artisan schedule:work</code>
+                        en local. La comanda <code style="background:#fef9c3;padding:0.1rem 0.4rem;border-radius:0.25rem;">queue:notify</code>
+                        s'executa cada 5 minuts automàticament.
+                    </p>
+                </div>
+                @endif
 
             </div>
 

@@ -33,6 +33,33 @@
         </div>
     </nav>
 
+    {{-- Banner verificació email --}}
+    @auth('student')
+        @if (! auth('student')->user()->hasVerifiedEmail() && ! request()->routeIs('campus.verification.*'))
+        <div style="background:#fffbeb;border-bottom:1px solid #fde68a;padding:0.625rem 1rem;">
+            <div style="max-width:72rem;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.75rem;">
+                <span style="display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:#92400e;">
+                    <svg style="width:1rem;height:1rem;flex-shrink:0;color:#d97706;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+                    </svg>
+                    Compte pendent de verificació — introduïu el codi que heu rebut per correu.
+                </span>
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
+                    <a href="{{ route('campus.verification.notice') }}"
+                       style="background:#f59e0b;color:#fff;font-size:0.75rem;font-weight:600;padding:0.375rem 0.75rem;border-radius:0.5rem;text-decoration:none;"
+                       onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">
+                        Introduir codi →
+                    </a>
+                    <form method="POST" action="{{ route('campus.verification.resend') }}" style="display:inline;">
+                        @csrf
+                        <button type="submit" style="background:none;border:none;font-size:0.75rem;color:#92400e;cursor:pointer;text-decoration:underline;">Reenviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endif
+    @endauth
+
     <main class="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
         @if (session('success'))
             <div class="mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm">{{ session('success') }}</div>

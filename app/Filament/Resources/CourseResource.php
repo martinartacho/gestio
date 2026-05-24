@@ -161,6 +161,11 @@ class CourseResource extends Resource
                     ->label(__('site.course_is_public'))
                     ->helperText(__('site.course_is_public_hint'))
                     ->default(true)->inline(false),
+
+                Toggle::make('open_enrollment')
+                    ->label('Inscripció sempre oberta')
+                    ->helperText('Permet inscripcions en qualsevol moment, sense restricció de temporada ni de dates. Ideal per a cursos online o LMS.')
+                    ->default(false)->inline(false)->columnSpanFull(),
             ]),
         ]);
     }
@@ -224,6 +229,14 @@ class CourseResource extends Resource
                 Tables\Columns\IconColumn::make('is_public')
                     ->label(__('site.public'))->boolean()
                     ->trueColor('success')->falseColor('gray'),
+
+                Tables\Columns\IconColumn::make('open_enrollment')
+                    ->label('∞ Inscr.')
+                    ->boolean()
+                    ->trueColor('info')->falseColor('gray')
+                    ->trueIcon('heroicon-o-lock-open')
+                    ->falseIcon('heroicon-o-lock-closed')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('start_date')
                     ->label(__('site.course_start'))

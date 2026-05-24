@@ -29,9 +29,12 @@ class StudentAuthTest extends TestCase
             'password'              => 'password123',
             'password_confirmation' => 'password123',
             'data_consent'          => '1',
-        ])->assertRedirect('/portal/meus-cursos');
+        ])->assertRedirect('/portal/verificar-email'); // redirigeix a la pàgina de verificació
 
-        $this->assertDatabaseHas('campus_students', ['email' => 'marc@test.cat']);
+        $this->assertDatabaseHas('campus_students', [
+            'email'             => 'marc@test.cat',
+            'email_verified_at' => null, // no verificat fins que es faci clic a l'email
+        ]);
     }
 
     public function test_student_can_login(): void

@@ -31,12 +31,35 @@ class CatalogController extends Controller
         $selectedSeason ??= $activeSeason;
 
         $courses = CampusCourse::with(['category', 'space', 'teachers'])
+            ->withCount(['enrollments as active_enrollments_count' => fn($q) =>
+                $q->whereIn('status', CampusCourse::ACTIVE_STATUSES)
+            ])
             ->when(! $isPreview, fn($q) => $q->where('status', 'active')->where('is_public', true))
-            ->when($selectedSeason, fn($q) => $q->where('season_id', $selectedSeason->id))
+            ->when($selectedSeason, fn($q) => $q->where(function ($inner) use ($selectedSeason) {
+                $inner->where('season_id', $selectedSeason->id)
+                      ->orWhere('open_enrollment', true);
+            }))
             ->orderBy('start_date')
             ->get();
 
-        return view('campus.catalog.index', compact('courses', 'seasons', 'activeSeason', 'selectedSeason', 'isPreview'));
+        $enrollmentOpen = $selectedSeason
+            ? ($selectedSeason->enrollmentIsOpen() && $selectedSeason->isActive())
+            : false;
+
+        // Matrícules de l'alumne autenticat per als cursos mostrats (una sola query)
+        $student       = auth('student')->user();
+        $myEnrollments = $student
+            ? $student->enrollments()
+                      ->whereIn('course_id', $courses->pluck('id'))
+                      ->whereNotIn('status', ['cancelled', 'refunded'])
+                      ->get()
+                      ->keyBy('course_id')
+            : collect();
+
+        return view('campus.catalog.index', compact(
+            'courses', 'seasons', 'activeSeason', 'selectedSeason',
+            'isPreview', 'enrollmentOpen', 'myEnrollments'
+        ));
     }
 
     public function show(Request $request, string $slug)
@@ -44,23 +67,34 @@ class CatalogController extends Controller
         $isPreview = $request->boolean('preview') && $this->canPreview();
 
         $course = CampusCourse::with(['category', 'space', 'teachers', 'season'])
+            ->withCount(['enrollments as active_enrollments_count' => fn($q) =>
+                $q->whereIn('status', CampusCourse::ACTIVE_STATUSES)
+            ])
             ->where('slug', $slug)
             ->when(! $isPreview, fn($q) => $q->where('is_public', true))
             ->firstOrFail();
 
-        $student = auth('student')->user();
+        $student      = auth('student')->user();
+        // Cancel·lada/retornada = pot tornar a inscriure's; no compten com a "ja inscrit"
+        $myEnrollment = $student
+            ? $student->enrollments()
+                      ->where('course_id', $course->id)
+                      ->whereNotIn('status', ['cancelled', 'refunded'])
+                      ->first()
+            : null;
+        $alreadyEnrolled = $myEnrollment !== null;
 
-        $alreadyEnrolled = $student
-            ? $student->courses()->where('campus_courses.id', $course->id)->exists()
-            : false;
+        $season         = $course->season;
+        $openEnrollment = $course->open_enrollment;
 
-        $season          = $course->season;
-        $enrollmentOpen  = $season?->enrollmentIsOpen() && $season?->isActive();
-        $seasonIsPast    = $season?->isClosed() || $season?->isPast();
-        $seasonIsFuture  = $season?->isDraft() || $season?->isFuture();
+        $enrollmentOpen = $openEnrollment
+            || ($season?->enrollmentIsOpen() && $season?->isActive());
+        $seasonIsPast   = ! $openEnrollment && ($season?->isClosed() || $season?->isPast());
+        $seasonIsFuture = ! $openEnrollment && ($season?->isDraft() || $season?->isFuture());
 
         return view('campus.catalog.show', compact(
-            'course', 'alreadyEnrolled', 'enrollmentOpen', 'seasonIsPast', 'seasonIsFuture', 'isPreview'
+            'course', 'myEnrollment', 'alreadyEnrolled',
+            'enrollmentOpen', 'seasonIsPast', 'seasonIsFuture', 'isPreview'
         ));
     }
 }

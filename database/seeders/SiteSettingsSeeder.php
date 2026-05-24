@@ -35,6 +35,26 @@ class SiteSettingsSeeder extends Seeder
             'lms_enabled'           => false,
             'courses_learning_enabled' => false,
 
+            // ── Pagament manual ──────────────────────────────────────────────
+            'payment_transfer_enabled' => false,
+            'payment_bizum_enabled'    => false,
+            'payment_cash_enabled'     => false,
+            'payment_paypal_enabled'   => false,
+            'payment_iban'             => null,
+            'payment_bank_holder'      => null,
+            'payment_bizum_number'     => null,
+            'payment_paypal_email'     => null,
+            'payment_concept_template' => '{NOM} - {CURS}',
+            'payment_expiry_value'     => 5,
+            'payment_expiry_unit'      => 'days',
+
+            // ── Cua d'inscripcions ────────────────────────────────────────────
+            'queue_enabled'               => false,
+            'queue_start_at'              => null,
+            'queue_batch_size'            => 10,
+            'queue_slot_minutes'          => 15,
+            'queue_access_window_minutes' => 30,
+
             // ── Avançat ──────────────────────────────────────────────────────
             'timezone'              => 'Europe/Madrid',
             'locale'                => 'ca',

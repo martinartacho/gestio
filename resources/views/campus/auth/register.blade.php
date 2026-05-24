@@ -9,6 +9,10 @@
 
         <form method="POST" action="{{ route('campus.register.post') }}" class="space-y-4">
             @csrf
+            {{-- Honeypot: els bots omplen camps ocults; els humans no els veuen --}}
+            <div style="display:none" aria-hidden="true">
+                <input type="text" name="website" tabindex="-1" autocomplete="off">
+            </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>

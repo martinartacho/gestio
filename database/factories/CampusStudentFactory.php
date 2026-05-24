@@ -12,16 +12,32 @@ class CampusStudentFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name'   => $this->faker->firstName(),
-            'last_name'    => $this->faker->lastName(),
-            'email'        => $this->faker->unique()->safeEmail(),
-            'password'     => 'password',
-            'phone'        => $this->faker->phoneNumber(),
-            'dni'          => null,
-            'address'      => $this->faker->streetAddress(),
-            'postal_code'  => $this->faker->postcode(),
-            'city'         => $this->faker->city(),
-            'data_consent' => true,
+            'first_name'        => $this->faker->firstName(),
+            'last_name'         => $this->faker->lastName(),
+            'email'             => $this->faker->unique()->safeEmail(),
+            'password'          => 'password',
+            'phone'             => $this->faker->phoneNumber(),
+            'dni'               => null,
+            'address'           => $this->faker->streetAddress(),
+            'postal_code'       => $this->faker->postcode(),
+            'city'              => $this->faker->city(),
+            'data_consent'      => true,
+            'email_verified_at' => now(), // verificat per defecte als tests
         ];
+    }
+
+    /** Alumne sense email verificat. */
+    public function unverified(): static
+    {
+        return $this->state(['email_verified_at' => null]);
+    }
+
+    /** Alumne suspès. */
+    public function suspended(string $reason = 'Suspensió de test'): static
+    {
+        return $this->state([
+            'suspended_at'      => now(),
+            'suspension_reason' => $reason,
+        ]);
     }
 }

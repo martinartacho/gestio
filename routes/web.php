@@ -7,6 +7,7 @@ use App\Http\Controllers\Campus\LmsStudentController;
 use App\Http\Controllers\Campus\LmsTeacherController;
 use App\Http\Controllers\Campus\LmsTeacherWizardController;
 use App\Http\Controllers\Campus\PortalController;
+use App\Http\Controllers\Campus\QueueController;
 use App\Http\Controllers\Campus\StudentAuthController;
 use App\Http\Controllers\Campus\StripeWebhookController;
 use App\Http\Controllers\Campus\DocumentController;
@@ -16,24 +17,66 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('campus.home'))->name('home');
 
+// ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────
+Route::prefix('cursos/cua')->name('campus.queue.')->group(function () {
+    Route::get('/',             [QueueController::class, 'join'])
+        ->middleware(\App\Http\Middleware\TrackCatalogVisits::class)
+        ->name('join');
+    Route::post('/',            [QueueController::class, 'store'])->name('store');
+    Route::get('/estat',        [QueueController::class, 'status'])
+        ->middleware(\App\Http\Middleware\TrackCatalogVisits::class)
+        ->name('status');
+    Route::post('/codi',        [QueueController::class, 'enterCode'])->name('code');
+    Route::get('/canviar-torn', [QueueController::class, 'changeSlot'])->name('change-slot');
+    Route::post('/canviar-torn',[QueueController::class, 'updateSlot'])->name('update-slot');
+});
+
 // ── Catàleg públic ────────────────────────────────────────────────────────────
 Route::prefix('cursos')->name('campus.catalog.')->group(function () {
-    Route::get('/', [CatalogController::class, 'index'])->name('index');
-    Route::get('/{slug}', [CatalogController::class, 'show'])->name('show');
+    Route::get('/', [CatalogController::class, 'index'])
+        ->middleware([\App\Http\Middleware\EnsureQueueAccess::class,
+                      \App\Http\Middleware\TrackCatalogVisits::class])
+        ->name('index');
+    Route::get('/{slug}', [CatalogController::class, 'show'])
+        ->middleware([\App\Http\Middleware\EnsureQueueAccess::class,
+                      \App\Http\Middleware\TrackCatalogVisits::class])
+        ->name('show');
 });
 
 // ── Auth alumnes ──────────────────────────────────────────────────────────────
 Route::prefix('portal')->name('campus.')->group(function () {
     Route::get('/login', [StudentAuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [StudentAuthController::class, 'login'])->name('login.post');
+    Route::post('/login', [StudentAuthController::class, 'login'])->middleware('throttle:login')->name('login.post');
     Route::get('/registre', [StudentAuthController::class, 'showRegister'])->name('register');
-    Route::post('/registre', [StudentAuthController::class, 'register'])->name('register.post');
+    Route::post('/registre', [StudentAuthController::class, 'register'])->middleware('throttle:register')->name('register.post');
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
+
+    // ── Recuperació de contrasenya ────────────────────────────────────────────
+    Route::get('/recuperar-contrasenya', [StudentAuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/recuperar-contrasenya', [StudentAuthController::class, 'sendPasswordReset'])->middleware('throttle:5,10')->name('password.email');
+    Route::get('/recuperar-contrasenya/codi', [StudentAuthController::class, 'showPasswordResetCode'])->name('password.code');
+    Route::post('/recuperar-contrasenya/codi', [StudentAuthController::class, 'resetPassword'])->middleware('throttle:10,5')->name('password.reset');
+
+    // ── Verificació d'email per OTP ───────────────────────────────────────────
+    Route::get('/verificar-email', [StudentAuthController::class, 'verificationNotice'])
+        ->middleware(\App\Http\Middleware\AuthenticateStudent::class)
+        ->name('verification.notice');
+
+    Route::post('/verificar-email/codi', [StudentAuthController::class, 'verifyCode'])
+        ->middleware([\App\Http\Middleware\AuthenticateStudent::class, 'throttle:10,5'])
+        ->name('verification.code');
+
+    Route::post('/reenviar-verificacio', [StudentAuthController::class, 'resendVerification'])
+        ->middleware([\App\Http\Middleware\AuthenticateStudent::class, 'throttle:3,10'])
+        ->name('verification.resend');
 
     // ── Portal alumne (requereix auth) ────────────────────────────────────────
     Route::middleware(\App\Http\Middleware\AuthenticateStudent::class)->group(function () {
         Route::get('/meus-cursos', [PortalController::class, 'courses'])->name('portal.courses');
-        Route::post('/checkout/{slug}', [CheckoutController::class, 'create'])->name('checkout.create');
+        Route::post('/checkout/{slug}', [CheckoutController::class, 'create'])
+            ->middleware(['throttle:checkout', \App\Http\Middleware\EnsureStudentEmailIsVerified::class])
+            ->name('checkout.create');
+        Route::post('/checkout/{slug}/cancel-enrollment', [CheckoutController::class, 'cancelEnrollment'])->middleware('throttle:checkout')->name('checkout.cancel-enrollment');
         Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
         Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
     });

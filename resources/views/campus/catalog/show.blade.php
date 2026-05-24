@@ -30,7 +30,7 @@
 
     <div class="bg-white rounded-xl border shadow-sm p-8
                 {{ $isPreview && (! $course->is_public || $course->status !== 'active') ? 'border-amber-200' : 'border-gray-200' }}">
-        <div class="flex items-center gap-3 mb-2">
+        <div class="flex items-center gap-3 mb-2 flex-wrap">
             @if ($course->category)
                 <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
                       style="background-color: {{ $course->category->color ?? '#e5e7eb' }}22; color: {{ $course->category->color ?? '#6b7280' }}">
@@ -40,6 +40,11 @@
             <span class="text-xs text-gray-400">{{ $course->code }}</span>
             @if ($course->season)
                 <span class="text-xs text-gray-400">· {{ $course->season->name }}</span>
+            @endif
+            @if ($course->open_enrollment)
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    ∞ Inscripció oberta
+                </span>
             @endif
         </div>
 
@@ -68,6 +73,19 @@
             @if ($course->format)
                 <div><span class="font-medium text-gray-800">Format:</span> {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}</div>
             @endif
+            @if (! $course->hasUnlimitedPlaces())
+                @php $slots = $course->availableSlots(); @endphp
+                <div>
+                    <span class="font-medium text-gray-800">Places:</span>
+                    @if ($slots <= 0)
+                        <span class="text-red-600 font-semibold">Complet</span>
+                    @elseif ($slots <= 3)
+                        <span class="text-orange-600 font-semibold">{{ $slots }} {{ $slots === 1 ? 'lloc disponible' : 'llocs disponibles' }}</span>
+                    @else
+                        {{ $slots }} disponibles / {{ $course->max_students }}
+                    @endif
+                </div>
+            @endif
         </div>
 
         @if ($course->objectives)
@@ -93,10 +111,53 @@
                 <span class="bg-amber-50 text-amber-700 border border-amber-200 text-sm font-medium px-4 py-2 rounded-lg">
                     Previsualització — inscripció desactivada
                 </span>
+            @elseif (! $alreadyEnrolled && $course->isFull())
+                <div class="flex flex-col items-end gap-1">
+                    <span class="bg-red-50 text-red-700 border border-red-200 text-sm font-semibold px-4 py-2 rounded-lg">
+                        Curs complet
+                    </span>
+                    <span class="text-xs text-gray-400">No hi ha places disponibles</span>
+                </div>
             @elseif ($alreadyEnrolled)
-                <span class="bg-green-100 text-green-800 text-sm font-medium px-4 py-2 rounded-lg">
-                    Ja estàs inscrit/a
-                </span>
+                @php
+                    $eStatus = $myEnrollment->status;
+                    $eLabel  = \App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus;
+                    $eCss = match(\App\Models\CampusEnrollment::STATUS_COLORS[$eStatus] ?? 'gray') {
+                        'warning' => 'bg-yellow-50 text-yellow-800 border border-yellow-200',
+                        'success' => 'bg-green-100 text-green-800 border border-green-200',
+                        'danger'  => 'bg-red-50 text-red-700 border border-red-200',
+                        default   => 'bg-gray-100 text-gray-600 border border-gray-200',
+                    };
+                    $eIcon = match($eStatus) {
+                        'paid', 'confirmed' => '✓',
+                        'pending'           => '⏳',
+                        'cancelled'         => '✕',
+                        'refunded'          => '↩',
+                        default             => '•',
+                    };
+                @endphp
+                <div class="flex flex-col items-end gap-1.5">
+                    <span class="{{ $eCss }} text-sm font-semibold px-4 py-2 rounded-lg">
+                        {{ $eIcon }} {{ $eLabel }}
+                    </span>
+                    @if ($eStatus === 'pending')
+                        @if ($myEnrollment->payment_method && $myEnrollment->payment_method !== 'stripe')
+                            <span class="text-xs text-gray-400">Esperant confirmació de pagament</span>
+                        @endif
+                        {{-- Botó de cancel·lació: permet canviar de mètode de pagament --}}
+                        <form method="POST"
+                              action="{{ route('campus.checkout.cancel-enrollment', $course->slug) }}"
+                              onsubmit="return confirm('Segur que vols cancel·lar la inscripció? Podràs tornar a inscriure\'t amb un altre mètode.')">
+                            @csrf
+                            <button type="submit"
+                                    class="text-xs text-gray-400 hover:text-red-600 underline transition">
+                                Cancel·lar inscripció
+                            </button>
+                        </form>
+                    @elseif ($eStatus === 'paid' || $eStatus === 'confirmed')
+                        <span class="text-xs text-green-600">Accés al curs garantit</span>
+                    @endif
+                </div>
             @elseif ($seasonIsPast)
                 <span class="bg-gray-100 text-gray-500 text-sm font-medium px-4 py-2 rounded-lg">
                     Curs finalitzat
@@ -114,11 +175,46 @@
                     Inscripcions tancades
                 </span>
             @elseauth('student')
-                <form method="POST" action="{{ route('campus.checkout.create', $course->slug) }}">
+                @php
+                    // Mètodes de pagament disponibles (ordre: primer Stripe, despres manuals)
+                    $payMethods = [];
+                    if (config('services.stripe.secret') && $course->price > 0) {
+                        $payMethods['stripe'] = 'Targeta bancària';
+                    }
+                    if ($course->price > 0) {
+                        if (setting('payment_transfer_enabled')) $payMethods['transfer'] = 'Transferència bancària';
+                        if (setting('payment_bizum_enabled'))    $payMethods['bizum']    = 'Bizum';
+                        if (setting('payment_cash_enabled'))     $payMethods['cash']     = 'Efectiu';
+                        if (setting('payment_paypal_enabled'))   $payMethods['paypal']   = 'PayPal';
+                    }
+                @endphp
+
+                <form method="POST" action="{{ route('campus.checkout.create', $course->slug) }}"
+                      class="flex flex-col items-end gap-3">
                     @csrf
+
+                    @if (count($payMethods) > 1)
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500 mb-1.5 font-medium">Mètode de pagament:</p>
+                            @foreach ($payMethods as $key => $label)
+                                <label class="flex items-center justify-end gap-2 mb-1 cursor-pointer text-sm text-gray-700 hover:text-gray-900">
+                                    {{ $label }}
+                                    <input type="radio" name="payment_method" value="{{ $key }}"
+                                           {{ $loop->first ? 'checked' : '' }}
+                                           class="accent-indigo-600">
+                                </label>
+                            @endforeach
+                        </div>
+                    @elseif (count($payMethods) === 1)
+                        <input type="hidden" name="payment_method" value="{{ array_key_first($payMethods) }}">
+                    @else
+                        {{-- Curs gratuït: no cal mètode --}}
+                        <input type="hidden" name="payment_method" value="free">
+                    @endif
+
                     <button type="submit"
                             class="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                        Inscriure'm — {{ $course->price ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
+                        Inscriure'm — {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
                     </button>
                 </form>
             @else
