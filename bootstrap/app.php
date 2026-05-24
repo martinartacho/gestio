@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('enrollments:expire')->dailyAt('08:00');
         // Recordatori 1 hora abans de la caducitat (execució cada 15 min)
         $schedule->command('enrollments:remind')->everyFifteenMinutes();
+        // Notifica els torns de cua que han arribat i caduca els expirats (cada 5 min)
+        $schedule->command('queue:notify')->everyFiveMinutes();
     })
     ->withProviders([
         App\Providers\Filament\AdminPanelProvider::class,

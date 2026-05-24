@@ -48,6 +48,13 @@ class SiteSettingsSeeder extends Seeder
             'payment_expiry_value'     => 5,
             'payment_expiry_unit'      => 'days',
 
+            // ── Cua d'inscripcions ────────────────────────────────────────────
+            'queue_enabled'               => false,
+            'queue_start_at'              => null,
+            'queue_batch_size'            => 10,
+            'queue_slot_minutes'          => 15,
+            'queue_access_window_minutes' => 30,
+
             // ── Avançat ──────────────────────────────────────────────────────
             'timezone'              => 'Europe/Madrid',
             'locale'                => 'ca',

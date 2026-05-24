@@ -64,6 +64,13 @@ class SettingsPage extends Page
     public int    $payment_expiry_value     = 5;
     public string $payment_expiry_unit      = 'days';
 
+    // Tab: Cua d'inscripcions
+    public bool   $queue_enabled               = false;
+    public string $queue_start_at              = '';
+    public int    $queue_batch_size            = 10;
+    public int    $queue_slot_minutes          = 15;
+    public int    $queue_access_window_minutes = 30;
+
     // Tab: Avançat
     public string $timezone = 'Europe/Madrid';
     public string $locale   = 'ca';
@@ -111,6 +118,12 @@ class SettingsPage extends Page
         $this->payment_expiry_value     = (int)    $store->get('payment_expiry_value', 5);
         $this->payment_expiry_unit      = (string) $store->get('payment_expiry_unit', 'days');
 
+        $this->queue_enabled               = (bool)   $store->get('queue_enabled', false);
+        $this->queue_start_at              = (string) $store->get('queue_start_at', '');
+        $this->queue_batch_size            = (int)    $store->get('queue_batch_size', 10);
+        $this->queue_slot_minutes          = (int)    $store->get('queue_slot_minutes', 15);
+        $this->queue_access_window_minutes = (int)    $store->get('queue_access_window_minutes', 30);
+
         $this->timezone = (string) $store->get('timezone', 'Europe/Madrid');
         $this->locale   = (string) $store->get('locale', 'ca');
     }
@@ -157,6 +170,12 @@ class SettingsPage extends Page
             'payment_expiry_unit'      => in_array($this->payment_expiry_unit, ['hours', 'days'])
                                             ? $this->payment_expiry_unit
                                             : 'days',
+
+            'queue_enabled'               => $this->queue_enabled,
+            'queue_start_at'              => $this->queue_start_at ?: null,
+            'queue_batch_size'            => max(1, $this->queue_batch_size),
+            'queue_slot_minutes'          => max(1, $this->queue_slot_minutes),
+            'queue_access_window_minutes' => max(5, $this->queue_access_window_minutes),
 
             'timezone' => $this->timezone,
             'locale'   => $this->locale,

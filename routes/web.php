@@ -7,6 +7,7 @@ use App\Http\Controllers\Campus\LmsStudentController;
 use App\Http\Controllers\Campus\LmsTeacherController;
 use App\Http\Controllers\Campus\LmsTeacherWizardController;
 use App\Http\Controllers\Campus\PortalController;
+use App\Http\Controllers\Campus\QueueController;
 use App\Http\Controllers\Campus\StudentAuthController;
 use App\Http\Controllers\Campus\StripeWebhookController;
 use App\Http\Controllers\Campus\DocumentController;
@@ -16,10 +17,22 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('campus.home'))->name('home');
 
+// ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────
+Route::prefix('cursos/cua')->name('campus.queue.')->group(function () {
+    Route::get('/',      [QueueController::class, 'join'])->name('join');
+    Route::post('/',     [QueueController::class, 'store'])->name('store');
+    Route::get('/estat', [QueueController::class, 'status'])->name('status');
+    Route::post('/codi', [QueueController::class, 'enterCode'])->name('code');
+});
+
 // ── Catàleg públic ────────────────────────────────────────────────────────────
 Route::prefix('cursos')->name('campus.catalog.')->group(function () {
-    Route::get('/', [CatalogController::class, 'index'])->name('index');
-    Route::get('/{slug}', [CatalogController::class, 'show'])->name('show');
+    Route::get('/', [CatalogController::class, 'index'])
+        ->middleware(\App\Http\Middleware\EnsureQueueAccess::class)
+        ->name('index');
+    Route::get('/{slug}', [CatalogController::class, 'show'])
+        ->middleware(\App\Http\Middleware\EnsureQueueAccess::class)
+        ->name('show');
 });
 
 // ── Auth alumnes ──────────────────────────────────────────────────────────────

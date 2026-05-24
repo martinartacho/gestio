@@ -10,6 +10,7 @@
             'email'     => '✉️ Correu',
             'moduls'    => '🔧 Mòduls',
             'pagament'  => '💳 Pagament',
+            'cua'       => '🎟 Cua',
             'avançat'   => '⚙️ Avançat',
         ] as $tab => $label)
         <button wire:click="$set('activeTab','{{ $tab }}')"
@@ -348,6 +349,117 @@
                         Sense límit de temps.
                     @endif
                 </p>
+            </div>
+
+        </div>
+
+        {{-- ══════════════════════════════════════════════════════════════
+             TAB: CUA D'INSCRIPCIONS
+        ══════════════════════════════════════════════════════════════ --}}
+        <div style="{{ $activeTab !== 'cua' ? 'display:none;' : '' }}">
+
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Cua d'inscripcions</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">
+                    Quan hi ha molta demanda, la cua garanteix un accés ordenat al catàleg.
+                    Cada alumne rep un número de torn i una hora estimada d'accés.
+                </p>
+
+                {{-- Toggle principal --}}
+                <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;padding:1rem;background:#f9fafb;border-radius:0.5rem;margin-bottom:1.25rem;">
+                    <input type="checkbox" wire:model.live="queue_enabled"
+                           style="width:1.25rem;height:1.25rem;border-radius:0.25rem;cursor:pointer;accent-color:#4f46e5;">
+                    <div>
+                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0;">Activar la cua d'inscripcions</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">
+                            Quan és activa, els alumnes han d'entrar a la cua per accedir al catàleg de cursos.
+                        </p>
+                    </div>
+                </label>
+
+                @if ($queue_enabled)
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+
+                    {{-- Data i hora d'obertura --}}
+                    <div style="grid-column:span 2;">
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Data i hora d'inici de la cua
+                        </label>
+                        <input type="datetime-local" wire:model="queue_start_at"
+                               style="width:100%;max-width:20rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Fins a aquesta hora, el catàleg és accessible sense restriccions.
+                            Deixeu en blanc per activar la cua immediatament.
+                        </p>
+                    </div>
+
+                    {{-- Mida del lot --}}
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Alumnes per torn (lot)
+                        </label>
+                        <input type="number" wire:model="queue_batch_size"
+                               min="1" max="500"
+                               style="width:7rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Quants alumnes accedeixen al mateix temps (en el mateix slot horari).
+                        </p>
+                    </div>
+
+                    {{-- Durada del slot --}}
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Durada de cada slot (minuts)
+                        </label>
+                        <input type="number" wire:model="queue_slot_minutes"
+                               min="1" max="240"
+                               style="width:7rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Cada quants minuts s'obre el torn al grup següent.
+                        </p>
+                    </div>
+
+                    {{-- Finestra d'accés --}}
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">
+                            Temps per usar el codi (minuts)
+                        </label>
+                        <input type="number" wire:model="queue_access_window_minutes"
+                               min="5" max="120"
+                               style="width:7rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Minuts que té l'alumne per entrar el codi un cop notificat.
+                        </p>
+                    </div>
+
+                    {{-- Resum --}}
+                    @if ($queue_batch_size > 0 && $queue_slot_minutes > 0)
+                    <div style="grid-column:span 2;padding:0.875rem;background:#eef2ff;border:1px solid #c7d2fe;border-radius:0.5rem;">
+                        <p style="font-size:0.8125rem;color:#3730a3;margin:0;">
+                            📊 Cada <strong>{{ $queue_slot_minutes }} min</strong> accediran
+                            <strong>{{ $queue_batch_size }}</strong> alumnes.
+                            Exemple: 100 apuntats → l'últim accedeix al cap de
+                            <strong>{{ round(ceil(100 / $queue_batch_size) * $queue_slot_minutes) }} min</strong>.
+                        </p>
+                    </div>
+                    @endif
+
+                </div>
+
+                {{-- Instruccions scheduler --}}
+                <div style="margin-top:1.25rem;padding:0.875rem 1rem;background:#fefce8;border:1px solid #fef08a;border-radius:0.5rem;">
+                    <p style="font-size:0.8125rem;color:#713f12;margin:0 0 0.25rem;"><strong>⚙️ Scheduler</strong></p>
+                    <p style="font-size:0.8125rem;color:#92400e;margin:0;">
+                        Cal que el scheduler de Laravel estigui en marxa:
+                        <code style="background:#fef9c3;padding:0.1rem 0.4rem;border-radius:0.25rem;">php artisan schedule:run</code>
+                        cada minut via cron, o bé
+                        <code style="background:#fef9c3;padding:0.1rem 0.4rem;border-radius:0.25rem;">php artisan schedule:work</code>
+                        en local. La comanda <code style="background:#fef9c3;padding:0.1rem 0.4rem;border-radius:0.25rem;">queue:notify</code>
+                        s'executa cada 5 minuts automàticament.
+                    </p>
+                </div>
+                @endif
+
             </div>
 
         </div>
