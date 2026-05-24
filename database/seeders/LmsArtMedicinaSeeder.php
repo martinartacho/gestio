@@ -16,10 +16,10 @@ class LmsArtMedicinaSeeder extends Seeder
 {
     public function run(): void
     {
-        $seederMail  = env('SEEDER_MAIL', 'gestio.test');
-        $teacherPass = env('SEEDER_TEACHER_PASSWORD')
+        $seederMail  = config('seeder.mail', 'gestio.test');
+        $teacherPass = config('seeder.teacher_password')
             ?? throw new \RuntimeException('SEEDER_TEACHER_PASSWORD no està definit al .env');
-        $studentPass = env('SEEDER_STUDENT_PASSWORD')
+        $studentPass = config('seeder.student_password')
             ?? throw new \RuntimeException('SEEDER_STUDENT_PASSWORD no està definit al .env');
 
         // ── Temporada ──────────────────────────────────────────────────────────

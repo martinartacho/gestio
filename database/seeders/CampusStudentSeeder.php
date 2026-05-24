@@ -28,7 +28,7 @@ class CampusStudentSeeder extends Seeder
         ];
 
         $password = Hash::make(
-            env('SEEDER_STUDENT_PASSWORD') ?? throw new \RuntimeException('SEEDER_STUDENT_PASSWORD no està definit al .env')
+            config('seeder.student_password') ?? throw new \RuntimeException('SEEDER_STUDENT_PASSWORD no està definit al .env')
         );
 
         $createdStudents = [];
