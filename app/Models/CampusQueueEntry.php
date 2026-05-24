@@ -59,6 +59,10 @@ class CampusQueueEntry extends Model
     /** Hora estimada formatada per a l'usuari. */
     public function slotTimeLabel(): string
     {
+        // Slot ja obert → notificació imminent quan s'executi el scheduler
+        if ($this->slot_starts_at->isPast()) {
+            return 'Molt aviat';
+        }
         if ($this->slot_starts_at->isToday()) {
             return 'avui a les ' . $this->slot_starts_at->format('H:i') . ' h';
         }

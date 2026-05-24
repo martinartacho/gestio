@@ -80,9 +80,13 @@ class QueueController extends Controller
 
     public function enterCode(Request $request): RedirectResponse
     {
+        // Normalitzar: treure espais (l'email mostra "652 KSD" però el camp pot tenir espai copiat)
+        $raw = strtoupper(str_replace(' ', '', trim($request->input('code', ''))));
+        $request->merge(['code' => $raw]);
+
         $request->validate(['code' => ['required', 'string', 'size:6']]);
 
-        $code  = strtoupper(trim($request->input('code')));
+        $code  = $raw;
         $entry = CampusQueueEntry::where('access_code', $code)
             ->where('status', CampusQueueEntry::STATUS_NOTIFIED)
             ->first();

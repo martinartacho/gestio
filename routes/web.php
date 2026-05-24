@@ -19,19 +19,25 @@ Route::get('/', fn() => view('campus.home'))->name('home');
 
 // ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────
 Route::prefix('cursos/cua')->name('campus.queue.')->group(function () {
-    Route::get('/',      [QueueController::class, 'join'])->name('join');
+    Route::get('/',      [QueueController::class, 'join'])
+        ->middleware(\App\Http\Middleware\TrackCatalogVisits::class)
+        ->name('join');
     Route::post('/',     [QueueController::class, 'store'])->name('store');
-    Route::get('/estat', [QueueController::class, 'status'])->name('status');
+    Route::get('/estat', [QueueController::class, 'status'])
+        ->middleware(\App\Http\Middleware\TrackCatalogVisits::class)
+        ->name('status');
     Route::post('/codi', [QueueController::class, 'enterCode'])->name('code');
 });
 
 // ── Catàleg públic ────────────────────────────────────────────────────────────
 Route::prefix('cursos')->name('campus.catalog.')->group(function () {
     Route::get('/', [CatalogController::class, 'index'])
-        ->middleware(\App\Http\Middleware\EnsureQueueAccess::class)
+        ->middleware([\App\Http\Middleware\EnsureQueueAccess::class,
+                      \App\Http\Middleware\TrackCatalogVisits::class])
         ->name('index');
     Route::get('/{slug}', [CatalogController::class, 'show'])
-        ->middleware(\App\Http\Middleware\EnsureQueueAccess::class)
+        ->middleware([\App\Http\Middleware\EnsureQueueAccess::class,
+                      \App\Http\Middleware\TrackCatalogVisits::class])
         ->name('show');
 });
 

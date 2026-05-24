@@ -4,6 +4,18 @@
 
 @section('content')
 <div class="max-w-md mx-auto">
+
+    @if ($manyReloads ?? false)
+    <div class="bg-amber-50 border border-amber-300 rounded-xl px-4 py-3 text-sm text-amber-800 mb-4 flex items-start gap-2">
+        <span class="shrink-0 text-base">⚠️</span>
+        <div>
+            <strong>Moltes sol·licituds des del vostre dispositiu.</strong>
+            Recarregar repetidament no avança el torn.
+            Si continueu, l'accés podria ser restringit temporalment.
+        </div>
+    </div>
+    @endif
+
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center">
 
         @if ($entry->status === 'waiting')
@@ -18,6 +30,27 @@
             <p class="font-semibold text-gray-800 text-lg">{{ $entry->slotTimeLabel() }}</p>
             <p class="text-xs text-gray-400 mt-4">Rebreu un correu amb el codi d'accés quan arribi el vostre torn. No cal que espereu aquí.</p>
 
+            {{-- Avís per a nous estudiants sense compte --}}
+            @guest('student')
+            <div class="mt-5 text-left bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <p class="text-sm font-semibold text-amber-800 mb-1">⚠️ Mentre espereu, creeu el vostre compte</p>
+                <p class="text-xs text-amber-700 mb-3">
+                    Per completar la inscripció quan arribi el vostre torn necessiteu un compte actiu.
+                    Creeu-lo ara (és gratuït) o inicieu sessió si ja en teniu.
+                </p>
+                <div class="flex gap-2">
+                    <a href="{{ route('campus.register') }}"
+                       class="flex-1 text-center bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-2 rounded-lg transition">
+                        Crear compte
+                    </a>
+                    <a href="{{ route('campus.login') }}"
+                       class="flex-1 text-center border border-amber-300 text-amber-800 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-amber-100 transition">
+                        Ja tinc compte
+                    </a>
+                </div>
+            </div>
+            @endguest
+
         @elseif ($entry->status === 'notified')
             <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
                 <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -28,7 +61,7 @@
             <p class="text-gray-500 text-sm mb-4">Introduïu el codi que heu rebut per correu:</p>
             <form method="POST" action="{{ route('campus.queue.code') }}" class="space-y-3">
                 @csrf
-                <input type="text" name="code" maxlength="6" placeholder="000AAA" autofocus
+                <input type="text" name="code" maxlength="7" placeholder="000 AAA" autofocus
                        class="w-full text-center font-mono font-bold text-2xl tracking-widest uppercase border
                               border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500
                               @error('code') border-red-400 @enderror">

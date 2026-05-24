@@ -111,7 +111,8 @@ class StudentAuthController extends Controller
             return redirect()->route('campus.portal.courses');
         }
 
-        $code = strtoupper(trim($request->input('code', '')));
+        // Normalitzar: treure espais (el correu mostra "104 PYW" però l'input pot contenir espai copiat)
+        $code = strtoupper(str_replace(' ', '', trim($request->input('code', ''))));
 
         // Incrementar intents sempre (abans de validar)
         $student->increment('verification_attempts');
@@ -140,6 +141,19 @@ class StudentAuthController extends Controller
             'verification_code_expires_at' => null,
             'verification_attempts'        => 0,
         ]);
+
+        // Si l'alumne ja és a la cua (registrat mentre esperava el torn), redirigir a l'estat
+        $queueEntry = \App\Models\CampusQueueEntry::where('email', $student->email)
+            ->whereIn('status', [
+                \App\Models\CampusQueueEntry::STATUS_WAITING,
+                \App\Models\CampusQueueEntry::STATUS_NOTIFIED,
+            ])
+            ->first();
+
+        if ($queueEntry) {
+            return redirect()->route('campus.queue.status', ['email' => $student->email])
+                ->with('success', '✓ Correu verificat. Aquí teniu l\'estat del vostre torn a la cua.');
+        }
 
         return redirect()->route('campus.portal.courses')
             ->with('success', '✓ Correu verificat correctament. Ja pots inscriure\'t als cursos!');

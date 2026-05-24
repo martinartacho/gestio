@@ -5,6 +5,17 @@
 @section('content')
 <div class="max-w-lg mx-auto">
 
+    @if ($manyReloads ?? false)
+    <div class="bg-amber-50 border border-amber-300 rounded-xl px-4 py-3 text-sm text-amber-800 mb-4 flex items-start gap-2">
+        <span class="shrink-0 text-base">⚠️</span>
+        <div>
+            <strong>Moltes sol·licituds des del vostre dispositiu.</strong>
+            Recarregar repetidament no avança el torn.
+            Si continueu, l'accés podria ser restringit temporalment.
+        </div>
+    </div>
+    @endif
+
     <div class="bg-white rounded-xl border border-indigo-200 shadow-sm p-8 text-center">
 
         <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
@@ -22,9 +33,31 @@
         </div>
 
         <h1 class="text-2xl font-bold text-gray-900 mb-2">Cua d'inscripcions</h1>
-        <p class="text-gray-500 text-sm mb-2">
+        <p class="text-gray-500 text-sm mb-4">
             Per garantir un accés equitatiu, les inscripcions s'obren per torns.
         </p>
+
+        {{-- Banner explicatiu: adaptat per a nous visitants vs. estudiants registrats --}}
+        @guest('student')
+        <div class="text-left bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-5">
+            <p class="text-xs font-semibold text-indigo-700 uppercase tracking-wide mb-2">Com funciona?</p>
+            <ol class="space-y-1.5 text-sm text-indigo-900">
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">①</span> Introduïu el vostre correu i reserveu el torn.</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-amber-500 shrink-0">②</span> <span><strong class="text-amber-700">Mentre espereu</strong>, creeu el vostre compte o inicieu sessió — el necessitareu per inscriure-us.</span></li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">③</span> Quan arribi el vostre torn, rebreu un <strong>codi d'accés</strong> al correu.</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">④</span> Introduïu el codi al catàleg i completeu la inscripció.</li>
+            </ol>
+        </div>
+        @else
+        <div class="text-left bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-5">
+            <p class="text-xs font-semibold text-indigo-700 uppercase tracking-wide mb-2">Com funciona?</p>
+            <ol class="space-y-1.5 text-sm text-indigo-900">
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">①</span> Introduïu el vostre correu i reserveu el torn.</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">②</span> Quan arribi el vostre torn, rebreu un <strong>codi d'accés</strong> al correu.</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">③</span> Introduïu el codi al catàleg i completeu la inscripció.</li>
+            </ol>
+        </div>
+        @endguest
 
         @php
             $queueStart = $settings->get('queue_start_at') ? \Carbon\Carbon::parse($settings->get('queue_start_at')) : null;
@@ -68,7 +101,7 @@
             <p class="text-sm font-medium text-gray-600 mb-3">Ja teniu el codi d'accés?</p>
             <form method="POST" action="{{ route('campus.queue.code') }}" class="flex gap-2">
                 @csrf
-                <input type="text" name="code" maxlength="6" placeholder="000AAA"
+                <input type="text" name="code" maxlength="7" placeholder="000 AAA"
                        class="flex-1 text-center font-mono font-bold text-lg tracking-widest uppercase border border-gray-300
                               rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500
                               @error('code') border-red-400 @enderror">

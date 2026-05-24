@@ -41,15 +41,15 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2 text-center">Codi de verificació</label>
                 <input type="text"
                        name="code"
-                       maxlength="6"
+                       maxlength="7"
                        autocomplete="one-time-code"
                        autofocus
-                       placeholder="000AAA"
+                       placeholder="000 AAA"
                        class="w-full text-center text-2xl font-mono font-bold tracking-widest border border-gray-300
                               rounded-lg px-4 py-3 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500
                               @error('code') border-red-400 @enderror"
                        value="{{ old('code') }}">
-                <p class="text-xs text-gray-400 text-center mt-1">3 números + 3 lletres — sense espais</p>
+                <p class="text-xs text-gray-400 text-center mt-1">3 números + 3 lletres</p>
             </div>
 
             <button type="submit"
