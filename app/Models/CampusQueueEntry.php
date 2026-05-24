@@ -43,6 +43,13 @@ class CampusQueueEntry extends Model
         return $digits . $letters;
     }
 
+    /** Retorna l'índex del slot actual de l'entrada (útil per a la vista de canvi de torn). */
+    public function getCurrentSlotIndexAttribute(): int
+    {
+        $batchSize = max(1, (int) app(\App\Settings\SettingStore::class)->get('queue_batch_size', 10));
+        return static::slotIndexFor($this->queue_number, $batchSize);
+    }
+
     /** Retorna true si el codi és vàlid i el torn és actiu. */
     public function canAccess(): bool
     {

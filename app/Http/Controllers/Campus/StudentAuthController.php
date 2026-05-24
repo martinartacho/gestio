@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
 use App\Mail\Campus\EmailVerificationMail;
+use App\Mail\Campus\PasswordResetMail;
+use App\Models\CampusQueueEntry;
 use App\Models\CampusStudent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
@@ -171,5 +174,91 @@ class StudentAuthController extends Controller
 
         return redirect()->route('campus.verification.notice')
             ->with('info', 'Nou codi enviat a ' . $student->email . '. Introduïu-lo aquí.');
+    }
+
+    // ── Recuperació de contrasenya (OTP) ──────────────────────────────────────
+
+    public function showForgotPassword(): View
+    {
+        return view('campus.auth.forgot-password');
+    }
+
+    public function sendPasswordReset(Request $request): RedirectResponse
+    {
+        $request->validate(['email' => ['required', 'email', 'max:150']]);
+
+        $email   = strtolower(trim($request->input('email')));
+        $student = CampusStudent::where('email', $email)->first();
+
+        // Resposta sempre igual per evitar enumerar comptes
+        if ($student) {
+            Mail::to($student->email)->send(new PasswordResetMail($student));
+        }
+
+        $request->session()->put('password_reset_email', $email);
+
+        return redirect()->route('campus.password.code')
+            ->with('info', 'Si existeix un compte amb ' . $email . ', hem enviat un codi de recuperació al correu.');
+    }
+
+    public function showPasswordResetCode(Request $request): View|RedirectResponse
+    {
+        if (! $request->session()->has('password_reset_email')) {
+            return redirect()->route('campus.password.request');
+        }
+
+        return view('campus.auth.reset-password');
+    }
+
+    public function resetPassword(Request $request): RedirectResponse
+    {
+        $email = $request->session()->get('password_reset_email');
+
+        if (! $email) {
+            return redirect()->route('campus.password.request');
+        }
+
+        $request->validate([
+            'code'     => ['required', 'string'],
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ]);
+
+        $code    = strtoupper(str_replace(' ', '', trim($request->input('code', ''))));
+        $student = CampusStudent::where('email', $email)->first();
+
+        if (! $student) {
+            return back()->withErrors(['code' => 'No s\'ha trobat el compte.']);
+        }
+
+        $student->increment('verification_attempts');
+
+        if (! $student->isValidOtp($code)) {
+            $attemptsLeft = max(0, 3 - $student->fresh()->verification_attempts);
+
+            if ($attemptsLeft === 0) {
+                return back()->withErrors(['code' =>
+                    'Massa intents incorrectes. Sol·liciteu un nou codi.'
+                ]);
+            }
+
+            return back()->withErrors(['code' =>
+                'Codi incorrecte o caducat. Us queden ' . $attemptsLeft . ' ' .
+                ($attemptsLeft === 1 ? 'intent' : 'intents') . '.'
+            ]);
+        }
+
+        $student->update([
+            'password'                     => Hash::make($request->input('password')),
+            'verification_code'            => null,
+            'verification_code_expires_at' => null,
+            'verification_attempts'        => 0,
+            // Si el compte no estava verificat, aprofitem per verificar-lo (prova de recepció de correu)
+            'email_verified_at'            => $student->email_verified_at ?? now(),
+        ]);
+
+        $request->session()->forget('password_reset_email');
+
+        return redirect()->route('campus.login')
+            ->with('success', '✓ Contrasenya actualitzada correctament. Ja podeu accedir.');
     }
 }

@@ -103,4 +103,79 @@ class QueueController extends Controller
         return redirect()->route('campus.catalog.index')
             ->with('success', '✓ Accés concedit fins a les ' . $entry->access_expires_at->format('H:i') . ' h.');
     }
+
+    public function changeSlot(Request $request): View|RedirectResponse
+    {
+        $email  = $request->query('email', '');
+        $queueN = (int) $request->query('n', 0);
+
+        $entry = CampusQueueEntry::where('email', $email)
+            ->where('queue_number', $queueN)
+            ->where('status', CampusQueueEntry::STATUS_WAITING)
+            ->first();
+
+        if (! $entry) {
+            return redirect()->route('campus.queue.join')
+                ->with('error', 'No s\'ha trobat cap torn actiu o el torn ja ha estat processat.');
+        }
+
+        $settings    = app(SettingStore::class);
+        $slotMinutes = max(1, (int) $settings->get('queue_slot_minutes', 15));
+        $queueStart  = Carbon::parse($settings->get('queue_start_at') ?? now()->subSecond());
+
+        // Índex actual de l'entrada
+        $currentIndex = $entry->currentSlotIndex;
+
+        // Primer índex disponible: el més proper al futur (o el de l'entrada si és major)
+        $elapsed          = max(0, $queueStart->diffInMinutes(now(), false));
+        $nextFutureIndex  = (int) ceil($elapsed / $slotMinutes);
+        $startIndex       = max($currentIndex, $nextFutureIndex);
+
+        // Generar 8 slots futurs
+        $slots = [];
+        for ($i = $startIndex; $i < $startIndex + 8; $i++) {
+            $slots[$i] = $queueStart->copy()->addMinutes($i * $slotMinutes);
+        }
+
+        return view('campus.queue.change-slot', compact('entry', 'slots'));
+    }
+
+    public function updateSlot(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email'        => ['required', 'email'],
+            'queue_number' => ['required', 'integer'],
+            'slot_index'   => ['required', 'integer', 'min:0'],
+        ]);
+
+        $email  = strtolower(trim($request->input('email')));
+        $queueN = (int) $request->input('queue_number');
+
+        $entry = CampusQueueEntry::where('email', $email)
+            ->where('queue_number', $queueN)
+            ->where('status', CampusQueueEntry::STATUS_WAITING)
+            ->first();
+
+        if (! $entry) {
+            return redirect()->route('campus.queue.join')
+                ->with('error', 'No s\'ha pogut actualitzar el torn. Pot ser que ja hagi estat processat.');
+        }
+
+        $settings    = app(SettingStore::class);
+        $slotMinutes = max(1, (int) $settings->get('queue_slot_minutes', 15));
+        $queueStart  = Carbon::parse($settings->get('queue_start_at') ?? now()->subSecond());
+
+        $newSlotIndex = (int) $request->input('slot_index');
+        $newSlotTime  = $queueStart->copy()->addMinutes($newSlotIndex * $slotMinutes);
+
+        // No permetre moure a un slot passat
+        if ($newSlotTime->isPast()) {
+            return back()->withErrors(['slot_index' => 'No es pot seleccionar una hora passada.']);
+        }
+
+        $entry->update(['slot_starts_at' => $newSlotTime]);
+
+        return redirect()->route('campus.queue.status', ['email' => $email])
+            ->with('success', 'Torn actualitzat. Nova hora estimada: ' . $entry->fresh()->slotTimeLabel());
+    }
 }

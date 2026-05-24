@@ -19,14 +19,16 @@ Route::get('/', fn() => view('campus.home'))->name('home');
 
 // ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────
 Route::prefix('cursos/cua')->name('campus.queue.')->group(function () {
-    Route::get('/',      [QueueController::class, 'join'])
+    Route::get('/',             [QueueController::class, 'join'])
         ->middleware(\App\Http\Middleware\TrackCatalogVisits::class)
         ->name('join');
-    Route::post('/',     [QueueController::class, 'store'])->name('store');
-    Route::get('/estat', [QueueController::class, 'status'])
+    Route::post('/',            [QueueController::class, 'store'])->name('store');
+    Route::get('/estat',        [QueueController::class, 'status'])
         ->middleware(\App\Http\Middleware\TrackCatalogVisits::class)
         ->name('status');
-    Route::post('/codi', [QueueController::class, 'enterCode'])->name('code');
+    Route::post('/codi',        [QueueController::class, 'enterCode'])->name('code');
+    Route::get('/canviar-torn', [QueueController::class, 'changeSlot'])->name('change-slot');
+    Route::post('/canviar-torn',[QueueController::class, 'updateSlot'])->name('update-slot');
 });
 
 // ── Catàleg públic ────────────────────────────────────────────────────────────
@@ -48,6 +50,12 @@ Route::prefix('portal')->name('campus.')->group(function () {
     Route::get('/registre', [StudentAuthController::class, 'showRegister'])->name('register');
     Route::post('/registre', [StudentAuthController::class, 'register'])->middleware('throttle:register')->name('register.post');
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
+
+    // ── Recuperació de contrasenya ────────────────────────────────────────────
+    Route::get('/recuperar-contrasenya', [StudentAuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/recuperar-contrasenya', [StudentAuthController::class, 'sendPasswordReset'])->middleware('throttle:5,10')->name('password.email');
+    Route::get('/recuperar-contrasenya/codi', [StudentAuthController::class, 'showPasswordResetCode'])->name('password.code');
+    Route::post('/recuperar-contrasenya/codi', [StudentAuthController::class, 'resetPassword'])->middleware('throttle:10,5')->name('password.reset');
 
     // ── Verificació d'email per OTP ───────────────────────────────────────────
     Route::get('/verificar-email', [StudentAuthController::class, 'verificationNotice'])

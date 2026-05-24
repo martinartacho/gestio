@@ -21,6 +21,14 @@ Us heu apuntat a la cua d'inscripcions de **{{ config('app.name') }}**.
 
 > No cal que espereu davant del navegador. Us avisarem per correu.
 
+---
+
+Necessiteu un torn diferent? Podeu canviar l'hora:
+
+<x-mail::button :url="route('campus.queue.change-slot', ['email' => $entry->email, 'n' => $entry->queue_number])" color="secondary">
+📅 Canviar l'hora del torn
+</x-mail::button>
+
 Gràcies per la paciència,<br>
 {{ config('app.name') }}
 </x-mail::message>
