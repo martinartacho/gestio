@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\Campus\QueueAccessMail;
 use App\Models\CampusQueueEntry;
+use App\Models\CampusStudent;
 use App\Settings\SettingStore;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -36,6 +37,14 @@ class QueueNotify extends Command
         $this->info("Torns a notificar: {$candidates->count()}");
 
         foreach ($candidates as $entry) {
+            // Si existeix un compte d'alumne amb aquest email i NO ha verificat el correu,
+            // esperar que ho faci abans d'enviar el codi d'accés.
+            $student = CampusStudent::where('email', $entry->email)->first();
+            if ($student && ! $student->hasVerifiedEmail()) {
+                $this->line("  ⏳ #{$entry->queue_number} → {$entry->email} | pendent de verificació");
+                continue;
+            }
+
             if ($this->option('dry-run')) {
                 $this->line("  [dry-run] #{$entry->queue_number} → {$entry->email}");
                 continue;
