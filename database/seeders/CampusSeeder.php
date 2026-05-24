@@ -169,7 +169,7 @@ class CampusSeeder extends Seeder
             ],
         ];
 
-        $teacherPassword = env('SEEDER_TEACHER_PASSWORD')
+        $teacherPassword = config('seeder.teacher_password')
             ?? throw new \RuntimeException('SEEDER_TEACHER_PASSWORD no definit al .env');
 
         foreach ($teachersDefs as $d) {

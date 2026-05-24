@@ -94,9 +94,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // ── Usuaris de prova ──────────────────────────────────────────────
-        $adminPassword = env('SEEDER_ADMIN_PASSWORD')
+        $adminPassword = config('seeder.admin_password')
             ?? throw new \RuntimeException('SEEDER_ADMIN_PASSWORD no està definit al .env');
-        $userPassword = env('SEEDER_USER_PASSWORD')
+        $userPassword = config('seeder.user_password')
             ?? throw new \RuntimeException('SEEDER_USER_PASSWORD no està definit al .env');
 
         User::firstOrCreate(['email' => 'admin@app.com'], [
