@@ -16,6 +16,7 @@ use App\Http\Controllers\Campus\TeacherPortalController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('campus.home'))->name('home');
+Route::get('/novetats', fn() => view('campus.releases'))->name('campus.releases');
 
 // ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────
 Route::prefix('cursos/cua')->name('campus.queue.')->group(function () {
