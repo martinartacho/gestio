@@ -47,9 +47,15 @@ class SettingsPage extends Page
     public string $mail_footer_text  = '';
 
     // Tab: Mòduls
+    public bool $campus_enabled             = true;
     public bool $documents_enabled          = true;
     public bool $lms_enabled                = false;
     public bool $courses_learning_enabled   = false;
+
+    // Tab: Associats
+    public bool   $associats_enabled        = false;
+    public string $associats_org_name       = 'AC Granollers';
+    public string $associats_member_prefix  = '';
 
     // Tab: Pagament manual
     public bool   $payment_transfer_enabled = false;
@@ -102,9 +108,14 @@ class SettingsPage extends Page
         $this->mail_from_address = (string) $store->get('mail_from_address', '');
         $this->mail_footer_text  = (string) $store->get('mail_footer_text', '');
 
+        $this->campus_enabled           = (bool) $store->get('campus_enabled', true);
         $this->documents_enabled        = (bool) $store->get('documents_enabled', true);
         $this->lms_enabled              = (bool) $store->get('lms_enabled', false);
         $this->courses_learning_enabled = (bool) $store->get('courses_learning_enabled', false);
+
+        $this->associats_enabled       = (bool)   $store->get('associats_enabled', false);
+        $this->associats_org_name      = (string) $store->get('associats_org_name', 'AC Granollers');
+        $this->associats_member_prefix = (string) $store->get('associats_member_prefix', '');
 
         $this->payment_transfer_enabled = (bool)   $store->get('payment_transfer_enabled', false);
         $this->payment_bizum_enabled    = (bool)   $store->get('payment_bizum_enabled', false);
@@ -153,9 +164,14 @@ class SettingsPage extends Page
             'mail_from_address' => $this->mail_from_address ?: null,
             'mail_footer_text'  => $this->mail_footer_text ?: null,
 
+            'campus_enabled'           => $this->campus_enabled,
             'documents_enabled'        => $this->documents_enabled,
             'lms_enabled'              => $this->lms_enabled,
             'courses_learning_enabled' => $this->courses_learning_enabled,
+
+            'associats_enabled'        => $this->associats_enabled,
+            'associats_org_name'       => $this->associats_org_name ?: 'AC Granollers',
+            'associats_member_prefix'  => $this->associats_member_prefix,
 
             'payment_transfer_enabled' => $this->payment_transfer_enabled,
             'payment_bizum_enabled'    => $this->payment_bizum_enabled,

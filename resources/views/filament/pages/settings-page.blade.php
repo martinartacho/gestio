@@ -5,13 +5,14 @@
     {{-- ── Tabs ─────────────────────────────────────────────────────────── --}}
     <div style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;margin-bottom:1.5rem;">
         @foreach([
-            'campus'    => '🏫 Campus',
-            'aparenca'  => '🎨 Aparença',
-            'email'     => '✉️ Correu',
-            'moduls'    => '🔧 Mòduls',
-            'pagament'  => '💳 Pagament',
-            'cua'       => '🎟 Cua',
-            'avançat'   => '⚙️ Avançat',
+            'campus'     => '🏫 Campus',
+            'aparenca'   => '🎨 Aparença',
+            'email'      => '✉️ Correu',
+            'moduls'     => '🔧 Mòduls',
+            'associats'  => '🤝 Associats',
+            'pagament'   => '💳 Pagament',
+            'cua'        => '🎟 Cua',
+            'avançat'    => '⚙️ Avançat',
         ] as $tab => $label)
         <button wire:click="$set('activeTab','{{ $tab }}')"
                 type="button"
@@ -178,7 +179,8 @@
                 </p>
 
                 @foreach([
-                    ['key' => 'documents_enabled',        'label' => 'Mòdul de documents',           'desc' => 'Permet pujar i compartir documents amb alumnes i professors.'],
+                    ['key' => 'campus_enabled',           'label' => 'Mòdul Campus',                   'desc' => 'Activa el catàleg de cursos i els portals d\'alumnes i professors. Quan és desactivat, els admins segueixen tenint accés.'],
+                    ['key' => 'documents_enabled',        'label' => 'Mòdul de documents',              'desc' => 'Permet pujar i compartir documents amb alumnes i professors.'],
                     ['key' => 'lms_enabled',              'label' => 'LMS (plataforma d\'aprenentatge)', 'desc' => 'Activa les funcions de LMS: lliçons, qüestionaris i seguiment.'],
                     ['key' => 'courses_learning_enabled', 'label' => 'Aprenentatge en línia de cursos', 'desc' => 'Permet als alumnes visualitzar continguts de vídeo i materials en línia.'],
                 ] as $module)
@@ -192,6 +194,56 @@
                 </label>
                 @endforeach
 
+            </div>
+
+        </div>
+
+        {{-- ══════════════════════════════════════════════════════════════
+             TAB: ASSOCIATS
+        ══════════════════════════════════════════════════════════════ --}}
+        <div style="{{ $activeTab !== 'associats' ? 'display:none;' : '' }}">
+
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Mòdul Associats</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">
+                    Gestió de socis de l'entitat amb carnet digital i codi QR (Passaport Cultural Digital).
+                </p>
+
+                {{-- Toggle principal --}}
+                <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;padding:1rem;background:#f9fafb;border-radius:0.5rem;margin-bottom:1.5rem;">
+                    <input type="checkbox" wire:model.live="associats_enabled"
+                           style="width:1.25rem;height:1.25rem;border-radius:0.25rem;cursor:pointer;accent-color:#4f46e5;">
+                    <div>
+                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0;">Activar el mòdul d'associats</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">
+                            Habilita el portal de socis (<code>/socis</code>), el carnet digital i la gestió al panell d'administració.
+                        </p>
+                    </div>
+                </label>
+
+                @if ($associats_enabled)
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div style="grid-column:span 2;">
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Nom de l'entitat</label>
+                        <input type="text" wire:model="associats_org_name"
+                               placeholder="AC Granollers"
+                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Apareix al carnet digital i als correus als socis.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Prefix del número de soci</label>
+                        <input type="text" wire:model="associats_member_prefix"
+                               placeholder="Deixa buit si no en vols"
+                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
+                            Exemple: "ACG-" mostrarà "ACG-1947". Deixa buit per mostrar només el número.
+                        </p>
+                    </div>
+                </div>
+                @endif
             </div>
 
         </div>

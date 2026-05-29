@@ -23,7 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ])
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'feature' => \App\Http\Middleware\FeatureEnabled::class,
+            'feature'            => \App\Http\Middleware\FeatureEnabled::class,
+            'campus.enabled'     => \App\Http\Middleware\EnsureCampusEnabled::class,
+            'associats.enabled'  => \App\Http\Middleware\EnsureAssociatsEnabled::class,
         ]);
         // Bloqueig per IP aplicat a totes les peticions web
         $middleware->prependToGroup('web', \App\Http\Middleware\BlockSuspiciousIp::class);

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Associats\MemberAuthController;
+use App\Http\Controllers\Associats\MemberPortalController;
 use App\Http\Controllers\Campus\CatalogController;
 use App\Http\Controllers\Campus\CheckoutController;
 use App\Http\Controllers\Campus\LmsPreviewController;
@@ -19,7 +21,7 @@ Route::get('/', fn() => view('campus.home'))->name('home');
 Route::get('/novetats', fn() => view('campus.releases'))->name('campus.releases');
 
 // ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────
-Route::prefix('cursos/cua')->name('campus.queue.')->group(function () {
+Route::prefix('cursos/cua')->name('campus.queue.')->middleware('campus.enabled')->group(function () {
     Route::get('/',             [QueueController::class, 'join'])
         ->middleware(\App\Http\Middleware\TrackCatalogVisits::class)
         ->name('join');
@@ -33,7 +35,7 @@ Route::prefix('cursos/cua')->name('campus.queue.')->group(function () {
 });
 
 // ── Catàleg públic ────────────────────────────────────────────────────────────
-Route::prefix('cursos')->name('campus.catalog.')->group(function () {
+Route::prefix('cursos')->name('campus.catalog.')->middleware('campus.enabled')->group(function () {
     Route::get('/', [CatalogController::class, 'index'])
         ->middleware([\App\Http\Middleware\EnsureQueueAccess::class,
                       \App\Http\Middleware\TrackCatalogVisits::class])
@@ -45,7 +47,7 @@ Route::prefix('cursos')->name('campus.catalog.')->group(function () {
 });
 
 // ── Auth alumnes ──────────────────────────────────────────────────────────────
-Route::prefix('portal')->name('campus.')->group(function () {
+Route::prefix('portal')->name('campus.')->middleware('campus.enabled')->group(function () {
     Route::get('/login', [StudentAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [StudentAuthController::class, 'login'])->middleware('throttle:login')->name('login.post');
     Route::get('/registre', [StudentAuthController::class, 'showRegister'])->name('register');
@@ -84,7 +86,7 @@ Route::prefix('portal')->name('campus.')->group(function () {
 });
 
 // ── Auth professorat ─────────────────────────────────────────────────────────
-Route::prefix('professorat')->name('teacher.')->group(function () {
+Route::prefix('professorat')->name('teacher.')->middleware('campus.enabled')->group(function () {
     Route::get('/login', [TeacherAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [TeacherAuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [TeacherAuthController::class, 'logout'])->name('logout');
@@ -155,6 +157,18 @@ Route::get('/documents/{document}/download', [DocumentController::class, 'downlo
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
     ->name('stripe.webhook')
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
+// ── Portal Socis (Associats) ──────────────────────────────────────────────────
+Route::prefix('socis')->name('member.')->middleware('associats.enabled')->group(function () {
+    Route::get('/login',  [MemberAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [MemberAuthController::class, 'login'])->middleware('throttle:login')->name('login.post');
+    Route::post('/logout',[MemberAuthController::class, 'logout'])->name('logout');
+
+    Route::middleware(\App\Http\Middleware\AuthenticateMember::class)->group(function () {
+        Route::get('/carnet', [MemberPortalController::class, 'card'])->name('card');
+        Route::get('/perfil', [MemberPortalController::class, 'profile'])->name('profile');
+    });
+});
 
 Route::get('/admin/calendar/events', [\App\Http\Controllers\CalendarEventsController::class, 'index'])
     ->middleware(['web', 'auth'])

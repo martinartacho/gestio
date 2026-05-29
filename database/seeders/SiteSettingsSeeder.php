@@ -31,9 +31,15 @@ class SiteSettingsSeeder extends Seeder
             'mail_footer_text'      => null,
 
             // ── Mòduls / Feature flags ───────────────────────────────────────
-            'documents_enabled'     => true,
-            'lms_enabled'           => false,
+            'campus_enabled'           => true,
+            'documents_enabled'        => true,
+            'lms_enabled'              => false,
             'courses_learning_enabled' => false,
+
+            // ── Associats ────────────────────────────────────────────────────
+            'associats_enabled'        => false,
+            'associats_org_name'       => 'AC Granollers',
+            'associats_member_prefix'  => '',
 
             // ── Pagament manual ──────────────────────────────────────────────
             'payment_transfer_enabled' => false,
