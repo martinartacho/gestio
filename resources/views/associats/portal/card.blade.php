@@ -8,8 +8,8 @@
     use chillerlan\QRCode\QROptions;
 
     $qrUrl = route('member.card') . '?token=' . $member->qr_token;
-    $options = new QROptions(['outputType' => QRCode::OUTPUT_MARKUP_SVG, 'eccLevel' => QRCode::ECC_H]);
-    $qrSvg = (new QRCode($options))->render($qrUrl);
+    $options = new QROptions(['eccLevel' => QRCode::ECC_H]);
+    $qrImage = (new QRCode($options))->render($qrUrl);
 @endphp
 
 <div style="max-width:420px; margin:0 auto;">
@@ -46,8 +46,9 @@
 
         {{-- QR --}}
         <div style="display:flex;justify-content:center;">
-            <div style="background:#fff;border-radius:0.5rem;padding:0.75rem;width:140px;height:140px;">
-                {!! $qrSvg !!}
+            <div style="background:#fff;border-radius:0.5rem;padding:0.5rem;width:148px;height:148px;">
+                <img src="{{ $qrImage }}" alt="QR soci {{ $member->member_number }}"
+                     style="width:100%;height:100%;display:block;">
             </div>
         </div>
 

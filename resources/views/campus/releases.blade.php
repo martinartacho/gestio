@@ -17,12 +17,54 @@
         </p>
     </div>
 
+    {{-- ── v1.4.0 ── --}}
+    <div style="margin-bottom:3rem;">
+        <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+            <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.4.0</span>
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
+                Nou
+            </span>
+            <span style="font-size:0.65rem; color:#9ca3af;">Maig 2026</span>
+        </div>
+
+        <div style="border-left:2px solid #6366f1; padding-left:1.5rem;">
+            <p style="color:#6b7280; font-size:0.9rem; line-height:1.8; margin-bottom:1.5rem;">
+                La plataforma s'ha preparat per acollir nous mòduls independents.
+                Debut del <strong>Passaport Cultural Digital</strong> per a socis d'entitats culturals.
+            </p>
+
+            <div style="margin-bottom:1.25rem;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Mòdul Campus activable/desactivable
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    L'administrador pot activar o desactivar el campus de formació des del panell
+                    de configuració. Quan és desactivat, el catàleg i els portals d'alumnes i professors
+                    deixen de ser accessibles als visitants, sense afectar l'administració.
+                </p>
+            </div>
+
+            <div style="margin-bottom:0;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Passaport Cultural Digital (mòdul Associats)
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    Primer pas de la digitalització dels carnets físics de l'AC Granollers.
+                    Cada soci pot accedir al portal amb correu i contrasenya i obtenir el seu
+                    <strong>carnet digital</strong> amb codi QR únic que preserva el número
+                    de soci historic. El mòdul s'activa des de la configuració i és completament
+                    independent del campus de formació.
+                </p>
+            </div>
+        </div>
+    </div>
+
     {{-- ── v1.3.0 ── --}}
     <div style="margin-bottom:3rem;">
         <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.3.0</span>
-            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
-                Nou
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#374151; background:#e5e7eb; padding:0.2rem 0.6rem; border-radius:3px;">
+                Millores
             </span>
             <span style="font-size:0.65rem; color:#9ca3af;">Maig 2026</span>
         </div>
