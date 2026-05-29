@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Associats\MemberAuthController;
+use App\Http\Controllers\Associats\MemberPasswordController;
 use App\Http\Controllers\Associats\MemberPortalController;
 use App\Http\Controllers\Campus\CatalogController;
 use App\Http\Controllers\Campus\CheckoutController;
@@ -163,6 +164,11 @@ Route::prefix('socis')->name('member.')->middleware('associats.enabled')->group(
     Route::get('/login',  [MemberAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [MemberAuthController::class, 'login'])->middleware('throttle:login')->name('login.post');
     Route::post('/logout',[MemberAuthController::class, 'logout'])->name('logout');
+
+    Route::get('/recuperar-contrasenya',          [MemberPasswordController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/recuperar-contrasenya',         [MemberPasswordController::class, 'sendReset'])->middleware('throttle:5,10')->name('password.email');
+    Route::get('/recuperar-contrasenya/{token}',  [MemberPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/recuperar-contrasenya/{token}', [MemberPasswordController::class, 'resetPassword'])->name('password.update');
 
     Route::middleware(\App\Http\Middleware\AuthenticateMember::class)->group(function () {
         Route::get('/carnet', [MemberPortalController::class, 'card'])->name('card');

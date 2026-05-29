@@ -25,7 +25,11 @@
                 @enderror
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Contrasenya</label>
+                <div class="flex items-center justify-between mb-1">
+                    <label class="block text-sm font-medium text-gray-700">Contrasenya</label>
+                    <a href="{{ route('member.password.request') }}"
+                       class="text-xs text-indigo-600 hover:underline">Heu oblidat la contrasenya?</a>
+                </div>
                 <input type="password" name="password" required
                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>

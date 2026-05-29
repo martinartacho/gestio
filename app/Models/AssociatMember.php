@@ -20,6 +20,7 @@ class AssociatMember extends Authenticatable
         'phone', 'dni', 'address', 'postal_code', 'city',
         'status', 'joined_at', 'cancelled_at', 'data_consent',
         'qr_token', 'campus_student_id',
+        'reset_token', 'reset_token_expires_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -28,8 +29,9 @@ class AssociatMember extends Authenticatable
         'dni'          => 'encrypted',
         'password'     => 'hashed',
         'data_consent' => 'boolean',
-        'joined_at'    => 'date',
-        'cancelled_at' => 'date',
+        'joined_at'               => 'date',
+        'cancelled_at'            => 'date',
+        'reset_token_expires_at'  => 'datetime',
     ];
 
     protected static function booted(): void
@@ -54,5 +56,32 @@ class AssociatMember extends Authenticatable
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    public function generateResetToken(): string
+    {
+        $token = \Illuminate\Support\Str::uuid()->toString();
+
+        $this->update([
+            'reset_token'            => $token,
+            'reset_token_expires_at' => now()->addHour(),
+        ]);
+
+        return $token;
+    }
+
+    public function isValidResetToken(string $token): bool
+    {
+        return $this->reset_token === $token
+            && $this->reset_token_expires_at
+            && $this->reset_token_expires_at->isFuture();
+    }
+
+    public function clearResetToken(): void
+    {
+        $this->update([
+            'reset_token'            => null,
+            'reset_token_expires_at' => null,
+        ]);
     }
 }
