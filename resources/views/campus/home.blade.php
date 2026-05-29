@@ -11,7 +11,8 @@
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
 
-    {{-- Hero ----------------------------------------------------------------}}
+    {{-- Hero (només si campus actiu) ----------------------------------------}}
+    @if(setting('campus_enabled', true))
     <div style="background-color:{{ setting('hero_color', '#3730a3') }};">
         <div class="max-w-5xl mx-auto px-6 py-16 text-center">
             <h1 class="text-4xl font-extrabold tracking-tight mb-3" style="color:{{ setting('hero_text_color', '#ffffff') }};">
@@ -34,15 +35,30 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Access cards --------------------------------------------------------}}
     <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-14">
 
         <h2 class="text-center text-sm font-semibold uppercase tracking-widest text-gray-400 mb-8">Accés per perfil</h2>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        @php
+            $campusActiu    = setting('campus_enabled', true);
+            $associatsActiu = setting('associats_enabled', false);
 
-            {{-- Alumnat --}}
+            $cols = 1 + (int) $campusActiu * 2 + (int) $associatsActiu;
+            $gridClass = match(true) {
+                $cols >= 4  => 'grid grid-cols-1 sm:grid-cols-4 gap-6',
+                $cols === 3 => 'grid grid-cols-1 sm:grid-cols-3 gap-6',
+                $cols === 2 => 'grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-xl mx-auto',
+                default     => 'grid grid-cols-1 gap-6 max-w-xs mx-auto',
+            };
+        @endphp
+
+        <div class="{{ $gridClass }}">
+
+            {{-- Alumnat (campus) --}}
+            @if($campusActiu)
             <a href="{{ route('campus.login') }}"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
                 <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition">
@@ -57,7 +73,7 @@
                 <span class="mt-auto text-xs text-indigo-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
 
-            {{-- Professorat --}}
+            {{-- Professorat (campus) --}}
             <a href="{{ route('teacher.login') }}"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
                 <div class="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition">
@@ -71,8 +87,26 @@
                 </div>
                 <span class="mt-auto text-xs text-emerald-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
+            @endif
 
-            {{-- Gestió --}}
+            {{-- Socis (associats) --}}
+            @if($associatsActiu)
+            <a href="{{ route('member.login') }}"
+               class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-violet-100 flex items-center justify-center group-hover:bg-violet-200 transition">
+                    <svg class="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-bold text-gray-900 text-base">Socis</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('associats_org_name', 'AC Granollers') }} · Passaport Cultural</p>
+                </div>
+                <span class="mt-auto text-xs text-violet-600 font-medium group-hover:underline">Accedir &rarr;</span>
+            </a>
+            @endif
+
+            {{-- Gestió (sempre visible) --}}
             <a href="/admin"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
                 <div class="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition">
@@ -92,48 +126,7 @@
 
     </main>
 
-    {{-- Footer -------------------------------------------------------------}}
-    <footer style="border-top:1px solid #e5e7eb;background:#fff;">
-        <div style="max-width:64rem;margin:0 auto;padding:1.5rem 1.5rem;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1rem;">
-
-            {{-- Columna 1: Identificació --}}
-            <div style="display:flex;flex-direction:column;gap:0.25rem;font-size:0.75rem;color:#9ca3af;">
-                <span style="font-size:0.875rem;font-weight:600;color:#4b5563;">
-                    {{ setting('campus_name', 'Campus de Formació Continuada') }}
-                </span>
-                @if(setting('campus_contact_email'))
-                    <a href="mailto:{{ setting('campus_contact_email') }}"
-                       style="color:#9ca3af;text-decoration:none;"
-                       onmouseover="this.style.color='#4f46e5'" onmouseout="this.style.color='#9ca3af'">
-                        {{ setting('campus_contact_email') }}
-                    </a>
-                @endif
-                @if(setting('campus_contact_phone'))
-                    <span>{{ setting('campus_contact_phone') }}</span>
-                @endif
-                @if(setting('campus_address'))
-                    <span>{{ setting('campus_address') }}</span>
-                @endif
-            </div>
-
-            {{-- Columna 2: Menús --}}
-            <nav style="display:flex;align-items:center;gap:0;font-size:0.75rem;">
-                <a href="{{ route('campus.catalog.index') }}"
-                   style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-                   onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Catàleg</a>
-                <a href="{{ route('campus.login') }}"
-                   style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-                   onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Alumnat</a>
-                <a href="{{ route('teacher.login') }}"
-                   style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-                   onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Professorat</a>
-                <a href="/admin"
-                   style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;"
-                   onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Administració</a>
-            </nav>
-
-        </div>
-    </footer>
+    @include('campus.partials.footer')
 
 </body>
 </html>
