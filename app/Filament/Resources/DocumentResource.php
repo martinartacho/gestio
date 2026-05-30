@@ -36,7 +36,9 @@ class DocumentResource extends Resource
 
     public static function canAccess(): bool
     {
-        return (bool) app(SettingStore::class)->get('documents_enabled', true);
+        $store = app(SettingStore::class);
+        return $store->get('campus_enabled', true)
+            && $store->get('documents_enabled', true);
     }
 
     public static function form(Schema $schema): Schema

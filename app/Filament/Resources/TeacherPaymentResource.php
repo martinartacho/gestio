@@ -26,7 +26,7 @@ class TeacherPaymentResource extends Resource
     public static function getModelLabel(): string       { return __('site.teacher_payment'); }
     public static function getPluralModelLabel(): string { return __('site.teacher_payments'); }
 
-    public static function canAccess(): bool                                          { return auth()->user()?->hasPermissionTo('teacher_payments.view')   ?? false; }
+    public static function canAccess(): bool                                          { return app(\App\Settings\SettingStore::class)->get('campus_enabled', true) && (auth()->user()?->hasPermissionTo('teacher_payments.view') ?? false); }
     public static function canCreate(): bool                                          { return auth()->user()?->hasPermissionTo('teacher_payments.create') ?? false; }
     public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool      { return auth()->user()?->hasPermissionTo('teacher_payments.edit')   ?? false; }
     public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('teacher_payments.delete') ?? false; }

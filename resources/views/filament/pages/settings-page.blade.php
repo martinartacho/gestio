@@ -9,7 +9,6 @@
             'aparenca'   => '🎨 Aparença',
             'email'      => '✉️ Correu',
             'moduls'     => '🔧 Mòduls',
-            'associats'  => '🤝 Associats',
             'pagament'   => '💳 Pagament',
             'cua'        => '🎟 Cua',
             'avançat'    => '⚙️ Avançat',
@@ -174,76 +173,102 @@
 
             <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
                 <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Mòduls actius</h2>
-                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">
-                    Activa o desactiva funcionalitats del campus. Alguns canvis requereixen recarregar la pàgina per fer efecte.
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.5rem;">
+                    Activa o desactiva funcionalitats. Alguns canvis requereixen recarregar la pàgina per fer efecte.
                 </p>
 
-                @foreach([
-                    ['key' => 'campus_enabled',           'label' => 'Mòdul Campus',                   'desc' => 'Activa el catàleg de cursos i els portals d\'alumnes i professors. Quan és desactivat, els admins segueixen tenint accés.'],
-                    ['key' => 'documents_enabled',        'label' => 'Mòdul de documents',              'desc' => 'Permet pujar i compartir documents amb alumnes i professors.'],
-                    ['key' => 'lms_enabled',              'label' => 'LMS (plataforma d\'aprenentatge)', 'desc' => 'Activa les funcions de LMS: lliçons, qüestionaris i seguiment.'],
-                    ['key' => 'courses_learning_enabled', 'label' => 'Aprenentatge en línia de cursos', 'desc' => 'Permet als alumnes visualitzar continguts de vídeo i materials en línia.'],
-                ] as $module)
-                <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem 0;border-bottom:1px solid #f3f4f6;cursor:pointer;">
-                    <input type="checkbox" wire:model="{{ $module['key'] }}"
+                {{-- ── Mòdul Campus ── --}}
+                <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem 0;border-bottom:1px solid #e5e7eb;cursor:pointer;">
+                    <input type="checkbox" wire:model.live="campus_enabled"
                            style="margin-top:0.125rem;width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
                     <div>
-                        <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.125rem;">{{ $module['label'] }}</p>
-                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">{{ $module['desc'] }}</p>
+                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0 0 0.125rem;">Mòdul Campus</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">Catàleg de cursos, portals d'alumnes i professors, inscripcions i pagaments. Quan és desactivat, els admins segueixen tenint accés al panell.</p>
                     </div>
                 </label>
-                @endforeach
 
-            </div>
+                {{-- Sub-mòduls de Campus (indentats) --}}
+                <div style="margin-left:1.875rem;border-left:2px solid #e5e7eb;padding-left:1rem;">
 
-        </div>
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid #f3f4f6;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <input type="checkbox" wire:model.live="documents_enabled" {{ $campus_enabled ? '' : 'disabled' }}
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Mòdul de documents</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">Permet pujar i compartir documents amb alumnes i professors.</p>
+                        </div>
+                    </label>
 
-        {{-- ══════════════════════════════════════════════════════════════
-             TAB: ASSOCIATS
-        ══════════════════════════════════════════════════════════════ --}}
-        <div style="{{ $activeTab !== 'associats' ? 'display:none;' : '' }}">
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid #f3f4f6;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <input type="checkbox" wire:model.live="lms_enabled" {{ $campus_enabled ? '' : 'disabled' }}
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">LMS (plataforma d'aprenentatge)</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">Activa les funcions de LMS: lliçons, qüestionaris i seguiment del progrés.</p>
+                        </div>
+                    </label>
 
-            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
-                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Mòdul Associats</h2>
-                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">
-                    Gestió de socis de l'entitat amb carnet digital i codi QR (Passaport Cultural Digital).
-                </p>
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <input type="checkbox" wire:model.live="courses_learning_enabled" {{ $campus_enabled ? '' : 'disabled' }}
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Aprenentatge en línia de cursos</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">Permet als alumnes visualitzar continguts de vídeo i materials en línia.</p>
+                        </div>
+                    </label>
 
-                {{-- Toggle principal --}}
-                <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;padding:1rem;background:#f9fafb;border-radius:0.5rem;margin-bottom:1.5rem;">
+                </div>
+
+                {{-- ── Mòdul Associats ── --}}
+                <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-top:0.5rem;cursor:pointer;">
                     <input type="checkbox" wire:model.live="associats_enabled"
-                           style="width:1.25rem;height:1.25rem;border-radius:0.25rem;cursor:pointer;accent-color:#4f46e5;">
+                           style="margin-top:0.125rem;width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
                     <div>
-                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0;">Activar el mòdul d'associats</p>
-                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">
-                            Habilita el portal de socis (<code>/socis</code>), el carnet digital i la gestió al panell d'administració.
-                        </p>
+                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0 0 0.125rem;">Mòdul Associats</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">Gestió de socis de l'entitat: portal <code>/socis</code>, carnet digital amb QR i Passaport Cultural Digital.</p>
                     </div>
                 </label>
 
+                {{-- Config Associats quan actiu --}}
                 @if ($associats_enabled)
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                    <div style="grid-column:span 2;">
-                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Nom de l'entitat</label>
-                        <input type="text" wire:model="associats_org_name"
-                               placeholder="AC Granollers"
-                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
-                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
-                            Apareix al carnet digital i als correus als socis.
-                        </p>
+                <div style="margin-left:1.875rem;border-left:2px solid #e5e7eb;padding-left:1rem;padding-top:0.5rem;">
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+                        <div style="grid-column:span 2;">
+                            <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Nom de l'entitat</label>
+                            <input type="text" wire:model="associats_org_name" placeholder="AC Granollers"
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                            <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.2rem;">Apareix al carnet digital i als correus als socis.</p>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Prefix del número de soci</label>
+                            <input type="text" wire:model="associats_member_prefix" placeholder="Deixa buit si no en vols"
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                            <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.2rem;">Ex: "ACG-" mostrarà "ACG-1947".</p>
+                        </div>
                     </div>
 
-                    <div>
-                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Prefix del número de soci</label>
-                        <input type="text" wire:model="associats_member_prefix"
-                               placeholder="Deixa buit si no en vols"
-                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
-                        <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">
-                            Exemple: "ACG-" mostrarà "ACG-1947". Deixa buit per mostrar només el número.
-                        </p>
+                    {{-- Sub-mòduls futurs --}}
+                    <div style="opacity:0.45;pointer-events:none;">
+                        <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;">
+                            <input type="checkbox" disabled style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;">
+                            <div>
+                                <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Quotes i renovació <span style="font-size:0.7rem;background:#f3f4f6;color:#6b7280;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.25rem;">Pròximament</span></p>
+                                <p style="font-size:0.8rem;color:#6b7280;margin:0;">Gestió de quotes anuals, renovació automàtica i control de pagaments dels socis.</p>
+                            </div>
+                        </label>
+                        <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;">
+                            <input type="checkbox" disabled style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;">
+                            <div>
+                                <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Notificacions i comunicats <span style="font-size:0.7rem;background:#f3f4f6;color:#6b7280;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.25rem;">Pròximament</span></p>
+                                <p style="font-size:0.8rem;color:#6b7280;margin:0;">Enviament de comunicats personalitzats als socis per correu electrònic.</p>
+                            </div>
+                        </label>
                     </div>
+
                 </div>
                 @endif
+
             </div>
 
         </div>

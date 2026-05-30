@@ -25,7 +25,7 @@ class BlockedIpResource extends Resource
     public static function getPluralModelLabel(): string { return 'IPs bloquejades'; }
     public static function getNavigationSort(): int      { return 10; }
 
-    public static function canAccess(): bool                                       { return auth()->user()?->hasPermissionTo('enrollments.edit') ?? false; }
+    public static function canAccess(): bool                                       { return app(\App\Settings\SettingStore::class)->get('campus_enabled', true) && (auth()->user()?->hasPermissionTo('enrollments.edit') ?? false); }
     public static function canCreate(): bool                                       { return auth()->user()?->hasPermissionTo('enrollments.edit') ?? false; }
     public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool   { return false; }
     public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool { return auth()->user()?->hasPermissionTo('enrollments.edit') ?? false; }

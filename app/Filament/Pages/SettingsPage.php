@@ -197,10 +197,15 @@ class SettingsPage extends Page
             'locale'   => $this->locale,
         ]);
 
+        // Forçar neteja de caché per garantir que el sidebar s'actualitzi
+        \Illuminate\Support\Facades\Cache::forget('site_settings.all');
+
         Notification::make()
             ->title('Configuració desada correctament')
             ->success()
             ->send();
+
+        $this->js('window.location.reload()');
     }
 
     public function getTimezoneOptions(): array

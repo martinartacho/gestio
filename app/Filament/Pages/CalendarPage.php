@@ -23,7 +23,8 @@ class CalendarPage extends Page
 
     public static function canAccess(): bool
     {
-        return Auth::user()?->hasAnyRole(['admin', 'manager']) ?? false;
+        return app(\App\Settings\SettingStore::class)->get('campus_enabled', true)
+            && (Auth::user()?->hasAnyRole(['admin', 'manager']) ?? false);
     }
 
     // ── Estat Livewire ────────────────────────────────────────────────────
