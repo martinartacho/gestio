@@ -6,6 +6,7 @@ use App\Filament\Resources\AssociatMemberResource\Pages;
 use App\Models\AssociatMember;
 use App\Settings\SettingStore;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -42,16 +43,6 @@ class AssociatMemberResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->maxLength(20),
 
-                TextInput::make('first_name')
-                    ->label('Nom')
-                    ->required()
-                    ->maxLength(100),
-
-                TextInput::make('last_name')
-                    ->label('Cognoms')
-                    ->required()
-                    ->maxLength(100),
-
                 Select::make('status')
                     ->label('Estat')
                     ->options([
@@ -61,6 +52,16 @@ class AssociatMemberResource extends Resource
                     ])
                     ->required()
                     ->default('pending'),
+
+                TextInput::make('first_name')
+                    ->label('Nom')
+                    ->required()
+                    ->maxLength(100),
+
+                TextInput::make('last_name')
+                    ->label('Cognoms')
+                    ->required()
+                    ->maxLength(100),
             ])->columns(2),
 
             Section::make('Contacte')->schema([
@@ -77,18 +78,19 @@ class AssociatMemberResource extends Resource
 
                 TextInput::make('address')
                     ->label('Adreça')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
 
                 TextInput::make('postal_code')
                     ->label('Codi postal')
                     ->maxLength(10),
 
                 TextInput::make('city')
-                    ->label('Ciutat')
+                    ->label('Municipi')
                     ->maxLength(100),
             ])->columns(2),
 
-            Section::make('Dates')->schema([
+            Section::make('Dates d\'alta i baixa')->schema([
                 DatePicker::make('joined_at')
                     ->label('Data d\'alta')
                     ->displayFormat('d/m/Y'),
@@ -98,13 +100,82 @@ class AssociatMemberResource extends Resource
                     ->displayFormat('d/m/Y'),
             ])->columns(2),
 
-            Section::make('Accés')->schema([
+            Section::make('Dades bancàries — Domiciliació SEPA')
+                ->description('Informació necessària per generar fitxers de remesa SEPA (pain.008). Les dades bancàries es guarden xifrades.')
+                ->schema([
+                    TextInput::make('bank_iban')
+                        ->label('IBAN')
+                        ->placeholder('ES91 2100 0418 4502 0005 1332')
+                        ->maxLength(34)
+                        ->columnSpanFull(),
+
+                    TextInput::make('bank_holder')
+                        ->label('Titular del compte')
+                        ->maxLength(100),
+
+                    TextInput::make('mandate_reference')
+                        ->label('Referència del mandat')
+                        ->placeholder('SOCI-000123')
+                        ->unique(ignoreRecord: true)
+                        ->maxLength(35),
+
+                    DatePicker::make('mandate_signed_at')
+                        ->label('Data de signatura del mandat')
+                        ->displayFormat('d/m/Y'),
+
+                    Select::make('mandate_sequence')
+                        ->label('Tipus de seqüència')
+                        ->options([
+                            'FRST' => 'FRST — Primera presentació',
+                            'RCUR' => 'RCUR — Recurrent',
+                        ])
+                        ->helperText('FRST per al primer càrrec; RCUR per a successius.'),
+
+                    Select::make('mandate_method')
+                        ->label('Suport del mandat')
+                        ->options([
+                            'paper'       => 'Paper signat (escanejat)',
+                            'electronic'  => 'Signatura electrònica (URL)',
+                            'web'         => 'Formulari web (acceptació digital)',
+                        ])
+                        ->live()
+                        ->columnSpanFull(),
+
+                    FileUpload::make('mandate_document')
+                        ->label('Document escanejat (PDF/imatge)')
+                        ->disk('local')
+                        ->directory('mandats-sepa')
+                        ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                        ->maxSize(5120)
+                        ->downloadable()
+                        ->openable()
+                        ->columnSpanFull()
+                        ->visible(fn ($get) => $get('mandate_method') === 'paper'),
+
+                    TextInput::make('mandate_document')
+                        ->label('URL del document signat electrònicament')
+                        ->url()
+                        ->placeholder('https://docusign.net/...')
+                        ->columnSpanFull()
+                        ->visible(fn ($get) => $get('mandate_method') === 'electronic'),
+
+                    TextInput::make('mandate_ip')
+                        ->label('IP d\'acceptació (web)')
+                        ->placeholder('Omple automàticament si el soci accepta online')
+                        ->maxLength(45)
+                        ->columnSpanFull()
+                        ->visible(fn ($get) => $get('mandate_method') === 'web'),
+
+                ])->columns(2),
+
+            Section::make('Accés al portal')->schema([
                 TextInput::make('password')
                     ->label('Contrasenya')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn (string $context) => $context === 'create'),
+                    ->required(fn (string $context) => $context === 'create')
+                    ->helperText('Deixa buit per no canviar la contrasenya actual.'),
 
                 Toggle::make('data_consent')
                     ->label('Consentiment de dades (RGPD)')
@@ -121,21 +192,30 @@ class AssociatMemberResource extends Resource
                 Tables\Columns\TextColumn::make('member_number')
                     ->label('Nº soci')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('first_name')
-                    ->label('Nom')
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('last_name')
-                    ->label('Cognoms')
-                    ->sortable()
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('full_name')
+                    ->label('Nom complet')
+                    ->sortable(query: fn ($query, $direction) =>
+                        $query->orderBy('first_name', $direction)->orderBy('last_name', $direction)
+                    )
+                    ->searchable(query: fn ($query, $search) =>
+                        $query->where(fn ($q) =>
+                            $q->where('first_name', 'like', "%{$search}%")
+                              ->orWhere('last_name', 'like', "%{$search}%")
+                        )
+                    ),
 
                 Tables\Columns\TextColumn::make('email')
                     ->label('Correu')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable(),
+
+                Tables\Columns\TextColumn::make('city')
+                    ->label('Municipi')
+                    ->searchable()
+                    ->toggleable(),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Estat')
@@ -151,6 +231,15 @@ class AssociatMemberResource extends Resource
                         default     => $state,
                     }),
 
+                Tables\Columns\IconColumn::make('bank_iban')
+                    ->label('SEPA')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('gray')
+                    ->tooltip(fn ($record) => $record->bank_iban ? 'Dades SEPA registrades' : 'Sense dades SEPA'),
+
                 Tables\Columns\TextColumn::make('joined_at')
                     ->label('Alta')
                     ->date('d/m/Y')
@@ -164,8 +253,15 @@ class AssociatMemberResource extends Resource
                         'pending'   => 'Pendent',
                         'cancelled' => 'Baixa',
                     ]),
+
+                Tables\Filters\TernaryFilter::make('bank_iban')
+                    ->label('Dades SEPA')
+                    ->nullable()
+                    ->trueLabel('Amb SEPA')
+                    ->falseLabel('Sense SEPA'),
             ])
-            ->defaultSort('member_number');
+            ->defaultSort('member_number')
+            ->recordUrl(fn ($record) => static::getUrl('edit', ['record' => $record]));
     }
 
     public static function getPages(): array

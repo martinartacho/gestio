@@ -57,6 +57,12 @@ class SettingsPage extends Page
     public string $associats_org_name       = 'AC Granollers';
     public string $associats_member_prefix  = '';
 
+    // Creditor SEPA de l'entitat
+    public string $sepa_creditor_id   = '';
+    public string $sepa_org_name      = '';
+    public string $sepa_iban          = '';
+    public string $sepa_bic           = '';
+
     // Tab: Pagament manual
     public bool   $payment_transfer_enabled = false;
     public bool   $payment_bizum_enabled    = false;
@@ -117,6 +123,11 @@ class SettingsPage extends Page
         $this->associats_org_name      = (string) $store->get('associats_org_name', 'AC Granollers');
         $this->associats_member_prefix = (string) $store->get('associats_member_prefix', '');
 
+        $this->sepa_creditor_id = (string) $store->get('sepa_creditor_id', '');
+        $this->sepa_org_name    = (string) $store->get('sepa_org_name', '');
+        $this->sepa_iban        = (string) $store->get('sepa_iban', '');
+        $this->sepa_bic         = (string) $store->get('sepa_bic', '');
+
         $this->payment_transfer_enabled = (bool)   $store->get('payment_transfer_enabled', false);
         $this->payment_bizum_enabled    = (bool)   $store->get('payment_bizum_enabled', false);
         $this->payment_cash_enabled     = (bool)   $store->get('payment_cash_enabled', false);
@@ -172,6 +183,11 @@ class SettingsPage extends Page
             'associats_enabled'        => $this->associats_enabled,
             'associats_org_name'       => $this->associats_org_name ?: 'AC Granollers',
             'associats_member_prefix'  => $this->associats_member_prefix,
+
+            'sepa_creditor_id' => $this->sepa_creditor_id,
+            'sepa_org_name'    => $this->sepa_org_name,
+            'sepa_iban'        => $this->sepa_iban,
+            'sepa_bic'         => $this->sepa_bic,
 
             'payment_transfer_enabled' => $this->payment_transfer_enabled,
             'payment_bizum_enabled'    => $this->payment_bizum_enabled,

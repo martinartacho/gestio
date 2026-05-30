@@ -248,6 +248,35 @@
                         </div>
                     </div>
 
+                    {{-- Creditor SEPA de l'entitat --}}
+                    <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid #f3f4f6;">
+                        <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#9ca3af;margin-bottom:0.75rem;">Creditor SEPA de l'entitat</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                            <div style="grid-column:span 2;">
+                                <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Identificador de creditor SEPA</label>
+                                <input type="text" wire:model="sepa_creditor_id" placeholder="ES12ZZZ09999994"
+                                       style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;font-family:monospace;box-sizing:border-box;">
+                                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.2rem;">Assignat per el banc. Necessari per al fitxer pain.008.</p>
+                            </div>
+                            <div style="grid-column:span 2;">
+                                <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Nom legal de l'entitat</label>
+                                <input type="text" wire:model="sepa_org_name" placeholder="Associació Cultural de Granollers"
+                                       style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">IBAN de l'entitat (receptor)</label>
+                                <input type="text" wire:model="sepa_iban" placeholder="ES91 2100 0418 4502 0005 1332"
+                                       style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;font-family:monospace;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">BIC / SWIFT</label>
+                                <input type="text" wire:model="sepa_bic" placeholder="CAIXESBBXXX"
+                                       style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;font-family:monospace;box-sizing:border-box;">
+                                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.2rem;">Alguns bancs encara el requereixen.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Sub-mòduls futurs --}}
                     <div style="opacity:0.45;pointer-events:none;">
                         <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;">

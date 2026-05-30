@@ -21,17 +21,22 @@ class AssociatMember extends Authenticatable
         'status', 'joined_at', 'cancelled_at', 'data_consent',
         'qr_token', 'campus_student_id',
         'reset_token', 'reset_token_expires_at',
+        'bank_iban', 'bank_holder',
+        'mandate_reference', 'mandate_signed_at', 'mandate_sequence',
+        'mandate_method', 'mandate_document', 'mandate_ip',
     ];
 
     protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
-        'dni'          => 'encrypted',
-        'password'     => 'hashed',
-        'data_consent' => 'boolean',
-        'joined_at'               => 'date',
-        'cancelled_at'            => 'date',
-        'reset_token_expires_at'  => 'datetime',
+        'dni'                    => 'encrypted',
+        'bank_iban'              => 'encrypted',
+        'password'               => 'hashed',
+        'data_consent'           => 'boolean',
+        'joined_at'              => 'date',
+        'cancelled_at'           => 'date',
+        'mandate_signed_at'      => 'date',
+        'reset_token_expires_at' => 'datetime',
     ];
 
     protected static function booted(): void

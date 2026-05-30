@@ -41,6 +41,12 @@ class SiteSettingsSeeder extends Seeder
             'associats_org_name'       => 'AC Granollers',
             'associats_member_prefix'  => '',
 
+            // ── SEPA creditor de l'entitat ────────────────────────────────────
+            'sepa_creditor_id'  => '',
+            'sepa_org_name'     => '',
+            'sepa_iban'         => '',
+            'sepa_bic'          => '',
+
             // ── Pagament manual ──────────────────────────────────────────────
             'payment_transfer_enabled' => false,
             'payment_bizum_enabled'    => false,
