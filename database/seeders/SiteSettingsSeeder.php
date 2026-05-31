@@ -40,6 +40,8 @@ class SiteSettingsSeeder extends Seeder
             'associats_enabled'        => false,
             'associats_org_name'       => 'AC Granollers',
             'associats_member_prefix'  => '',
+            'associat_quota_amount'    => 0,
+            'associat_quota_concept'   => 'Quota anual soci {YEAR}',
 
             // ── SEPA creditor de l'entitat ────────────────────────────────────
             'sepa_creditor_id'  => '',
