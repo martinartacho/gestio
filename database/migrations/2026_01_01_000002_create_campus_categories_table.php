@@ -10,15 +10,17 @@ return new class extends Migration
     {
         Schema::create('campus_categories', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('parent_id')->nullable()->constrained('campus_categories')->nullOnDelete();
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->string('color')->default('blue');        // per Filament badge colors
+            $table->string('color')->default('blue');
             $table->boolean('is_active')->default(true);
             $table->integer('order')->default(0);
             $table->timestamps();
 
             $table->index(['is_active', 'order']);
+            $table->index('parent_id');
         });
     }
 

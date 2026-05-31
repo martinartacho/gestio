@@ -24,7 +24,17 @@ return new class extends Migration
             $table->date('joined_at')->nullable();
             $table->date('cancelled_at')->nullable();
             $table->boolean('data_consent')->default(false);
-            $table->string('qr_token')->unique()->nullable();
+            $table->text('bank_iban')->nullable();
+            $table->string('bank_holder')->nullable();
+            $table->string('mandate_reference')->nullable()->unique();
+            $table->date('mandate_signed_at')->nullable();
+            $table->enum('mandate_sequence', ['FRST', 'RCUR'])->nullable();
+            $table->enum('mandate_method', ['paper', 'electronic', 'web'])->nullable();
+            $table->string('mandate_document')->nullable();
+            $table->string('mandate_ip', 45)->nullable();
+            $table->string('qr_token')->nullable()->unique();
+            $table->string('reset_token')->nullable()->unique();
+            $table->timestamp('reset_token_expires_at')->nullable();
             $table->foreignId('campus_student_id')->nullable()->constrained('campus_students')->nullOnDelete();
             $table->rememberToken();
             $table->timestamps();

@@ -10,16 +10,17 @@ return new class extends Migration
     {
         Schema::create('campus_seasons', function (Blueprint $table) {
             $table->id();
-            $table->string('name');                          // "Tardor 2026", "Primavera 2027"
-            $table->smallInteger('year');                    // 2026
-            $table->tinyInteger('quadrimester');             // 1 = tardor/setembre-gener, 2 = primavera/febrer-juny
+            $table->string('name');
+            $table->smallInteger('year');
+            $table->tinyInteger('quadrimester');
             $table->date('start_date');
             $table->date('end_date');
-            $table->boolean('is_active')->default(false);
+            $table->date('start_date_enrollment')->nullable();
+            $table->date('end_date_enrollment')->nullable();
+            $table->string('status')->default('draft');
             $table->timestamps();
 
             $table->unique(['year', 'quadrimester']);
-            $table->index(['is_active']);
         });
     }
 
