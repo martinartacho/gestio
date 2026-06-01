@@ -29,7 +29,9 @@ class AssociatMemberResource extends Resource
 
     public static function canAccess(): bool
     {
-        return (bool) app(SettingStore::class)->get('associats_enabled', false);
+        $store = app(SettingStore::class);
+        return (bool) $store->get('associats_enabled', false)
+            && (bool) $store->get('associats_socis_enabled', true);
     }
 
     public static function form(Schema $schema): Schema

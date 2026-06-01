@@ -54,6 +54,9 @@ class SettingsPage extends Page
 
     // Tab: Associats
     public bool   $associats_enabled        = false;
+    public bool   $associats_socis_enabled  = true;
+    public bool   $associats_quotes_enabled = true;
+    public bool   $associats_sepa_enabled   = true;
     public string $associats_org_name       = 'AC Granollers';
     public string $associats_member_prefix  = '';
 
@@ -119,9 +122,12 @@ class SettingsPage extends Page
         $this->lms_enabled              = (bool) $store->get('lms_enabled', false);
         $this->courses_learning_enabled = (bool) $store->get('courses_learning_enabled', false);
 
-        $this->associats_enabled       = (bool)   $store->get('associats_enabled', false);
-        $this->associats_org_name      = (string) $store->get('associats_org_name', 'AC Granollers');
-        $this->associats_member_prefix = (string) $store->get('associats_member_prefix', '');
+        $this->associats_enabled        = (bool) $store->get('associats_enabled', false);
+        $this->associats_socis_enabled  = (bool) $store->get('associats_socis_enabled', true);
+        $this->associats_quotes_enabled = (bool) $store->get('associats_quotes_enabled', true);
+        $this->associats_sepa_enabled   = (bool) $store->get('associats_sepa_enabled', true);
+        $this->associats_org_name       = (string) $store->get('associats_org_name', 'AC Granollers');
+        $this->associats_member_prefix  = (string) $store->get('associats_member_prefix', '');
 
         $this->sepa_creditor_id = (string) $store->get('sepa_creditor_id', '');
         $this->sepa_org_name    = (string) $store->get('sepa_org_name', '');
@@ -181,6 +187,9 @@ class SettingsPage extends Page
             'courses_learning_enabled' => $this->courses_learning_enabled,
 
             'associats_enabled'        => $this->associats_enabled,
+            'associats_socis_enabled'  => $this->associats_socis_enabled,
+            'associats_quotes_enabled' => $this->associats_quotes_enabled,
+            'associats_sepa_enabled'   => $this->associats_sepa_enabled,
             'associats_org_name'       => $this->associats_org_name ?: 'AC Granollers',
             'associats_member_prefix'  => $this->associats_member_prefix,
 

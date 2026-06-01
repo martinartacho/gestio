@@ -277,15 +277,24 @@
                         </div>
                     </div>
 
-                    {{-- Sub-mòduls futurs --}}
+                    {{-- Sub-mòduls actius --}}
+                    @foreach ([
+                        ['key' => 'associats_socis_enabled',  'label' => 'Socis',        'desc' => 'Gestió de persones sòcies: crear, editar, fitxa i carnet digital amb QR.'],
+                        ['key' => 'associats_quotes_enabled', 'label' => 'Quotes',       'desc' => 'Gestió de quotes periòdiques (anual, semestral, trimestral, mensual).'],
+                        ['key' => 'associats_sepa_enabled',   'label' => 'Remeses SEPA', 'desc' => 'Generació de fitxers pain.008 per a domiciliació bancària SEPA.'],
+                    ] as $sub)
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;cursor:pointer;">
+                        <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">{{ $sub['desc'] }}</p>
+                        </div>
+                    </label>
+                    @endforeach
+
+                    {{-- Sub-mòduls pròximament --}}
                     <div style="opacity:0.45;pointer-events:none;">
-                        <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;">
-                            <input type="checkbox" disabled style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;">
-                            <div>
-                                <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Quotes i renovació <span style="font-size:0.7rem;background:#f3f4f6;color:#6b7280;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.25rem;">Pròximament</span></p>
-                                <p style="font-size:0.8rem;color:#6b7280;margin:0;">Gestió de quotes anuals, renovació automàtica i control de pagaments dels socis.</p>
-                            </div>
-                        </label>
                         <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;">
                             <input type="checkbox" disabled style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;">
                             <div>
