@@ -12,6 +12,7 @@ class AssociatMemberSeeder extends Seeder
     {
         $password = config('seeder.member_password')
             ?? throw new \RuntimeException('SEEDER_MEMBER_PASSWORD no està definit al .env');
+        $mail = config('seeder.mail', 'app.test');
 
         $faker = Faker::create('es_ES');
 
@@ -36,7 +37,7 @@ class AssociatMemberSeeder extends Seeder
             AssociatMember::firstOrCreate(['member_number' => $num], [
                 'first_name'        => $firstName,
                 'last_name'         => $lastName,
-                'email'             => "membre.{$num}@demo.test",
+                'email'             => "membre.{$num}@{$mail}",
                 'password'          => bcrypt($password),
                 'phone'             => $faker->phoneNumber(),
                 'address'           => $faker->streetAddress(),

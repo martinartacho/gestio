@@ -98,28 +98,29 @@ class DatabaseSeeder extends Seeder
             ?? throw new \RuntimeException('SEEDER_ADMIN_PASSWORD no està definit al .env');
         $userPassword = config('seeder.user_password')
             ?? throw new \RuntimeException('SEEDER_USER_PASSWORD no està definit al .env');
+        $mail = config('seeder.mail', 'app.test');
 
-        User::firstOrCreate(['email' => 'admin@app.com'], [
+        User::firstOrCreate(['email' => "admin@{$mail}"], [
             'name' => 'Administrador', 'password' => bcrypt($adminPassword), 'active' => true,
         ])->syncRoles(['admin']);
 
-        User::firstOrCreate(['email' => 'manager@app.com'], [
+        User::firstOrCreate(['email' => "manager@{$mail}"], [
             'name' => 'Manager Cursos', 'password' => bcrypt($userPassword), 'active' => true,
         ])->syncRoles(['manager']);
 
-        User::firstOrCreate(['email' => 'secretaria@app.com'], [
+        User::firstOrCreate(['email' => "secretaria@{$mail}"], [
             'name' => 'Secretaria', 'password' => bcrypt($userPassword), 'active' => true,
         ])->syncRoles(['secretaria']);
 
-        User::firstOrCreate(['email' => 'editor@app.com'], [
+        User::firstOrCreate(['email' => "editor@{$mail}"], [
             'name' => 'Editor Exemple', 'password' => bcrypt($userPassword), 'active' => true,
         ])->syncRoles(['editor']);
 
-        User::firstOrCreate(['email' => 'tresoreria@app.com'], [
+        User::firstOrCreate(['email' => "tresoreria@{$mail}"], [
             'name' => 'Tresoreria', 'password' => bcrypt($userPassword), 'active' => true,
         ])->syncRoles(['tresoreria']);
 
-        User::firstOrCreate(['email' => 'viewer@app.com'], [
+        User::firstOrCreate(['email' => "viewer@{$mail}"], [
             'name' => 'Viewer Exemple', 'password' => bcrypt($userPassword), 'active' => true,
         ])->syncRoles(['viewer']);
 
@@ -127,12 +128,12 @@ class DatabaseSeeder extends Seeder
         $this->command->table(
             ['Email', 'Rol', 'Contrasenya'],
             [
-                ['admin@app.com',      'admin',      $adminPassword],
-                ['manager@app.com',    'manager',    $userPassword],
-                ['secretaria@app.com', 'secretaria', $userPassword],
-                ['tresoreria@app.com', 'tresoreria', $userPassword],
-                ['editor@app.com',     'editor',     $userPassword],
-                ['viewer@app.com',     'viewer',     $userPassword],
+                ["admin@{$mail}",      'admin',      $adminPassword],
+                ["manager@{$mail}",    'manager',    $userPassword],
+                ["secretaria@{$mail}", 'secretaria', $userPassword],
+                ["tresoreria@{$mail}", 'tresoreria', $userPassword],
+                ["editor@{$mail}",     'editor',     $userPassword],
+                ["viewer@{$mail}",     'viewer',     $userPassword],
             ]
         );
 
