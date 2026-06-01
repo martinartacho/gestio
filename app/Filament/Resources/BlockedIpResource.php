@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BlockedIpResource\Pages;
 use App\Models\BlockedIp;
 use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -88,8 +90,8 @@ class BlockedIpResource extends Resource
                 DeleteAction::make()->label('Desbloquejar'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->label('Desbloquejar seleccionades'),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()->label('Desbloquejar seleccionades'),
                 ]),
             ]);
     }
