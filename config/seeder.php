@@ -7,4 +7,5 @@ return [
     'student_password' => env('SEEDER_STUDENT_PASSWORD'),
     'teacher_password' => env('SEEDER_TEACHER_PASSWORD'),
     'member_password'  => env('SEEDER_MEMBER_PASSWORD'),
+
 ];
