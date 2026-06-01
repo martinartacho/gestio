@@ -217,6 +217,21 @@
                         </div>
                     </label>
 
+                    {{-- ── Cursos i Professorat ── --}}
+                    @foreach ([
+                        ['key' => 'campus_cursos_enabled',      'label' => 'Cursos',      'desc' => 'Gestió del catàleg de cursos, edicions i continguts.'],
+                        ['key' => 'campus_professorat_enabled', 'label' => 'Professorat', 'desc' => 'Fitxes de professors, liquidacions i assignació a cursos.'],
+                    ] as $sub)
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <input type="checkbox" wire:model.live="{{ $sub['key'] }}" {{ $campus_enabled ? '' : 'disabled' }}
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">{{ $sub['desc'] }}</p>
+                        </div>
+                    </label>
+                    @endforeach
+
                     {{-- ── Catàleg ── --}}
                     <div style="{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
                         <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;cursor:pointer;">
@@ -268,7 +283,6 @@
                                 ['key' => 'tresoreria_liquidacions_enabled',  'label' => 'Liquidacions professors','desc' => 'Càlcul i gestió de liquidacions econòmiques dels professors.'],
                                 ['key' => 'tresoreria_alumnes_enabled',       'label' => 'Alumnes',                'desc' => 'Fitxes dels alumnes, accés al portal i historial de cursos.'],
                                 ['key' => 'tresoreria_ips_enabled',           'label' => 'IPs bloquejades',        'desc' => 'Control d\'adreces IP amb accés restringit al portal.'],
-                                ['key' => 'tresoreria_administracio_enabled', 'label' => 'Administració',          'desc' => 'Gestió d\'usuaris del panell i assignació de rols.'],
                             ] as $sub)
                             <label style="display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;border-top:1px solid #f9fafb;cursor:pointer;">
                                 <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
@@ -284,6 +298,34 @@
                     </div>
 
                 </div>
+
+                {{-- ── Mòdul Gestió ── --}}
+                <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-top:0.5rem;cursor:pointer;">
+                    <input type="checkbox" wire:model.live="gestio_enabled"
+                           style="margin-top:0.125rem;width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                    <div>
+                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0 0 0.125rem;">Mòdul Gestió</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">Eines d'administració del panell: usuaris, rols i calendari de cursos.</p>
+                    </div>
+                </label>
+
+                @if ($gestio_enabled)
+                <div style="margin-left:1.875rem;border-left:2px solid #e5e7eb;padding-left:1rem;padding-top:0.5rem;">
+                    @foreach ([
+                        ['key' => 'gestio_administracio_enabled', 'label' => 'Administració', 'desc' => 'Gestió d\'usuaris del panell i assignació de rols.'],
+                        ['key' => 'gestio_calendari_enabled',     'label' => 'Calendari',     'desc' => 'Vista de calendari amb tots els cursos i sessions programades.'],
+                    ] as $sub)
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;cursor:pointer;">
+                        <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">{{ $sub['desc'] }}</p>
+                        </div>
+                    </label>
+                    @endforeach
+                </div>
+                @endif
 
                 {{-- ── Mòdul Associats ── --}}
                 <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-top:0.5rem;cursor:pointer;">

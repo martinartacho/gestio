@@ -56,13 +56,17 @@ class SettingsPage extends Page
     public bool $cataleg_categories_enabled = true;
     public bool $cataleg_espais_enabled     = true;
     public bool $cataleg_franges_enabled    = true;
+    public bool $campus_cursos_enabled      = true;
+    public bool $campus_professorat_enabled = true;
     public bool $tresoreria_enabled              = true;
     public bool $tresoreria_inscripcions_enabled = true;
     public bool $tresoreria_pagaments_enabled    = true;
     public bool $tresoreria_liquidacions_enabled = true;
     public bool $tresoreria_alumnes_enabled      = true;
     public bool $tresoreria_ips_enabled          = true;
-    public bool $tresoreria_administracio_enabled = true;
+    public bool $gestio_enabled              = true;
+    public bool $gestio_administracio_enabled = true;
+    public bool $gestio_calendari_enabled    = true;
 
     // Tab: Associats
     public bool   $associats_enabled        = false;
@@ -138,13 +142,17 @@ class SettingsPage extends Page
         $this->cataleg_categories_enabled = (bool) $store->get('cataleg_categories_enabled', true);
         $this->cataleg_espais_enabled     = (bool) $store->get('cataleg_espais_enabled', true);
         $this->cataleg_franges_enabled    = (bool) $store->get('cataleg_franges_enabled', true);
+        $this->campus_cursos_enabled      = (bool) $store->get('campus_cursos_enabled', true);
+        $this->campus_professorat_enabled = (bool) $store->get('campus_professorat_enabled', true);
         $this->tresoreria_enabled              = (bool) $store->get('tresoreria_enabled', true);
         $this->tresoreria_inscripcions_enabled = (bool) $store->get('tresoreria_inscripcions_enabled', true);
         $this->tresoreria_pagaments_enabled    = (bool) $store->get('tresoreria_pagaments_enabled', true);
         $this->tresoreria_liquidacions_enabled = (bool) $store->get('tresoreria_liquidacions_enabled', true);
         $this->tresoreria_alumnes_enabled      = (bool) $store->get('tresoreria_alumnes_enabled', true);
         $this->tresoreria_ips_enabled          = (bool) $store->get('tresoreria_ips_enabled', true);
-        $this->tresoreria_administracio_enabled = (bool) $store->get('tresoreria_administracio_enabled', true);
+        $this->gestio_enabled               = (bool) $store->get('gestio_enabled', true);
+        $this->gestio_administracio_enabled = (bool) $store->get('gestio_administracio_enabled', true);
+        $this->gestio_calendari_enabled     = (bool) $store->get('gestio_calendari_enabled', true);
 
         $this->associats_enabled        = (bool) $store->get('associats_enabled', false);
         $this->associats_socis_enabled  = (bool) $store->get('associats_socis_enabled', true);
@@ -214,13 +222,17 @@ class SettingsPage extends Page
             'cataleg_categories_enabled' => $this->cataleg_categories_enabled,
             'cataleg_espais_enabled'     => $this->cataleg_espais_enabled,
             'cataleg_franges_enabled'    => $this->cataleg_franges_enabled,
+            'campus_cursos_enabled'      => $this->campus_cursos_enabled,
+            'campus_professorat_enabled' => $this->campus_professorat_enabled,
             'tresoreria_enabled'               => $this->tresoreria_enabled,
             'tresoreria_inscripcions_enabled'  => $this->tresoreria_inscripcions_enabled,
             'tresoreria_pagaments_enabled'     => $this->tresoreria_pagaments_enabled,
             'tresoreria_liquidacions_enabled'  => $this->tresoreria_liquidacions_enabled,
             'tresoreria_alumnes_enabled'       => $this->tresoreria_alumnes_enabled,
             'tresoreria_ips_enabled'           => $this->tresoreria_ips_enabled,
-            'tresoreria_administracio_enabled' => $this->tresoreria_administracio_enabled,
+            'gestio_enabled'               => $this->gestio_enabled,
+            'gestio_administracio_enabled' => $this->gestio_administracio_enabled,
+            'gestio_calendari_enabled'     => $this->gestio_calendari_enabled,
 
             'associats_enabled'        => $this->associats_enabled,
             'associats_socis_enabled'  => $this->associats_socis_enabled,

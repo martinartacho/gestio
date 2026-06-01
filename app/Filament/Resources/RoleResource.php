@@ -51,8 +51,8 @@ class RoleResource extends Resource
     public static function canAccess(): bool
     {
         $s = app(\App\Settings\SettingStore::class);
-        return $s->get('tresoreria_enabled', true)
-            && $s->get('tresoreria_administracio_enabled', true)
+        return $s->get('gestio_enabled', true)
+            && $s->get('gestio_administracio_enabled', true)
             && (auth()->user()?->hasPermissionTo('roles.view') ?? false);
     }
     public static function canCreate(): bool                                          { return auth()->user()?->hasPermissionTo('roles.create') ?? false; }
