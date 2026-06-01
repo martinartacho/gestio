@@ -40,6 +40,13 @@ class SiteSettingsSeeder extends Seeder
             'cataleg_categories_enabled' => true,
             'cataleg_espais_enabled'     => true,
             'cataleg_franges_enabled'    => true,
+            'tresoreria_enabled'               => true,
+            'tresoreria_inscripcions_enabled'  => true,
+            'tresoreria_pagaments_enabled'     => true,
+            'tresoreria_liquidacions_enabled'  => true,
+            'tresoreria_alumnes_enabled'       => true,
+            'tresoreria_ips_enabled'           => true,
+            'tresoreria_administracio_enabled' => true,
 
             // ── Associats ────────────────────────────────────────────────────
             'associats_enabled'        => false,

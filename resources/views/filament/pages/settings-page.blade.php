@@ -249,6 +249,40 @@
                         @endif
                     </div>
 
+                    {{-- ── Tresoreria ── --}}
+                    <div style="{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;cursor:pointer;">
+                            <input type="checkbox" wire:model.live="tresoreria_enabled" {{ $campus_enabled ? '' : 'disabled' }}
+                                   style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                            <div>
+                                <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Tresoreria</p>
+                                <p style="font-size:0.8rem;color:#6b7280;margin:0;">Inscripcions, pagaments, liquidacions de professors i gestió d'alumnes.</p>
+                            </div>
+                        </label>
+
+                        @if ($campus_enabled && $tresoreria_enabled)
+                        <div style="margin-left:1.5rem;border-left:2px solid #f3f4f6;padding-left:0.75rem;">
+                            @foreach ([
+                                ['key' => 'tresoreria_inscripcions_enabled',  'label' => 'Inscripcions',           'desc' => 'Gestió de matrícules i el seu estat de pagament.'],
+                                ['key' => 'tresoreria_pagaments_enabled',     'label' => 'Pagaments',              'desc' => 'Registre de pagaments rebuts (Stripe, transferència, Bizum...).'],
+                                ['key' => 'tresoreria_liquidacions_enabled',  'label' => 'Liquidacions professors','desc' => 'Càlcul i gestió de liquidacions econòmiques dels professors.'],
+                                ['key' => 'tresoreria_alumnes_enabled',       'label' => 'Alumnes',                'desc' => 'Fitxes dels alumnes, accés al portal i historial de cursos.'],
+                                ['key' => 'tresoreria_ips_enabled',           'label' => 'IPs bloquejades',        'desc' => 'Control d\'adreces IP amb accés restringit al portal.'],
+                                ['key' => 'tresoreria_administracio_enabled', 'label' => 'Administració',          'desc' => 'Gestió d\'usuaris del panell i assignació de rols.'],
+                            ] as $sub)
+                            <label style="display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;border-top:1px solid #f9fafb;cursor:pointer;">
+                                <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                                       style="margin-top:0.15rem;width:0.875rem;height:0.875rem;border-radius:0.2rem;cursor:pointer;">
+                                <div>
+                                    <p style="font-size:0.8125rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                                    <p style="font-size:0.75rem;color:#9ca3af;margin:0;">{{ $sub['desc'] }}</p>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+
                 </div>
 
                 {{-- ── Mòdul Associats ── --}}
