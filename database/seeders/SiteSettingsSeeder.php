@@ -31,10 +31,15 @@ class SiteSettingsSeeder extends Seeder
             'mail_footer_text'      => null,
 
             // ── Mòduls / Feature flags ───────────────────────────────────────
-            'campus_enabled'           => true,
-            'documents_enabled'        => true,
-            'lms_enabled'              => false,
-            'courses_learning_enabled' => false,
+            'campus_enabled'             => true,
+            'documents_enabled'          => true,
+            'lms_enabled'                => false,
+            'courses_learning_enabled'   => false,
+            'cataleg_enabled'            => true,
+            'cataleg_periodes_enabled'   => true,
+            'cataleg_categories_enabled' => true,
+            'cataleg_espais_enabled'     => true,
+            'cataleg_franges_enabled'    => true,
 
             // ── Associats ────────────────────────────────────────────────────
             'associats_enabled'        => false,

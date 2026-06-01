@@ -208,7 +208,7 @@
                         </div>
                     </label>
 
-                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid #f3f4f6;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
                         <input type="checkbox" wire:model.live="courses_learning_enabled" {{ $campus_enabled ? '' : 'disabled' }}
                                style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
                         <div>
@@ -216,6 +216,38 @@
                             <p style="font-size:0.8rem;color:#6b7280;margin:0;">Permet als alumnes visualitzar continguts de vídeo i materials en línia.</p>
                         </div>
                     </label>
+
+                    {{-- ── Catàleg ── --}}
+                    <div style="{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;cursor:pointer;">
+                            <input type="checkbox" wire:model.live="cataleg_enabled" {{ $campus_enabled ? '' : 'disabled' }}
+                                   style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                            <div>
+                                <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Catàleg</p>
+                                <p style="font-size:0.8rem;color:#6b7280;margin:0;">Períodes acadèmics, categories, espais i franges horàries.</p>
+                            </div>
+                        </label>
+
+                        @if ($campus_enabled && $cataleg_enabled)
+                        <div style="margin-left:1.5rem;border-left:2px solid #f3f4f6;padding-left:0.75rem;">
+                            @foreach ([
+                                ['key' => 'cataleg_periodes_enabled',   'label' => 'Períodes',          'desc' => 'Temporades acadèmiques (tardor, primavera...).'],
+                                ['key' => 'cataleg_categories_enabled', 'label' => 'Categories',        'desc' => 'Classificació temàtica dels cursos.'],
+                                ['key' => 'cataleg_espais_enabled',     'label' => 'Espais',            'desc' => 'Aules i sales on s\'imparteixen els cursos.'],
+                                ['key' => 'cataleg_franges_enabled',    'label' => 'Franges horàries',  'desc' => 'Torns horaris disponibles (matí, tarda...).'],
+                            ] as $sub)
+                            <label style="display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;border-top:1px solid #f9fafb;cursor:pointer;">
+                                <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                                       style="margin-top:0.15rem;width:0.875rem;height:0.875rem;border-radius:0.2rem;cursor:pointer;">
+                                <div>
+                                    <p style="font-size:0.8125rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                                    <p style="font-size:0.75rem;color:#9ca3af;margin:0;">{{ $sub['desc'] }}</p>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
 
                 </div>
 

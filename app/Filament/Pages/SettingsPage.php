@@ -51,6 +51,11 @@ class SettingsPage extends Page
     public bool $documents_enabled          = true;
     public bool $lms_enabled                = false;
     public bool $courses_learning_enabled   = false;
+    public bool $cataleg_enabled            = true;
+    public bool $cataleg_periodes_enabled   = true;
+    public bool $cataleg_categories_enabled = true;
+    public bool $cataleg_espais_enabled     = true;
+    public bool $cataleg_franges_enabled    = true;
 
     // Tab: Associats
     public bool   $associats_enabled        = false;
@@ -117,10 +122,15 @@ class SettingsPage extends Page
         $this->mail_from_address = (string) $store->get('mail_from_address', '');
         $this->mail_footer_text  = (string) $store->get('mail_footer_text', '');
 
-        $this->campus_enabled           = (bool) $store->get('campus_enabled', true);
-        $this->documents_enabled        = (bool) $store->get('documents_enabled', true);
-        $this->lms_enabled              = (bool) $store->get('lms_enabled', false);
-        $this->courses_learning_enabled = (bool) $store->get('courses_learning_enabled', false);
+        $this->campus_enabled             = (bool) $store->get('campus_enabled', true);
+        $this->documents_enabled          = (bool) $store->get('documents_enabled', true);
+        $this->lms_enabled                = (bool) $store->get('lms_enabled', false);
+        $this->courses_learning_enabled   = (bool) $store->get('courses_learning_enabled', false);
+        $this->cataleg_enabled            = (bool) $store->get('cataleg_enabled', true);
+        $this->cataleg_periodes_enabled   = (bool) $store->get('cataleg_periodes_enabled', true);
+        $this->cataleg_categories_enabled = (bool) $store->get('cataleg_categories_enabled', true);
+        $this->cataleg_espais_enabled     = (bool) $store->get('cataleg_espais_enabled', true);
+        $this->cataleg_franges_enabled    = (bool) $store->get('cataleg_franges_enabled', true);
 
         $this->associats_enabled        = (bool) $store->get('associats_enabled', false);
         $this->associats_socis_enabled  = (bool) $store->get('associats_socis_enabled', true);
@@ -181,10 +191,15 @@ class SettingsPage extends Page
             'mail_from_address' => $this->mail_from_address ?: null,
             'mail_footer_text'  => $this->mail_footer_text ?: null,
 
-            'campus_enabled'           => $this->campus_enabled,
-            'documents_enabled'        => $this->documents_enabled,
-            'lms_enabled'              => $this->lms_enabled,
-            'courses_learning_enabled' => $this->courses_learning_enabled,
+            'campus_enabled'             => $this->campus_enabled,
+            'documents_enabled'          => $this->documents_enabled,
+            'lms_enabled'                => $this->lms_enabled,
+            'courses_learning_enabled'   => $this->courses_learning_enabled,
+            'cataleg_enabled'            => $this->cataleg_enabled,
+            'cataleg_periodes_enabled'   => $this->cataleg_periodes_enabled,
+            'cataleg_categories_enabled' => $this->cataleg_categories_enabled,
+            'cataleg_espais_enabled'     => $this->cataleg_espais_enabled,
+            'cataleg_franges_enabled'    => $this->cataleg_franges_enabled,
 
             'associats_enabled'        => $this->associats_enabled,
             'associats_socis_enabled'  => $this->associats_socis_enabled,
