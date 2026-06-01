@@ -147,5 +147,6 @@ class DatabaseSeeder extends Seeder
 
         // ── Dades del mòdul associats ─────────────────────────────────────
         $this->call(AssociatMemberSeeder::class);
+        $this->call(AssociatQuoteSeeder::class);
     }
 }
