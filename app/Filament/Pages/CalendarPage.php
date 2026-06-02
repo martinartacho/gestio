@@ -23,7 +23,9 @@ class CalendarPage extends Page
 
     public static function canAccess(): bool
     {
-        return app(\App\Settings\SettingStore::class)->get('campus_enabled', true)
+        $s = app(\App\Settings\SettingStore::class);
+        return $s->get('gestio_enabled', true)
+            && $s->get('gestio_calendari_enabled', true)
             && (Auth::user()?->hasAnyRole(['admin', 'manager']) ?? false);
     }
 

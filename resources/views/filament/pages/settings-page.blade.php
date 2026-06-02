@@ -208,7 +208,7 @@
                         </div>
                     </label>
 
-                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid #f3f4f6;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
                         <input type="checkbox" wire:model.live="courses_learning_enabled" {{ $campus_enabled ? '' : 'disabled' }}
                                style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
                         <div>
@@ -217,7 +217,115 @@
                         </div>
                     </label>
 
+                    {{-- ── Cursos i Professorat ── --}}
+                    @foreach ([
+                        ['key' => 'campus_cursos_enabled',      'label' => 'Cursos',      'desc' => 'Gestió del catàleg de cursos, edicions i continguts.'],
+                        ['key' => 'campus_professorat_enabled', 'label' => 'Professorat', 'desc' => 'Fitxes de professors, liquidacions i assignació a cursos.'],
+                    ] as $sub)
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;cursor:pointer;{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <input type="checkbox" wire:model.live="{{ $sub['key'] }}" {{ $campus_enabled ? '' : 'disabled' }}
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">{{ $sub['desc'] }}</p>
+                        </div>
+                    </label>
+                    @endforeach
+
+                    {{-- ── Catàleg ── --}}
+                    <div style="{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;cursor:pointer;">
+                            <input type="checkbox" wire:model.live="cataleg_enabled" {{ $campus_enabled ? '' : 'disabled' }}
+                                   style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                            <div>
+                                <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Catàleg</p>
+                                <p style="font-size:0.8rem;color:#6b7280;margin:0;">Períodes acadèmics, categories, espais i franges horàries.</p>
+                            </div>
+                        </label>
+
+                        @if ($campus_enabled && $cataleg_enabled)
+                        <div style="margin-left:1.5rem;border-left:2px solid #f3f4f6;padding-left:0.75rem;">
+                            @foreach ([
+                                ['key' => 'cataleg_periodes_enabled',   'label' => 'Períodes',          'desc' => 'Temporades acadèmiques (tardor, primavera...).'],
+                                ['key' => 'cataleg_categories_enabled', 'label' => 'Categories',        'desc' => 'Classificació temàtica dels cursos.'],
+                                ['key' => 'cataleg_espais_enabled',     'label' => 'Espais',            'desc' => 'Aules i sales on s\'imparteixen els cursos.'],
+                                ['key' => 'cataleg_franges_enabled',    'label' => 'Franges horàries',  'desc' => 'Torns horaris disponibles (matí, tarda...).'],
+                            ] as $sub)
+                            <label style="display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;border-top:1px solid #f9fafb;cursor:pointer;">
+                                <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                                       style="margin-top:0.15rem;width:0.875rem;height:0.875rem;border-radius:0.2rem;cursor:pointer;">
+                                <div>
+                                    <p style="font-size:0.8125rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                                    <p style="font-size:0.75rem;color:#9ca3af;margin:0;">{{ $sub['desc'] }}</p>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+
+                    {{-- ── Tresoreria ── --}}
+                    <div style="{{ $campus_enabled ? '' : 'opacity:0.45;pointer-events:none;' }}">
+                        <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;cursor:pointer;">
+                            <input type="checkbox" wire:model.live="tresoreria_enabled" {{ $campus_enabled ? '' : 'disabled' }}
+                                   style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                            <div>
+                                <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Tresoreria</p>
+                                <p style="font-size:0.8rem;color:#6b7280;margin:0;">Inscripcions, pagaments, liquidacions de professors i gestió d'alumnes.</p>
+                            </div>
+                        </label>
+
+                        @if ($campus_enabled && $tresoreria_enabled)
+                        <div style="margin-left:1.5rem;border-left:2px solid #f3f4f6;padding-left:0.75rem;">
+                            @foreach ([
+                                ['key' => 'tresoreria_inscripcions_enabled',  'label' => 'Inscripcions',           'desc' => 'Gestió de matrícules i el seu estat de pagament.'],
+                                ['key' => 'tresoreria_pagaments_enabled',     'label' => 'Pagaments',              'desc' => 'Registre de pagaments rebuts (Stripe, transferència, Bizum...).'],
+                                ['key' => 'tresoreria_liquidacions_enabled',  'label' => 'Liquidacions professors','desc' => 'Càlcul i gestió de liquidacions econòmiques dels professors.'],
+                                ['key' => 'tresoreria_alumnes_enabled',       'label' => 'Alumnes',                'desc' => 'Fitxes dels alumnes, accés al portal i historial de cursos.'],
+                                ['key' => 'tresoreria_ips_enabled',           'label' => 'IPs bloquejades',        'desc' => 'Control d\'adreces IP amb accés restringit al portal.'],
+                            ] as $sub)
+                            <label style="display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;border-top:1px solid #f9fafb;cursor:pointer;">
+                                <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                                       style="margin-top:0.15rem;width:0.875rem;height:0.875rem;border-radius:0.2rem;cursor:pointer;">
+                                <div>
+                                    <p style="font-size:0.8125rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                                    <p style="font-size:0.75rem;color:#9ca3af;margin:0;">{{ $sub['desc'] }}</p>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+
                 </div>
+
+                {{-- ── Mòdul Gestió ── --}}
+                <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-top:0.5rem;cursor:pointer;">
+                    <input type="checkbox" wire:model.live="gestio_enabled"
+                           style="margin-top:0.125rem;width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                    <div>
+                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0 0 0.125rem;">Mòdul Gestió</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">Eines d'administració del panell: usuaris, rols i calendari de cursos.</p>
+                    </div>
+                </label>
+
+                @if ($gestio_enabled)
+                <div style="margin-left:1.875rem;border-left:2px solid #e5e7eb;padding-left:1rem;padding-top:0.5rem;">
+                    @foreach ([
+                        ['key' => 'gestio_administracio_enabled', 'label' => 'Administració', 'desc' => 'Gestió d\'usuaris del panell i assignació de rols.'],
+                        ['key' => 'gestio_calendari_enabled',     'label' => 'Calendari',     'desc' => 'Vista de calendari amb tots els cursos i sessions programades.'],
+                    ] as $sub)
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;cursor:pointer;">
+                        <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">{{ $sub['desc'] }}</p>
+                        </div>
+                    </label>
+                    @endforeach
+                </div>
+                @endif
 
                 {{-- ── Mòdul Associats ── --}}
                 <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-top:0.5rem;cursor:pointer;">
@@ -277,15 +385,24 @@
                         </div>
                     </div>
 
-                    {{-- Sub-mòduls futurs --}}
+                    {{-- Sub-mòduls actius --}}
+                    @foreach ([
+                        ['key' => 'associats_socis_enabled',  'label' => 'Socis',        'desc' => 'Gestió de persones sòcies: crear, editar, fitxa i carnet digital amb QR.'],
+                        ['key' => 'associats_quotes_enabled', 'label' => 'Quotes',       'desc' => 'Gestió de quotes periòdiques (anual, semestral, trimestral, mensual).'],
+                        ['key' => 'associats_sepa_enabled',   'label' => 'Remeses SEPA', 'desc' => 'Generació de fitxers pain.008 per a domiciliació bancària SEPA.'],
+                    ] as $sub)
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;cursor:pointer;">
+                        <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                               style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;">
+                        <div>
+                            <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">{{ $sub['desc'] }}</p>
+                        </div>
+                    </label>
+                    @endforeach
+
+                    {{-- Sub-mòduls pròximament --}}
                     <div style="opacity:0.45;pointer-events:none;">
-                        <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;">
-                            <input type="checkbox" disabled style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;">
-                            <div>
-                                <p style="font-size:0.875rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">Quotes i renovació <span style="font-size:0.7rem;background:#f3f4f6;color:#6b7280;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.25rem;">Pròximament</span></p>
-                                <p style="font-size:0.8rem;color:#6b7280;margin:0;">Gestió de quotes anuals, renovació automàtica i control de pagaments dels socis.</p>
-                            </div>
-                        </label>
                         <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-top:1px solid #f3f4f6;">
                             <input type="checkbox" disabled style="margin-top:0.125rem;width:1rem;height:1rem;border-radius:0.25rem;">
                             <div>

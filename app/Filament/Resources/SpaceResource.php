@@ -23,7 +23,14 @@ class SpaceResource extends Resource
     public static function getModelLabel(): string       { return __('site.space'); }
     public static function getPluralModelLabel(): string { return __('site.spaces'); }
 
-    public static function canAccess(): bool                                          { return app(\App\Settings\SettingStore::class)->get('campus_enabled', true) && (auth()->user()?->hasPermissionTo('spaces.view') ?? false); }
+    public static function canAccess(): bool
+    {
+        $s = app(\App\Settings\SettingStore::class);
+        return $s->get('campus_enabled', true)
+            && $s->get('cataleg_enabled', true)
+            && $s->get('cataleg_espais_enabled', true)
+            && (auth()->user()?->hasPermissionTo('spaces.view') ?? false);
+    }
     public static function canCreate(): bool                                          { return auth()->user()?->hasPermissionTo('spaces.create') ?? false; }
     public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool      { return auth()->user()?->hasPermissionTo('spaces.edit')   ?? false; }
     public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('spaces.delete') ?? false; }

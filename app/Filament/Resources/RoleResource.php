@@ -48,7 +48,13 @@ class RoleResource extends Resource
         return __('site.roles');
     }
 
-    public static function canAccess(): bool                                          { return auth()->user()?->hasPermissionTo('roles.view')   ?? false; }
+    public static function canAccess(): bool
+    {
+        $s = app(\App\Settings\SettingStore::class);
+        return $s->get('gestio_enabled', true)
+            && $s->get('gestio_administracio_enabled', true)
+            && (auth()->user()?->hasPermissionTo('roles.view') ?? false);
+    }
     public static function canCreate(): bool                                          { return auth()->user()?->hasPermissionTo('roles.create') ?? false; }
     public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool      { return auth()->user()?->hasPermissionTo('roles.edit')   ?? false; }
     public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('roles.delete') ?? false; }

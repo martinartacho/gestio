@@ -51,9 +51,28 @@ class SettingsPage extends Page
     public bool $documents_enabled          = true;
     public bool $lms_enabled                = false;
     public bool $courses_learning_enabled   = false;
+    public bool $cataleg_enabled            = true;
+    public bool $cataleg_periodes_enabled   = true;
+    public bool $cataleg_categories_enabled = true;
+    public bool $cataleg_espais_enabled     = true;
+    public bool $cataleg_franges_enabled    = true;
+    public bool $campus_cursos_enabled      = true;
+    public bool $campus_professorat_enabled = true;
+    public bool $tresoreria_enabled              = true;
+    public bool $tresoreria_inscripcions_enabled = true;
+    public bool $tresoreria_pagaments_enabled    = true;
+    public bool $tresoreria_liquidacions_enabled = true;
+    public bool $tresoreria_alumnes_enabled      = true;
+    public bool $tresoreria_ips_enabled          = true;
+    public bool $gestio_enabled              = true;
+    public bool $gestio_administracio_enabled = true;
+    public bool $gestio_calendari_enabled    = true;
 
     // Tab: Associats
     public bool   $associats_enabled        = false;
+    public bool   $associats_socis_enabled  = true;
+    public bool   $associats_quotes_enabled = true;
+    public bool   $associats_sepa_enabled   = true;
     public string $associats_org_name       = 'AC Granollers';
     public string $associats_member_prefix  = '';
 
@@ -114,14 +133,33 @@ class SettingsPage extends Page
         $this->mail_from_address = (string) $store->get('mail_from_address', '');
         $this->mail_footer_text  = (string) $store->get('mail_footer_text', '');
 
-        $this->campus_enabled           = (bool) $store->get('campus_enabled', true);
-        $this->documents_enabled        = (bool) $store->get('documents_enabled', true);
-        $this->lms_enabled              = (bool) $store->get('lms_enabled', false);
-        $this->courses_learning_enabled = (bool) $store->get('courses_learning_enabled', false);
+        $this->campus_enabled             = (bool) $store->get('campus_enabled', true);
+        $this->documents_enabled          = (bool) $store->get('documents_enabled', true);
+        $this->lms_enabled                = (bool) $store->get('lms_enabled', false);
+        $this->courses_learning_enabled   = (bool) $store->get('courses_learning_enabled', false);
+        $this->cataleg_enabled            = (bool) $store->get('cataleg_enabled', true);
+        $this->cataleg_periodes_enabled   = (bool) $store->get('cataleg_periodes_enabled', true);
+        $this->cataleg_categories_enabled = (bool) $store->get('cataleg_categories_enabled', true);
+        $this->cataleg_espais_enabled     = (bool) $store->get('cataleg_espais_enabled', true);
+        $this->cataleg_franges_enabled    = (bool) $store->get('cataleg_franges_enabled', true);
+        $this->campus_cursos_enabled      = (bool) $store->get('campus_cursos_enabled', true);
+        $this->campus_professorat_enabled = (bool) $store->get('campus_professorat_enabled', true);
+        $this->tresoreria_enabled              = (bool) $store->get('tresoreria_enabled', true);
+        $this->tresoreria_inscripcions_enabled = (bool) $store->get('tresoreria_inscripcions_enabled', true);
+        $this->tresoreria_pagaments_enabled    = (bool) $store->get('tresoreria_pagaments_enabled', true);
+        $this->tresoreria_liquidacions_enabled = (bool) $store->get('tresoreria_liquidacions_enabled', true);
+        $this->tresoreria_alumnes_enabled      = (bool) $store->get('tresoreria_alumnes_enabled', true);
+        $this->tresoreria_ips_enabled          = (bool) $store->get('tresoreria_ips_enabled', true);
+        $this->gestio_enabled               = (bool) $store->get('gestio_enabled', true);
+        $this->gestio_administracio_enabled = (bool) $store->get('gestio_administracio_enabled', true);
+        $this->gestio_calendari_enabled     = (bool) $store->get('gestio_calendari_enabled', true);
 
-        $this->associats_enabled       = (bool)   $store->get('associats_enabled', false);
-        $this->associats_org_name      = (string) $store->get('associats_org_name', 'AC Granollers');
-        $this->associats_member_prefix = (string) $store->get('associats_member_prefix', '');
+        $this->associats_enabled        = (bool) $store->get('associats_enabled', false);
+        $this->associats_socis_enabled  = (bool) $store->get('associats_socis_enabled', true);
+        $this->associats_quotes_enabled = (bool) $store->get('associats_quotes_enabled', true);
+        $this->associats_sepa_enabled   = (bool) $store->get('associats_sepa_enabled', true);
+        $this->associats_org_name       = (string) $store->get('associats_org_name', 'AC Granollers');
+        $this->associats_member_prefix  = (string) $store->get('associats_member_prefix', '');
 
         $this->sepa_creditor_id = (string) $store->get('sepa_creditor_id', '');
         $this->sepa_org_name    = (string) $store->get('sepa_org_name', '');
@@ -175,12 +213,31 @@ class SettingsPage extends Page
             'mail_from_address' => $this->mail_from_address ?: null,
             'mail_footer_text'  => $this->mail_footer_text ?: null,
 
-            'campus_enabled'           => $this->campus_enabled,
-            'documents_enabled'        => $this->documents_enabled,
-            'lms_enabled'              => $this->lms_enabled,
-            'courses_learning_enabled' => $this->courses_learning_enabled,
+            'campus_enabled'             => $this->campus_enabled,
+            'documents_enabled'          => $this->documents_enabled,
+            'lms_enabled'                => $this->lms_enabled,
+            'courses_learning_enabled'   => $this->courses_learning_enabled,
+            'cataleg_enabled'            => $this->cataleg_enabled,
+            'cataleg_periodes_enabled'   => $this->cataleg_periodes_enabled,
+            'cataleg_categories_enabled' => $this->cataleg_categories_enabled,
+            'cataleg_espais_enabled'     => $this->cataleg_espais_enabled,
+            'cataleg_franges_enabled'    => $this->cataleg_franges_enabled,
+            'campus_cursos_enabled'      => $this->campus_cursos_enabled,
+            'campus_professorat_enabled' => $this->campus_professorat_enabled,
+            'tresoreria_enabled'               => $this->tresoreria_enabled,
+            'tresoreria_inscripcions_enabled'  => $this->tresoreria_inscripcions_enabled,
+            'tresoreria_pagaments_enabled'     => $this->tresoreria_pagaments_enabled,
+            'tresoreria_liquidacions_enabled'  => $this->tresoreria_liquidacions_enabled,
+            'tresoreria_alumnes_enabled'       => $this->tresoreria_alumnes_enabled,
+            'tresoreria_ips_enabled'           => $this->tresoreria_ips_enabled,
+            'gestio_enabled'               => $this->gestio_enabled,
+            'gestio_administracio_enabled' => $this->gestio_administracio_enabled,
+            'gestio_calendari_enabled'     => $this->gestio_calendari_enabled,
 
             'associats_enabled'        => $this->associats_enabled,
+            'associats_socis_enabled'  => $this->associats_socis_enabled,
+            'associats_quotes_enabled' => $this->associats_quotes_enabled,
+            'associats_sepa_enabled'   => $this->associats_sepa_enabled,
             'associats_org_name'       => $this->associats_org_name ?: 'AC Granollers',
             'associats_member_prefix'  => $this->associats_member_prefix,
 

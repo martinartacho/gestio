@@ -25,7 +25,14 @@ class CategoryResource extends Resource
     public static function getModelLabel(): string       { return __('site.category'); }
     public static function getPluralModelLabel(): string { return __('site.categories'); }
 
-    public static function canAccess(): bool                                          { return app(\App\Settings\SettingStore::class)->get('campus_enabled', true) && (auth()->user()?->hasPermissionTo('categories.view') ?? false); }
+    public static function canAccess(): bool
+    {
+        $s = app(\App\Settings\SettingStore::class);
+        return $s->get('campus_enabled', true)
+            && $s->get('cataleg_enabled', true)
+            && $s->get('cataleg_categories_enabled', true)
+            && (auth()->user()?->hasPermissionTo('categories.view') ?? false);
+    }
     public static function canCreate(): bool                                          { return auth()->user()?->hasPermissionTo('categories.create') ?? false; }
     public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool      { return auth()->user()?->hasPermissionTo('categories.edit')   ?? false; }
     public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('categories.delete') ?? false; }

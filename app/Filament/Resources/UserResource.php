@@ -51,7 +51,13 @@ class UserResource extends Resource
         return __('site.users');
     }
 
-    public static function canAccess(): bool                                          { return auth()->user()?->hasPermissionTo('users.view')   ?? false; }
+    public static function canAccess(): bool
+    {
+        $s = app(\App\Settings\SettingStore::class);
+        return $s->get('gestio_enabled', true)
+            && $s->get('gestio_administracio_enabled', true)
+            && (auth()->user()?->hasPermissionTo('users.view') ?? false);
+    }
     public static function canCreate(): bool                                          { return auth()->user()?->hasPermissionTo('users.create') ?? false; }
     public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool      { return auth()->user()?->hasPermissionTo('users.edit')   ?? false; }
     public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('users.delete') ?? false; }
