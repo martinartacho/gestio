@@ -17,6 +17,7 @@ class DocumentAccessTest extends TestCase
 {
     use RefreshDatabase;
 
+
     // ── Descàrrega de documents ───────────────────────────────────────────────
 
     public function test_public_document_url_is_accessible_to_anyone(): void
