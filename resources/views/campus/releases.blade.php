@@ -17,12 +17,43 @@
         </p>
     </div>
 
+    {{-- ── v1.6.0 ── --}}
+    <div style="margin-bottom:3rem;">
+        <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+            <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.6.0</span>
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
+                Nou
+            </span>
+            <span style="font-size:0.65rem; color:#9ca3af;">Juny 2026</span>
+        </div>
+
+        <div style="border-left:2px solid #6366f1; padding-left:1.5rem;">
+            <p style="color:#6b7280; font-size:0.9rem; line-height:1.8; margin-bottom:1.5rem;">
+                El responsable de Tresoreria disposa d'un <strong>resum financer consolidat</strong>
+                en una sola pàgina: inscripcions, pagaments, liquidacions de professors i quotes de socis,
+                tots visibles alhora i adaptats als mòduls actius.
+            </p>
+
+            <div style="margin-bottom:0;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Dashboard Resum Financer
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    Nova pàgina accessible des del menú Tresoreria. Mostra KPIs per estat
+                    (pendent, pagat, cancel·lat…) amb el nombre de registres i l'import total de cadascun.
+                    Si un sub-mòdul és desactivat des de la Configuració, la seva secció desapareix
+                    automàticament del resum.
+                </p>
+            </div>
+        </div>
+    </div>
+
     {{-- ── v1.5.0 ── --}}
     <div style="margin-bottom:3rem;">
         <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.5.0</span>
-            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
-                Nou
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#374151; background:#e5e7eb; padding:0.2rem 0.6rem; border-radius:3px;">
+                Millores
             </span>
             <span style="font-size:0.65rem; color:#9ca3af;">Juny 2026</span>
         </div>
