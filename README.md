@@ -126,6 +126,7 @@ Hub central de tots els fluxos econòmics (Campus + Associats). Dissenyat per cr
 | Liquidacions professors | Ordre de pagament per professor/curs/temporada amb sessions, import brut, retenció i net |
 | Quotes socis | Gestió de quotes de socis des de Tresoreria (independent del mòdul Associats) |
 | Remeses SEPA socis | Gestió de remeses SEPA de domiciliació de socis des de Tresoreria |
+| **Resum financer** | Dashboard de KPIs consolidats: inscripcions, pagaments, liquidacions i quotes. S'adapta als flags actius de Settings |
 
 ### Control d'accés
 | Rol | Permisos |
