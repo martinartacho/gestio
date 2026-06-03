@@ -283,6 +283,8 @@
                                 ['key' => 'tresoreria_liquidacions_enabled',  'label' => 'Liquidacions professors','desc' => 'Càlcul i gestió de liquidacions econòmiques dels professors.'],
                                 ['key' => 'tresoreria_alumnes_enabled',       'label' => 'Alumnes',                'desc' => 'Fitxes dels alumnes, accés al portal i historial de cursos.'],
                                 ['key' => 'tresoreria_ips_enabled',           'label' => 'IPs bloquejades',        'desc' => 'Control d\'adreces IP amb accés restringit al portal.'],
+                                ['key' => 'tresoreria_quotes_socis_enabled',  'label' => 'Quotes socis',           'desc' => 'Gestió de quotes de socis des de Tresoreria (independent del mòdul Associats).'],
+                                ['key' => 'tresoreria_sepa_socis_enabled',    'label' => 'Remeses SEPA socis',     'desc' => 'Gestió de remeses SEPA de domiciliació de socis des de Tresoreria.'],
                             ] as $sub)
                             <label style="display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;border-top:1px solid #f9fafb;cursor:pointer;">
                                 <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
