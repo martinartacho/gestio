@@ -17,12 +17,52 @@
         </p>
     </div>
 
+    {{-- ── v1.5.0 ── --}}
+    <div style="margin-bottom:3rem;">
+        <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+            <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.5.0</span>
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
+                Nou
+            </span>
+            <span style="font-size:0.65rem; color:#9ca3af;">Juny 2026</span>
+        </div>
+
+        <div style="border-left:2px solid #6366f1; padding-left:1.5rem;">
+            <p style="color:#6b7280; font-size:0.9rem; line-height:1.8; margin-bottom:1.5rem;">
+                La Tresoreria es converteix en el <strong>hub central de tots els fluxos econòmics</strong>
+                de la plataforma, independentment del mòdul d'origen: Campus, Associats i, en el futur, Tickets i Botiga.
+            </p>
+
+            <div style="margin-bottom:1.25rem;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Quotes de socis a Tresoreria
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    El rol de Tresoreria pot consultar i gestionar totes les quotes dels socis
+                    directament des del seu grup de navegació, sense necessitat d'accedir al mòdul
+                    d'Associats. El flag d'activació és independent.
+                </p>
+            </div>
+
+            <div style="margin-bottom:0;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Remeses SEPA a Tresoreria
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    Les remeses de domiciliació bancària dels socis també són accessibles i gestionables
+                    des de Tresoreria, amb visió transversal de tots els socis i estat de cada remesa
+                    (esborrany, XML generat, enviada al banc, processada).
+                </p>
+            </div>
+        </div>
+    </div>
+
     {{-- ── v1.4.0 ── --}}
     <div style="margin-bottom:3rem;">
         <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.4.0</span>
-            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
-                Nou
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#374151; background:#e5e7eb; padding:0.2rem 0.6rem; border-radius:3px;">
+                Millores
             </span>
             <span style="font-size:0.65rem; color:#9ca3af;">Maig 2026</span>
         </div>
