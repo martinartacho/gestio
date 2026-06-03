@@ -117,11 +117,15 @@ Pàgina d'administració (rol `admin`) per personalitzar el campus sense tocar e
 - Timezone aplicada dinàmicament a `AppServiceProvider::boot()`
 
 ### Mòdul Tresoreria
+Hub central de tots els fluxos econòmics (Campus + Associats). Dissenyat per créixer cap a Tickets, Botiga i altres mòduls futurs.
+
 | Recurs | Descripció |
 |---|---|
 | Inscripcions | Alta d'alumnes a cursos, estat, domiciliació bancària, RGPD |
 | Pagaments alumnes | Registre de pagaments per inscripció (transferència, rebut, efectiu…) |
 | Liquidacions professors | Ordre de pagament per professor/curs/temporada amb sessions, import brut, retenció i net |
+| Quotes socis | Gestió de quotes de socis des de Tresoreria (independent del mòdul Associats) |
+| Remeses SEPA socis | Gestió de remeses SEPA de domiciliació de socis des de Tresoreria |
 
 ### Control d'accés
 | Rol | Permisos |
@@ -129,7 +133,7 @@ Pàgina d'administració (rol `admin`) per personalitzar el campus sense tocar e
 | `admin` | Accés total + drag & drop al calendari |
 | `manager` | Gestió de cursos, professors i categories |
 | `secretaria` | Visualització de tot el catàleg |
-| `tresoreria` | Inscripcions, pagaments, liquidacions i fitxa fiscal de professors |
+| `tresoreria` | Inscripcions, pagaments, liquidacions professors, quotes socis i remeses SEPA |
 | `editor` | Gestió d'usuaris i cursos |
 | `viewer` | Només lectura |
 
