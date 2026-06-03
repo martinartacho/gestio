@@ -48,6 +48,8 @@ class SiteSettingsSeeder extends Seeder
             'tresoreria_liquidacions_enabled' => true,
             'tresoreria_alumnes_enabled'      => true,
             'tresoreria_ips_enabled'          => true,
+            'tresoreria_quotes_socis_enabled' => true,
+            'tresoreria_sepa_socis_enabled'   => true,
             'gestio_enabled'               => true,
             'gestio_administracio_enabled' => true,
             'gestio_calendari_enabled'     => true,

@@ -64,6 +64,8 @@ class SettingsPage extends Page
     public bool $tresoreria_liquidacions_enabled = true;
     public bool $tresoreria_alumnes_enabled      = true;
     public bool $tresoreria_ips_enabled          = true;
+    public bool $tresoreria_quotes_socis_enabled = true;
+    public bool $tresoreria_sepa_socis_enabled   = true;
     public bool $gestio_enabled              = true;
     public bool $gestio_administracio_enabled = true;
     public bool $gestio_calendari_enabled    = true;
