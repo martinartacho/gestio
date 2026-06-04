@@ -119,7 +119,35 @@
     </div>
     @endif
 
-    @if (!$showInscripcions && !$showPagaments && !$showLiquidacions && !$showQuotesSocis)
+    {{-- ── Bloc Remeses SEPA socis ── --}}
+    @if ($showSepaSocis)
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;overflow:hidden;">
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid #f3f4f6;">
+            <h2 style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0 0 0.25rem;">Remeses SEPA socis</h2>
+            <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+                <span style="font-size:0.8125rem;color:#6b7280;">Import total: <strong style="color:#111827;">{{ number_format($remesesImport, 2, ',', '.') }} €</strong></span>
+                <span style="font-size:0.8125rem;color:#6b7280;">Operacions totals: <strong style="color:#111827;">{{ $remesesOperacions }}</strong></span>
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;">
+            @foreach ([
+                'draft'     => ['Esborrany',    '#9ca3af', '#f9fafb'],
+                'generated' => ['XML generat',  '#6366f1', '#eef2ff'],
+                'submitted' => ['Enviat banc',  '#f59e0b', '#fffbeb'],
+                'processed' => ['Processat',    '#10b981', '#f0fdf4'],
+            ] as $estat => [$label, $color, $bg])
+            <div style="padding:1rem 1.25rem;border-right:1px solid #f3f4f6;border-left:3px solid {{ $color }};background:{{ $bg }};">
+                <p style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#6b7280;margin:0 0 0.25rem;font-weight:600;">{{ $label }}</p>
+                <p style="font-size:1.375rem;font-weight:700;color:#111827;margin:0 0 0.125rem;">{{ $remesesSepa[$estat]['total'] }}</p>
+                <p style="font-size:0.8125rem;color:#6b7280;margin:0;">{{ number_format($remesesSepa[$estat]['import'], 2, ',', '.') }} €</p>
+                <p style="font-size:0.75rem;color:#9ca3af;margin:0.125rem 0 0;">{{ $remesesSepa[$estat]['operacions'] }} operacions</p>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    @if (!$showInscripcions && !$showPagaments && !$showLiquidacions && !$showQuotesSocis && !$showSepaSocis)
     <div style="padding:3rem;text-align:center;color:#9ca3af;">
         <p style="font-size:0.9375rem;">Cap sub-mòdul de Tresoreria actiu. Activa'ls des de <a href="{{ route('filament.admin.pages.settings-page') }}" style="color:#6366f1;">Configuració</a>.</p>
     </div>

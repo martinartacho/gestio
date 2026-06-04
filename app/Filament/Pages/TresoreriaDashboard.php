@@ -6,6 +6,7 @@ use App\Models\CampusEnrollment;
 use App\Models\CampusPayment;
 use App\Models\CampusTeacherPayment;
 use App\Models\TresoreriaQuote;
+use App\Models\TresoreriaRemittance;
 use App\Settings\SettingStore;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,7 @@ class TresoreriaDashboard extends Page
     public bool $showPagaments     = false;
     public bool $showLiquidacions  = false;
     public bool $showQuotesSocis   = false;
+    public bool $showSepaSocis     = false;
 
     // ── Dades Inscripcions ────────────────────────────────────────────────
     public array $inscripcions = [];
@@ -51,6 +53,11 @@ class TresoreriaDashboard extends Page
     public array $quotesSocis = [];
     public float $quotesTotal = 0;
 
+    // ── Dades Remeses SEPA socis ──────────────────────────────────────────
+    public array $remesesSepa     = [];
+    public float $remesesImport   = 0;
+    public int   $remesesOperacions = 0;
+
     public function mount(): void
     {
         $s = app(SettingStore::class);
@@ -60,6 +67,7 @@ class TresoreriaDashboard extends Page
         $this->showLiquidacions = (bool) $s->get('tresoreria_liquidacions_enabled', true);
         $associatsActiu = (bool) $s->get('associats_enabled', false);
         $this->showQuotesSocis  = $associatsActiu && (bool) $s->get('tresoreria_quotes_socis_enabled', true);
+        $this->showSepaSocis    = $associatsActiu && (bool) $s->get('tresoreria_sepa_socis_enabled', true);
 
         if ($this->showInscripcions) {
             $rows = CampusEnrollment::selectRaw('status, count(*) as total, coalesce(sum(amount),0) as import')
@@ -127,6 +135,24 @@ class TresoreriaDashboard extends Page
                 ];
             }
             $this->quotesTotal = $this->quotesSocis['paid']['import'] ?? 0;
+        }
+
+        if ($this->showSepaSocis) {
+            $rows = TresoreriaRemittance::selectRaw(
+                'status, count(*) as total,
+                 coalesce(sum(total_amount),0) as import,
+                 coalesce(sum(total_transactions),0) as operacions'
+            )->groupBy('status')->get()->keyBy('status');
+
+            foreach (['draft', 'generated', 'submitted', 'processed'] as $estat) {
+                $this->remesesSepa[$estat] = [
+                    'total'      => $rows[$estat]->total ?? 0,
+                    'import'     => (float) ($rows[$estat]->import ?? 0),
+                    'operacions' => (int) ($rows[$estat]->operacions ?? 0),
+                ];
+            }
+            $this->remesesImport    = collect($this->remesesSepa)->sum('import');
+            $this->remesesOperacions = collect($this->remesesSepa)->sum('operacions');
         }
     }
 }
