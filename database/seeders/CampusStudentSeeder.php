@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\CampusCourse;
 use App\Models\CampusEnrollment;
+use App\Models\CampusPayment;
 use App\Models\CampusStudent;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -60,26 +61,27 @@ class CampusStudentSeeder extends Seeder
         $course3 = $courses->get(2);
         $course4 = $courses->get(3);
 
+        // [student_idx, course, status, paid_at, payment_method]
+        // payment_method: 'stripe'|'transfer'|'cash'|'card'|null (pending/cancelled)
         $scenarios = [
-            // [student_idx, course, status, paid_at]
-            [0,  $course1, 'paid',      now()->subDays(10)],
-            [1,  $course1, 'paid',      now()->subDays(9)],
-            [2,  $course1, 'paid',      now()->subDays(8)],
-            [3,  $course1, 'pending',   null],
-            [4,  $course1, 'cancelled', null],
-            [5,  $course2 ?? $course1, 'paid',      now()->subDays(7)],
-            [6,  $course2 ?? $course1, 'paid',      now()->subDays(6)],
-            [7,  $course2 ?? $course1, 'pending',   null],
-            [8,  $course3 ?? $course1, 'paid',      now()->subDays(5)],
-            [9,  $course3 ?? $course1, 'refunded',  null],
-            [10, $course4 ?? $course1, 'paid',      now()->subDays(3)],
-            [11, $course4 ?? $course1, 'pending',   null],
+            [0,  $course1,            'paid',      now()->subDays(10), 'transfer'],
+            [1,  $course1,            'paid',      now()->subDays(9),  'cash'],
+            [2,  $course1,            'paid',      now()->subDays(8),  'card'],
+            [3,  $course1,            'pending',   null,               null],
+            [4,  $course1,            'cancelled', null,               null],
+            [5,  $course2 ?? $course1,'paid',      now()->subDays(7),  'transfer'],
+            [6,  $course2 ?? $course1,'paid',      now()->subDays(6),  'stripe'],
+            [7,  $course2 ?? $course1,'pending',   null,               null],
+            [8,  $course3 ?? $course1,'paid',      now()->subDays(5),  'stripe'],
+            [9,  $course3 ?? $course1,'refunded',  null,               'transfer'],
+            [10, $course4 ?? $course1,'paid',      now()->subDays(3),  'cash'],
+            [11, $course4 ?? $course1,'pending',   null,               null],
             // alumne inscrit a 2 cursos
-            [0,  $course2 ?? $course1, 'paid',      now()->subDays(4)],
-            [1,  $course3 ?? $course1, 'paid',      now()->subDays(2)],
+            [0,  $course2 ?? $course1,'paid',      now()->subDays(4),  'stripe'],
+            [1,  $course3 ?? $course1,'paid',      now()->subDays(2),  'card'],
         ];
 
-        foreach ($scenarios as [$idx, $course, $status, $paidAt]) {
+        foreach ($scenarios as [$idx, $course, $status, $paidAt, $paymentMethod]) {
             if (! $course) {
                 continue;
             }
@@ -94,6 +96,9 @@ class CampusStudentSeeder extends Seeder
                 continue;
             }
 
+            $isStripe  = $paymentMethod === 'stripe';
+            $isManual  = in_array($paymentMethod, ['transfer', 'cash', 'card', 'domiciliacio']);
+
             $enrollment = CampusEnrollment::create([
                 'student_id'      => $student->id,
                 'course_id'       => $course->id,
@@ -104,10 +109,23 @@ class CampusStudentSeeder extends Seeder
                 'enrollment_date' => ($paidAt ?? now())->toDateString(),
                 'status'          => $status,
                 'amount'          => $course->price,
-                'paid_at'         => $paidAt,
-                'stripe_session_id'     => $status === 'paid' ? 'cs_test_seed_' . uniqid() : null,
-                'stripe_payment_intent' => $status === 'paid' ? 'pi_test_seed_' . uniqid() : null,
+                'payment_method'  => $paymentMethod,
+                'paid_at'         => in_array($status, ['paid', 'refunded']) ? $paidAt : null,
+                'stripe_session_id'     => $isStripe && $status === 'paid' ? 'cs_test_seed_' . uniqid() : null,
+                'stripe_payment_intent' => $isStripe && $status === 'paid' ? 'pi_test_seed_' . uniqid() : null,
             ]);
+
+            // Crear campus_payment per pagaments manuals (no Stripe)
+            if ($isManual && in_array($status, ['paid', 'refunded'])) {
+                CampusPayment::create([
+                    'enrollment_id' => $enrollment->id,
+                    'amount'        => $course->price,
+                    'method'        => $paymentMethod,
+                    'status'        => $status === 'paid' ? 'completed' : 'refunded',
+                    'payment_date'  => ($paidAt ?? now())->toDateString(),
+                    'reference'     => strtoupper($paymentMethod) . '-' . strtoupper(uniqid()),
+                ]);
+            }
 
             // Inserir al pivot campus_course_student només si pagat
             if ($status === 'paid') {

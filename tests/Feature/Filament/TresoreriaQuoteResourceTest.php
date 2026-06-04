@@ -5,6 +5,7 @@ namespace Tests\Feature\Filament;
 use App\Models\AssociatMember;
 use App\Models\AssociatQuote;
 use App\Models\User;
+use App\Settings\SettingStore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\InteractsWithFilamentAdmin;
 use Tests\TestCase;
@@ -19,6 +20,7 @@ class TresoreriaQuoteResourceTest extends TestCase
     {
         parent::setUp();
         $this->admin = $this->createAdmin();
+        app(SettingStore::class)->set('associats_enabled', true);
     }
 
     private function makeMember(): AssociatMember
