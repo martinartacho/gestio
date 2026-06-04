@@ -156,6 +156,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CampusStudentSeeder::class);
         $this->call(CampusDocumentSeeder::class);
         $this->call(LmsLessonSeeder::class);
+        $this->call(LmsIntroAppSeeder::class);
 
         // ── Dades del mòdul associats ─────────────────────────────────────
         $this->call(AssociatMemberSeeder::class);
