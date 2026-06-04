@@ -31,7 +31,8 @@ class TresoreriaQuoteResource extends Resource
     public static function canAccess(): bool
     {
         $store = app(SettingStore::class);
-        return (bool) $store->get('tresoreria_enabled', true)
+        return (bool) $store->get('associats_enabled', false)
+            && (bool) $store->get('tresoreria_enabled', true)
             && (bool) $store->get('tresoreria_quotes_socis_enabled', true)
             && (auth()->user()?->hasPermissionTo('payments.view') ?? false);
     }

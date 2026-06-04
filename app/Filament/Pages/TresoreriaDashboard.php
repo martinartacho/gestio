@@ -58,7 +58,8 @@ class TresoreriaDashboard extends Page
         $this->showInscripcions = (bool) $s->get('tresoreria_inscripcions_enabled', true);
         $this->showPagaments    = (bool) $s->get('tresoreria_pagaments_enabled', true);
         $this->showLiquidacions = (bool) $s->get('tresoreria_liquidacions_enabled', true);
-        $this->showQuotesSocis  = (bool) $s->get('tresoreria_quotes_socis_enabled', true);
+        $associatsActiu = (bool) $s->get('associats_enabled', false);
+        $this->showQuotesSocis  = $associatsActiu && (bool) $s->get('tresoreria_quotes_socis_enabled', true);
 
         if ($this->showInscripcions) {
             $rows = CampusEnrollment::selectRaw('status, count(*) as total, coalesce(sum(amount),0) as import')

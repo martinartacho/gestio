@@ -283,8 +283,6 @@
                                 ['key' => 'tresoreria_liquidacions_enabled',  'label' => 'Liquidacions professors','desc' => 'Càlcul i gestió de liquidacions econòmiques dels professors.'],
                                 ['key' => 'tresoreria_alumnes_enabled',       'label' => 'Alumnes',                'desc' => 'Fitxes dels alumnes, accés al portal i historial de cursos.'],
                                 ['key' => 'tresoreria_ips_enabled',           'label' => 'IPs bloquejades',        'desc' => 'Control d\'adreces IP amb accés restringit al portal.'],
-                                ['key' => 'tresoreria_quotes_socis_enabled',  'label' => 'Quotes socis',           'desc' => 'Gestió de quotes de socis des de Tresoreria (independent del mòdul Associats).'],
-                                ['key' => 'tresoreria_sepa_socis_enabled',    'label' => 'Remeses SEPA socis',     'desc' => 'Gestió de remeses SEPA de domiciliació de socis des de Tresoreria.'],
                             ] as $sub)
                             <label style="display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;border-top:1px solid #f9fafb;cursor:pointer;">
                                 <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
@@ -292,6 +290,27 @@
                                 <div>
                                     <p style="font-size:0.8125rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
                                     <p style="font-size:0.75rem;color:#9ca3af;margin:0;">{{ $sub['desc'] }}</p>
+                                </div>
+                            </label>
+                            @endforeach
+
+                            {{-- Quotes i Remeses SEPA socis: depenen de Associats --}}
+                            @foreach ([
+                                ['key' => 'tresoreria_quotes_socis_enabled', 'label' => 'Quotes socis',       'desc' => 'Gestió de quotes de socis des de Tresoreria. Requereix el mòdul Associats actiu.'],
+                                ['key' => 'tresoreria_sepa_socis_enabled',   'label' => 'Remeses SEPA socis', 'desc' => 'Gestió de remeses SEPA de socis des de Tresoreria. Requereix el mòdul Associats actiu.'],
+                            ] as $sub)
+                            <label style="display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;border-top:1px solid #f9fafb;{{ $associats_enabled ? 'cursor:pointer;' : 'opacity:0.45;cursor:not-allowed;' }}">
+                                <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                                       {{ $associats_enabled ? '' : 'disabled' }}
+                                       style="margin-top:0.15rem;width:0.875rem;height:0.875rem;border-radius:0.2rem;">
+                                <div>
+                                    <p style="font-size:0.8125rem;font-weight:500;color:#111827;margin:0 0 0.1rem;">{{ $sub['label'] }}</p>
+                                    <p style="font-size:0.75rem;color:#9ca3af;margin:0;">
+                                        {{ $sub['desc'] }}
+                                        @if (!$associats_enabled)
+                                            <em style="color:#ef4444;">(Activa el mòdul Associats primer)</em>
+                                        @endif
+                                    </p>
                                 </div>
                             </label>
                             @endforeach

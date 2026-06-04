@@ -152,6 +152,8 @@ class SettingsPage extends Page
         $this->tresoreria_liquidacions_enabled = (bool) $store->get('tresoreria_liquidacions_enabled', true);
         $this->tresoreria_alumnes_enabled      = (bool) $store->get('tresoreria_alumnes_enabled', true);
         $this->tresoreria_ips_enabled          = (bool) $store->get('tresoreria_ips_enabled', true);
+        $this->tresoreria_quotes_socis_enabled = (bool) $store->get('tresoreria_quotes_socis_enabled', true);
+        $this->tresoreria_sepa_socis_enabled   = (bool) $store->get('tresoreria_sepa_socis_enabled', true);
         $this->gestio_enabled               = (bool) $store->get('gestio_enabled', true);
         $this->gestio_administracio_enabled = (bool) $store->get('gestio_administracio_enabled', true);
         $this->gestio_calendari_enabled     = (bool) $store->get('gestio_calendari_enabled', true);
@@ -232,6 +234,8 @@ class SettingsPage extends Page
             'tresoreria_liquidacions_enabled'  => $this->tresoreria_liquidacions_enabled,
             'tresoreria_alumnes_enabled'       => $this->tresoreria_alumnes_enabled,
             'tresoreria_ips_enabled'           => $this->tresoreria_ips_enabled,
+            'tresoreria_quotes_socis_enabled'  => $this->tresoreria_quotes_socis_enabled,
+            'tresoreria_sepa_socis_enabled'    => $this->tresoreria_sepa_socis_enabled,
             'gestio_enabled'               => $this->gestio_enabled,
             'gestio_administracio_enabled' => $this->gestio_administracio_enabled,
             'gestio_calendari_enabled'     => $this->gestio_calendari_enabled,
