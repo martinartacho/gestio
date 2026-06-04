@@ -52,6 +52,7 @@ class CampusStudentSeeder extends Seeder
         }
 
         $this->seedEnrollments($createdStudents, $courses);
+        $this->seedTardor2025Enrollments($createdStudents);
     }
 
     private function seedEnrollments(array $students, $courses): void
@@ -136,6 +137,79 @@ class CampusStudentSeeder extends Seeder
                     ],
                 ]);
             }
+        }
+    }
+
+    private function seedTardor2025Enrollments(array $students): void
+    {
+        // Inscripcions de Tardor 2025 (temporada tancada, coherents amb les liquidacions de professors)
+        $scenarios = [
+            // [slug_curs, student_idx, payment_method]
+            ['san-td25',  0, 'transfer'],
+            ['san-td25',  1, 'stripe'],
+            ['san-td25',  2, 'cash'],
+            ['san-td25',  3, 'stripe'],
+            ['edu-td25',  4, 'transfer'],
+            ['edu-td25',  5, 'stripe'],
+            ['edu-td25',  6, 'cash'],
+            ['tec-td25',  7, 'stripe'],
+            ['tec-td25',  8, 'transfer'],
+            ['tec-td25',  9, 'card'],
+            ['art-td25',  10, 'cash'],
+            ['art-td25',  11, 'transfer'],
+            ['med-td25',  0, 'stripe'],
+            ['med-td25',  2, 'cash'],
+            ['san-td25b', 4, 'transfer'],
+            ['san-td25b', 6, 'stripe'],
+            ['san-td25b', 8, 'card'],
+        ];
+
+        foreach ($scenarios as [$slug, $idx, $method]) {
+            $course  = CampusCourse::where('slug', $slug)->first();
+            $student = $students[$idx] ?? $students[0];
+
+            if (! $course) continue;
+
+            if (CampusEnrollment::where('student_id', $student->id)->where('course_id', $course->id)->exists()) {
+                continue;
+            }
+
+            $paidAt   = now()->subMonths(rand(5, 8));
+            $isManual = in_array($method, ['transfer', 'cash', 'card']);
+
+            $enrollment = CampusEnrollment::create([
+                'student_id'      => $student->id,
+                'course_id'       => $course->id,
+                'first_name'      => $student->first_name,
+                'last_name'       => $student->last_name,
+                'email'           => $student->email,
+                'phone'           => $student->phone,
+                'enrollment_date' => $paidAt->toDateString(),
+                'status'          => 'paid',
+                'amount'          => $course->price,
+                'payment_method'  => $method,
+                'paid_at'         => $paidAt,
+                'stripe_session_id'     => ! $isManual ? 'cs_test_td25_' . uniqid() : null,
+                'stripe_payment_intent' => ! $isManual ? 'pi_test_td25_' . uniqid() : null,
+            ]);
+
+            if ($isManual) {
+                CampusPayment::create([
+                    'enrollment_id' => $enrollment->id,
+                    'amount'        => $course->price,
+                    'method'        => $method,
+                    'status'        => 'completed',
+                    'payment_date'  => $paidAt->toDateString(),
+                    'reference'     => strtoupper($method) . '-TD25-' . strtoupper(uniqid()),
+                ]);
+            }
+
+            $course->students()->syncWithoutDetaching([
+                $student->id => [
+                    'enrollment_id' => $enrollment->id,
+                    'enrolled_at'   => $paidAt,
+                ],
+            ]);
         }
     }
 }
