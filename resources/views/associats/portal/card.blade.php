@@ -1,6 +1,6 @@
 @extends('associats.layouts.app')
 
-@section('title', 'Carnet digital · ' . setting('associats_org_name', 'AC Granollers'))
+@section('title', 'Carnet digital · ' . setting('associats_org_name', 'Entitat'))
 
 @section('content')
 @php
@@ -21,7 +21,7 @@
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
             <div>
                 <p style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#a5b4fc;margin:0 0 0.25rem;">
-                    {{ setting('associats_org_name', 'AC Granollers') }}
+                    {{ setting('associats_org_name', 'Entitat') }}
                 </p>
                 <p style="font-size:0.75rem;color:#c7d2fe;margin:0;">Passaport Cultural Digital</p>
             </div>

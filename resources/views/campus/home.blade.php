@@ -100,7 +100,7 @@
                 </div>
                 <div>
                     <p class="font-bold text-gray-900 text-base">Socis</p>
-                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('associats_org_name', 'AC Granollers') }} · Passaport Cultural</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('associats_org_name', 'Entitat') }} · Passaport Cultural</p>
                 </div>
                 <span class="mt-auto text-xs text-violet-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>

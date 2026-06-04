@@ -59,7 +59,7 @@ class SiteSettingsSeeder extends Seeder
             'associats_socis_enabled'  => true,
             'associats_quotes_enabled' => true,
             'associats_sepa_enabled'   => true,
-            'associats_org_name'       => 'AC Granollers',
+            'associats_org_name'       => 'Entitat',
             'associats_member_prefix'  => '',
             'associat_quota_amount'    => 0,
             'associat_quota_concept'   => 'Quota anual soci {YEAR}',

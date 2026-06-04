@@ -22,7 +22,7 @@ class MemberPasswordResetMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Recuperar contrasenya — ' . setting('associats_org_name', 'AC Granollers'),
+            subject: 'Recuperar contrasenya — ' . setting('associats_org_name', 'Entitat'),
         );
     }
 
