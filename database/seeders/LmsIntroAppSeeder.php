@@ -60,7 +60,7 @@ class LmsIntroAppSeeder extends Seeder
                 'hours'       => 3,
                 'price'       => 0,
                 'status'      => 'active',
-                'is_public'   => false,
+                'is_public'   => true,
                 'description' => 'Guia pràctica per a administradors i gestors de la plataforma GestorApp. '
                     . 'Six sessions que cobreixen la configuració inicial, el catàleg de cursos, '
                     . 'la tresoreria, el mòdul d\'associats i la gestió de rols i usuaris.',
@@ -205,13 +205,141 @@ class LmsIntroAppSeeder extends Seeder
             ]
         );
 
-        // ── Sessions 2-6: Esborranys (índex del curs) ─────────────────────────
+        // ── Sessió 2: Configuració inicial (PUBLICADA) ───────────────────────
+        LmsLesson::updateOrCreate(
+            ['course_id' => $course->id, 'session_number' => 2],
+            [
+                'title'      => 'Configuració inicial',
+                'subtitle'   => 'Guia d\'Introducció · Sessió 2 de 6',
+                'duration'   => '25–35 min',
+                'status'     => 'published',
+                'sort_order' => 2,
+
+                'quote_text'   => 'Una bona configuració és invisible. Es nota quan no hi és.',
+                'quote_author' => 'Principi de disseny de sistemes',
+                'quote_work'   => null,
+                'intro_text'   => 'La pàgina de Configuració és la sala de control de GestorApp. '
+                    . 'Només l\'administrador hi té accés. Tots els canvis s\'apliquen immediatament '
+                    . 'sense reiniciar ni desplegar res. Aquesta sessió cobreix les configuracions '
+                    . 'essencials per posar en marxa una nova instància de l\'app.',
+
+                'topic_text' => 'La configuració s\'organitza en pestanyes temàtiques: identitat del Campus, '
+                    . 'aparença, correu, mòduls actius, Associats, pagament, cua d\'inscripcions i avançat. '
+                    . 'El principi clau és la jerarquia de flags: cada mòdul té un flag principal '
+                    . 'i sub-flags per a cada funcionalitat interna. Desactivar el flag principal '
+                    . 'oculta tot el mòdul sense eliminar les dades.',
+
+                'concepts' => [
+                    [
+                        'icon'        => 'toggle-right',
+                        'title'       => 'Jerarquia de flags',
+                        'description' => 'Cada mòdul té un flag mestre (ex: "Tresoreria ON/OFF") '
+                            . 'i sub-flags per a cada funcionalitat (Inscripcions, Pagaments, Liquidacions...). '
+                            . 'Si el flag mestre és OFF, tots els sub-flags queden inactius '
+                            . 'independentment del seu estat individual.',
+                    ],
+                    [
+                        'icon'        => 'building',
+                        'title'       => 'Identitat de l\'entitat',
+                        'description' => 'El nom del Campus, el logo i les dades de contacte '
+                            . 'apareixen al portal d\'alumnes i als correus automàtics. '
+                            . 'Per al mòdul Associats, el nom de l\'entitat apareix als carnets digitals '
+                            . 'i als correus als socis.',
+                    ],
+                    [
+                        'icon'        => 'credit-card',
+                        'title'       => 'Mètodes de pagament',
+                        'description' => 'Per defecte, Stripe és l\'únic mètode actiu. '
+                            . 'Des de la pestanya "Pagament" es poden activar transferència bancària, '
+                            . 'Bizum, efectiu i PayPal, cadascun amb les seves dades específiques '
+                            . '(IBAN, número de Bizum, etc.).',
+                    ],
+                ],
+
+                'text_cards' => [
+                    [
+                        'type'     => 'reference',
+                        'title'    => 'Pestanya: Mòduls',
+                        'author'   => 'Configuració → Mòduls',
+                        'year'     => null,
+                        'extract'  => 'Campus ON → Catàleg, Cursos, Professorat · '
+                            . 'Tresoreria ON → Inscripcions, Pagaments, Liquidacions, Alumnes · '
+                            . 'Associats ON → Socis, Quotes, Remeses SEPA · '
+                            . 'Gestió ON → Administració, Calendari',
+                        'analysis' => 'Cada sub-mòdul és independent. Pots tenir Tresoreria activa '
+                            . 'però desactivar les IPs bloquejades si no les necessites. '
+                            . 'Els sub-mòduls de Quotes i Remeses SEPA de Tresoreria '
+                            . 'només es poden activar si el mòdul Associats és ON.',
+                    ],
+                    [
+                        'type'     => 'reference',
+                        'title'    => 'Pestanya: Associats',
+                        'author'   => 'Configuració → Associats',
+                        'year'     => null,
+                        'extract'  => 'Nom de l\'entitat (apareix als carnets i correus) · '
+                            . 'Prefix del número de soci (opcional) · '
+                            . 'Import de la quota anual per defecte · '
+                            . 'Credencial SEPA: ID creditor, IBAN i BIC de l\'entitat receptora',
+                        'analysis' => 'Les credencials SEPA les proporciona el banc de l\'entitat. '
+                            . 'Són necessàries per generar els fitxers XML pain.008 de domiciliació. '
+                            . 'Sense elles, les remeses SEPA es poden crear però no exportar.',
+                    ],
+                ],
+
+                'comparison' => [
+                    'left_label'   => 'Primera posada en marxa',
+                    'right_label'  => 'Configuració recurrent',
+                    'left_points'  => [
+                        'Dades del Campus (nom, logo, contacte)',
+                        'Activar els mòduls que necessiteu',
+                        'Nom de l\'entitat a Associats',
+                        'Credencials SEPA si useu domiciliació',
+                    ],
+                    'right_points' => [
+                        'Activar/desactivar sub-mòduls per temporada',
+                        'Actualitzar mètodes de pagament',
+                        'Ajustar import de quota anual',
+                        'Canviar aparença per campanyes',
+                    ],
+                ],
+
+                'reflection_questions' => [
+                    ['question' => 'Quins mòduls necessita activats la teva entitat ara mateix? Algun que no usaràs mai?'],
+                    ['question' => 'Tens les credencials SEPA del teu banc per configurar la domiciliació? On les trobes?'],
+                    ['question' => 'Si el Manager et demana activar un nou sub-mòdul, quins passos has de fer?'],
+                ],
+
+                'exercise' => [
+                    'title'     => 'Configura "Cultura Viva"',
+                    'duration'  => '10–15 min',
+                    'statement' => 'Imagina que has de posar en marxa GestorApp per a l\'entitat "Cultura Viva". '
+                        . 'Accedeix a la pàgina de Configuració del demo i aplica els canvis següents:',
+                    'examples'  => [
+                        '1. Campus → Nom del Campus: "Cultura Viva Formació"',
+                        '2. Campus → Tagline: "Aprèn. Participa. Transforma."',
+                        '3. Mòduls → Activa: Campus, Tresoreria (Inscripcions + Pagaments), Associats',
+                        '4. Mòduls → Desactiva: LMS, IPs bloquejades',
+                        '5. Associats → Nom de l\'entitat: "Cultura Viva"',
+                        '6. Associats → Import quota anual: 45',
+                    ],
+                    'tips' => [
+                        'Accedeix a: https://demo.artacho.org/admin/settings-page',
+                        'Cada canvi es desa automàticament en canviar el toggle o prémer Desar.',
+                        'Observa com el menú lateral canvia quan actives o desactives mòduls.',
+                        'Els canvis al demo es reinicien amb cada desplegament nou.',
+                    ],
+                    'demo_first_person' => null,
+                    'demo_third_person' => null,
+                ],
+            ]
+        );
+
+        // ── Sessions 3-6: Esborranys (índex del curs) ─────────────────────────
         $drafts = [
-            [2, 'Configuració inicial — Settings i mòduls',       'Aprèn a configurar els paràmetres del lloc, activar i desactivar mòduls i sub-mòduls, i ajustar les opcions de pagament, SEPA i cua d\'inscripcions.'],
-            [3, 'El Catàleg — cursos, espais i temporades',        'Creació i gestió del catàleg de formació: temporades, categories, espais, franges horàries, professors i cursos.'],
-            [4, 'Tresoreria — inscripcions i pagaments',           'Gestió de les inscripcions d\'alumnes, control de pagaments manuals i Stripe, liquidacions de professors i dashboard de resum financer.'],
-            [5, 'El Mòdul Associats — socis, quotes i SEPA',       'Alta i gestió de socis, generació de quotes periòdiques, remeses SEPA pain.008 i portal del carnet digital.'],
-            [6, 'Rols i Usuaris — control d\'accés',               'Creació d\'usuaris, assignació de rols i gestió de permisos. Diferència entre rols del panell i perfils dels portals (alumnes, professors, socis).'],
+            [3, 'El Catàleg — cursos, espais i temporades',       'Creació i gestió del catàleg de formació: temporades, categories, espais, franges horàries, professors i cursos.'],
+            [4, 'Tresoreria — inscripcions i pagaments',          'Gestió de les inscripcions d\'alumnes, control de pagaments manuals i Stripe, liquidacions de professors i dashboard de resum financer.'],
+            [5, 'El Mòdul Associats — socis, quotes i SEPA',      'Alta i gestió de socis, generació de quotes periòdiques, remeses SEPA pain.008 i portal del carnet digital.'],
+            [6, 'Rols i Usuaris — control d\'accés',              'Creació d\'usuaris, assignació de rols i gestió de permisos. Diferència entre rols del panell i perfils dels portals (alumnes, professors, socis).'],
         ];
 
         foreach ($drafts as [$num, $title, $intro]) {
@@ -233,6 +361,6 @@ class LmsIntroAppSeeder extends Seeder
             );
         }
 
-        $this->command->info("✅ LmsIntroAppSeeder: curs «{$course->title}» amb 6 sessions (1 publicada, 5 esborrany).");
+        $this->command->info("✅ LmsIntroAppSeeder: curs «{$course->title}» (públic) — 2 sessions publicades, 4 esborrany.");
     }
 }
