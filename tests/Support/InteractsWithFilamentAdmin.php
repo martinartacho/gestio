@@ -20,6 +20,9 @@ trait InteractsWithFilamentAdmin
         'enrollments.view', 'enrollments.create', 'enrollments.edit', 'enrollments.delete',
         'payments.view', 'payments.create', 'payments.edit', 'payments.delete',
         'teacher_payments.view', 'teacher_payments.create', 'teacher_payments.edit', 'teacher_payments.delete',
+        'members.view', 'members.create', 'members.edit', 'members.delete',
+        'quotes.view', 'quotes.create', 'quotes.edit', 'quotes.delete',
+        'sepa.view', 'sepa.create', 'sepa.edit', 'sepa.delete',
     ];
 
     protected function seedAllPermissions(): void
@@ -48,9 +51,26 @@ trait InteractsWithFilamentAdmin
             'enrollments.view', 'enrollments.create', 'enrollments.edit', 'enrollments.delete',
             'payments.view', 'payments.create', 'payments.edit', 'payments.delete',
             'teacher_payments.view', 'teacher_payments.create', 'teacher_payments.edit', 'teacher_payments.delete',
+            'quotes.view', 'quotes.create', 'quotes.edit', 'quotes.delete',
+            'sepa.view', 'sepa.create', 'sepa.edit', 'sepa.delete',
         ]);
         $user = User::factory()->create(['active' => true]);
         $user->assignRole('tresoreria');
+        return $user;
+    }
+
+    protected function createSecretaria(): User
+    {
+        $this->seedAllPermissions();
+        $role = Role::firstOrCreate(['name' => 'secretaria', 'guard_name' => 'web']);
+        $role->syncPermissions([
+            'seasons.view', 'categories.view', 'spaces.view', 'timeslots.view',
+            'teachers.view', 'courses.view', 'enrollments.view',
+            'members.view', 'members.create', 'members.edit', 'members.delete',
+            'quotes.view',
+        ]);
+        $user = User::factory()->create(['active' => true]);
+        $user->assignRole('secretaria');
         return $user;
     }
 

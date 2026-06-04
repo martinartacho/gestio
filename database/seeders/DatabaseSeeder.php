@@ -35,6 +35,12 @@ class DatabaseSeeder extends Seeder
             'payments.view', 'payments.create', 'payments.edit', 'payments.delete',
             // Liquidacions professors
             'teacher_payments.view', 'teacher_payments.create', 'teacher_payments.edit', 'teacher_payments.delete',
+            // Socis (Associats)
+            'members.view', 'members.create', 'members.edit', 'members.delete',
+            // Quotes de socis
+            'quotes.view', 'quotes.create', 'quotes.edit', 'quotes.delete',
+            // Remeses SEPA de socis
+            'sepa.view', 'sepa.create', 'sepa.edit', 'sepa.delete',
         ];
 
         foreach ($permissions as $perm) {
@@ -57,7 +63,7 @@ class DatabaseSeeder extends Seeder
             'courses.view', 'courses.create', 'courses.edit',
         ]);
 
-        // Secretaria: visualització de cursos i professors
+        // Secretaria: professors, alumnes i socis + visualització de quotes
         $secretaria = Role::firstOrCreate(['name' => 'secretaria']);
         $secretaria->syncPermissions([
             'seasons.view',
@@ -66,6 +72,9 @@ class DatabaseSeeder extends Seeder
             'timeslots.view',
             'teachers.view',
             'courses.view',
+            'enrollments.view',
+            'members.view', 'members.create', 'members.edit', 'members.delete',
+            'quotes.view',
         ]);
 
         // Editor (mantenim per compatibilitat)
@@ -76,15 +85,17 @@ class DatabaseSeeder extends Seeder
             'teachers.view',
         ]);
 
-        // Tresoreria: gestió econòmica (inscripcions, pagaments, liquidacions) + lectura de cursos/professors
+        // Tresoreria: màxima responsabilitat financera (Campus + Associats + futur)
         $tresoreria = Role::firstOrCreate(['name' => 'tresoreria']);
         $tresoreria->syncPermissions([
             'seasons.view',
             'courses.view',
-            'teachers.view', 'teachers.edit', 
+            'teachers.view', 'teachers.edit',
             'enrollments.view', 'enrollments.create', 'enrollments.edit', 'enrollments.delete',
             'payments.view', 'payments.create', 'payments.edit', 'payments.delete',
             'teacher_payments.view', 'teacher_payments.create', 'teacher_payments.edit', 'teacher_payments.delete',
+            'quotes.view', 'quotes.create', 'quotes.edit', 'quotes.delete',
+            'sepa.view', 'sepa.create', 'sepa.edit', 'sepa.delete',
         ]);
 
         // Viewer: només lectura

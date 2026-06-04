@@ -34,13 +34,13 @@ class TresoreriaQuoteResource extends Resource
         return (bool) $store->get('associats_enabled', false)
             && (bool) $store->get('tresoreria_enabled', true)
             && (bool) $store->get('tresoreria_quotes_socis_enabled', true)
-            && (auth()->user()?->hasPermissionTo('payments.view') ?? false);
+            && (auth()->user()?->hasPermissionTo('quotes.view') ?? false);
     }
 
-    public static function canCreate(): bool                                       { return auth()->user()?->hasPermissionTo('payments.create') ?? false; }
-    public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool   { return auth()->user()?->hasPermissionTo('payments.edit')   ?? false; }
-    public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool { return auth()->user()?->hasPermissionTo('payments.delete') ?? false; }
-    public static function canDeleteAny(): bool                                    { return auth()->user()?->hasPermissionTo('payments.delete') ?? false; }
+    public static function canCreate(): bool                                       { return auth()->user()?->hasPermissionTo('quotes.create') ?? false; }
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool   { return auth()->user()?->hasPermissionTo('quotes.edit')   ?? false; }
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool { return auth()->user()?->hasPermissionTo('quotes.delete') ?? false; }
+    public static function canDeleteAny(): bool                                    { return auth()->user()?->hasPermissionTo('quotes.delete') ?? false; }
 
     public static function form(Schema $schema): Schema
     {

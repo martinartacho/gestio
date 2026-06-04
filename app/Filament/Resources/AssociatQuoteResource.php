@@ -30,8 +30,14 @@ class AssociatQuoteResource extends Resource
     {
         $store = app(SettingStore::class);
         return (bool) $store->get('associats_enabled', false)
-            && (bool) $store->get('associats_quotes_enabled', true);
+            && (bool) $store->get('associats_quotes_enabled', true)
+            && (auth()->user()?->hasPermissionTo('quotes.view') ?? false);
     }
+
+    public static function canCreate(): bool                                       { return auth()->user()?->hasPermissionTo('quotes.create') ?? false; }
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $r): bool   { return auth()->user()?->hasPermissionTo('quotes.edit')   ?? false; }
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool { return auth()->user()?->hasPermissionTo('quotes.delete') ?? false; }
+    public static function canDeleteAny(): bool                                    { return auth()->user()?->hasPermissionTo('quotes.delete') ?? false; }
 
     public static function form(Schema $schema): Schema
     {
