@@ -507,18 +507,26 @@ class CampusSeeder extends Seeder
             'description' => 'Instal·lació i gestió de plaques solars per a la llar.',
         ], $tMiquel);
 
-        // ── Liquidacions professors (temporades tancades) ─────────────────
-        // Tardor 2025 – professors cobrats
-        $this->seedPayment($sTardor, $tAnna,  CampusCourse::where('slug', 'san-td25')->first(),  'SAN-TD25', 10, 50, 0);
-        $this->seedPayment($sTardor, $tMarta, CampusCourse::where('slug', 'edu-td25')->first(),  'EDU-TD25', 8,  50, 15);
-        $this->seedPayment($sTardor, $tJoan,  CampusCourse::where('slug', 'tec-td25')->first(),  'TEC-TD25', 8,  50, 15);
-        $this->seedPayment($sTardor, $tClaudia,CampusCourse::where('slug','art-td25')->first(),  'ART-TD25', 6,  50, 0);
-        $this->seedPayment($sTardor, $tMiquel,CampusCourse::where('slug', 'med-td25')->first(),  'MED-TD25', 5,  50, 0);
-        $this->seedPayment($sTardor, $tNuria, CampusCourse::where('slug', 'san-td25b')->first(), 'SAN-TD25B', 6, 50, 0);
+        // ── Liquidacions professors ───────────────────────────────────────
+        // Tardor 2025 (tancada) — paid/sent
+        $this->seedPayment($sTardor, $tAnna,    CampusCourse::where('slug', 'san-td25')->first(),   'SAN-TD25',  10, 50, 0);
+        $this->seedPayment($sTardor, $tMarta,   CampusCourse::where('slug', 'edu-td25')->first(),   'EDU-TD25',  8,  50, 15);
+        $this->seedPayment($sTardor, $tJoan,    CampusCourse::where('slug', 'tec-td25')->first(),   'TEC-TD25',  8,  50, 15);
+        $this->seedPayment($sTardor, $tClaudia, CampusCourse::where('slug', 'art-td25')->first(),   'ART-TD25',  6,  50, 0);
+        $this->seedPayment($sTardor, $tMiquel,  CampusCourse::where('slug', 'med-td25')->first(),   'MED-TD25',  5,  50, 0);
+        $this->seedPayment($sTardor, $tNuria,   CampusCourse::where('slug', 'san-td25b')->first(),  'SAN-TD25B', 6,  50, 0);
+
+        // Primavera 2026 (activa) — sent (cursos acabats) i draft (en preparació)
+        $this->seedPayment($sPrimavera, $tAnna,    CampusCourse::where('slug', 'san-pr26')->first(),    'SAN-PR26',  10, 50, 0,    'sent');
+        $this->seedPayment($sPrimavera, $tMarta,   CampusCourse::where('slug', 'edu-pr26')->first(),    'EDU-PR26',  8,  50, 15,   'sent');
+        $this->seedPayment($sPrimavera, $tLaura,   CampusCourse::where('slug', 'cie-pr26')->first(),    'CIE-PR26',  6,  50, 0,    'sent');
+        $this->seedPayment($sPrimavera, $tClaudia, CampusCourse::where('slug', 'art-pr26')->first(),    'ART-PR26',  8,  50, 0,    'sent');
+        $this->seedPayment($sPrimavera, $tMiquel,  CampusCourse::where('slug', 'med-pr26')->first(),    'MED-PR26',  5,  50, 0,    'draft');
+        $this->seedPayment($sPrimavera, $tJoan,    CampusCourse::where('slug', 'mon-digital-p26')->first(), 'MON-DIG-P', 4, 50, 15, 'draft');
 
         $n  = 3 + 6 + 8 + 4 + 5 + 9;
-        $nc = 5 + 4 + 6 + 3 + 4;
-        $this->command->info("✅ CampusSeeder completat: 5 temporades amb dates inscripció, 10 categories, 8 espais, 9 franges, 8 professors, {$n} cursos, {$nc} liquidacions.");
+        $nc = 6 + 6;
+        $this->command->info("✅ CampusSeeder completat: 5 temporades, 10 categories, 8 espais, 9 franges, 8 professors, {$n} cursos, {$nc} liquidacions.");
     }
 
     private function seedPayment(
@@ -528,13 +536,16 @@ class CampusSeeder extends Seeder
         string $description,
         int $sessions,
         float $pricePerSession,
-        float $retentionPct
+        float $retentionPct,
+        ?string $forceStatus = null
     ): void {
         if (!$course) return;
 
         $gross     = $sessions * $pricePerSession;
         $retAmount = round($gross * $retentionPct / 100, 2);
         $net       = $gross - $retAmount;
+
+        $status = $forceStatus ?? ($retentionPct > 0 ? 'paid' : 'sent');
 
         CampusTeacherPayment::firstOrCreate(
             ['season_id' => $season->id, 'teacher_id' => $teacher->id, 'course_id' => $course->id],
@@ -547,8 +558,8 @@ class CampusSeeder extends Seeder
                 'retention_amount'     => $retAmount,
                 'net_amount'           => $net,
                 'issues_invoice'       => $teacher->invoice ?? false,
-                'status'               => $retentionPct > 0 ? 'paid' : 'sent',
-                'paid_at'              => $retentionPct > 0 ? now()->subMonths(2) : null,
+                'status'               => $status,
+                'paid_at'              => $status === 'paid' ? now()->subMonths(2) : null,
             ]
         );
     }
