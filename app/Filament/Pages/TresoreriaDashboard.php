@@ -3,7 +3,6 @@
 namespace App\Filament\Pages;
 
 use App\Models\CampusEnrollment;
-use App\Models\CampusPayment;
 use App\Models\CampusTeacherPayment;
 use App\Models\TresoreriaQuote;
 use App\Settings\SettingStore;
@@ -80,8 +79,9 @@ class TresoreriaDashboard extends Page
         }
 
         if ($this->showPagaments) {
-            $rows = CampusPayment::selectRaw('method, status, count(*) as total, coalesce(sum(amount),0) as import')
-                ->groupBy('method', 'status')
+            $rows = CampusEnrollment::selectRaw('payment_method as method, status, count(*) as total, coalesce(sum(amount),0) as import')
+                ->whereNotNull('payment_method')
+                ->groupBy('payment_method', 'status')
                 ->get();
 
             foreach ($rows as $row) {
@@ -90,7 +90,7 @@ class TresoreriaDashboard extends Page
                     'import' => (float) $row->import,
                 ];
             }
-            $this->pagamentsTotal = CampusPayment::where('status', 'completed')->sum('amount');
+            $this->pagamentsTotal = CampusEnrollment::whereIn('status', ['paid', 'confirmed'])->sum('amount');
         }
 
         if ($this->showLiquidacions) {

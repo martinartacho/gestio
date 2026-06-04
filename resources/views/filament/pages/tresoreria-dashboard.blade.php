@@ -31,11 +31,11 @@
     @if ($showPagaments)
     <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;overflow:hidden;">
         <div style="padding:1rem 1.25rem;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;">
-            <h2 style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0;">Pagaments alumnes</h2>
-            <span style="font-size:0.8125rem;color:#6b7280;">Total completat: <strong style="color:#111827;">{{ number_format($pagamentsTotal, 2, ',', '.') }} €</strong></span>
+            <h2 style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0;">Inscripcions per mètode de pagament</h2>
+            <span style="font-size:0.8125rem;color:#6b7280;">Total pagat/confirmat: <strong style="color:#111827;">{{ number_format($pagamentsTotal, 2, ',', '.') }} €</strong></span>
         </div>
         @if (empty($pagaments))
-            <p style="padding:1rem 1.25rem;color:#9ca3af;font-size:0.875rem;margin:0;">Sense pagaments registrats.</p>
+            <p style="padding:1rem 1.25rem;color:#9ca3af;font-size:0.875rem;margin:0;">Sense inscripcions amb mètode de pagament registrat.</p>
         @else
         <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
             <thead>
@@ -52,8 +52,8 @@
                     <tr style="border-top:1px solid #f3f4f6;">
                         <td style="padding:0.625rem 1.25rem;color:#111827;font-weight:500;">{{ ucfirst($metode) }}</td>
                         <td style="padding:0.625rem 1.25rem;">
-                            <span style="font-size:0.75rem;padding:0.125rem 0.5rem;border-radius:9999px;background:{{ $estat === 'completed' ? '#d1fae5' : ($estat === 'refunded' ? '#fee2e2' : '#fef3c7') }};color:{{ $estat === 'completed' ? '#065f46' : ($estat === 'refunded' ? '#991b1b' : '#92400e') }};">
-                                {{ match($estat) { 'completed' => 'Completat', 'pending' => 'Pendent', 'refunded' => 'Retornat', default => $estat } }}
+                            <span style="font-size:0.75rem;padding:0.125rem 0.5rem;border-radius:9999px;background:{{ in_array($estat, ['paid','confirmed']) ? '#d1fae5' : ($estat === 'refunded' ? '#fee2e2' : '#fef3c7') }};color:{{ in_array($estat, ['paid','confirmed']) ? '#065f46' : ($estat === 'refunded' ? '#991b1b' : '#92400e') }};">
+                                {{ match($estat) { 'paid' => 'Pagada', 'confirmed' => 'Confirmada', 'pending' => 'Pendent', 'refunded' => 'Retornada', 'cancelled' => 'Cancel·lada', default => $estat } }}
                             </span>
                         </td>
                         <td style="padding:0.625rem 1.25rem;text-align:right;color:#374151;">{{ $dades['total'] }}</td>
