@@ -75,7 +75,7 @@ class SettingsPage extends Page
     public bool   $associats_socis_enabled  = true;
     public bool   $associats_quotes_enabled = true;
     public bool   $associats_sepa_enabled   = true;
-    public string $associats_org_name       = 'AC Granollers';
+    public string $associats_org_name       = 'Entitat';
     public string $associats_member_prefix  = '';
 
     // Creditor SEPA de l'entitat
@@ -162,7 +162,7 @@ class SettingsPage extends Page
         $this->associats_socis_enabled  = (bool) $store->get('associats_socis_enabled', true);
         $this->associats_quotes_enabled = (bool) $store->get('associats_quotes_enabled', true);
         $this->associats_sepa_enabled   = (bool) $store->get('associats_sepa_enabled', true);
-        $this->associats_org_name       = (string) $store->get('associats_org_name', 'AC Granollers');
+        $this->associats_org_name       = (string) $store->get('associats_org_name', 'Entitat');
         $this->associats_member_prefix  = (string) $store->get('associats_member_prefix', '');
 
         $this->sepa_creditor_id = (string) $store->get('sepa_creditor_id', '');
@@ -244,7 +244,7 @@ class SettingsPage extends Page
             'associats_socis_enabled'  => $this->associats_socis_enabled,
             'associats_quotes_enabled' => $this->associats_quotes_enabled,
             'associats_sepa_enabled'   => $this->associats_sepa_enabled,
-            'associats_org_name'       => $this->associats_org_name ?: 'AC Granollers',
+            'associats_org_name'       => $this->associats_org_name ?: 'Entitat',
             'associats_member_prefix'  => $this->associats_member_prefix,
 
             'sepa_creditor_id' => $this->sepa_creditor_id,

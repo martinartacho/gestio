@@ -1,6 +1,6 @@
 @extends('associats.layouts.app')
 
-@section('title', 'Nova contrasenya · ' . setting('associats_org_name', 'AC Granollers'))
+@section('title', 'Nova contrasenya · ' . setting('associats_org_name', 'Entitat'))
 
 @section('content')
 <div class="max-w-md mx-auto">
@@ -8,7 +8,7 @@
 
         <div class="text-center mb-6">
             <p class="text-xs font-semibold tracking-widest uppercase text-indigo-600 mb-1">
-                {{ setting('associats_org_name', 'AC Granollers') }}
+                {{ setting('associats_org_name', 'Entitat') }}
             </p>
             <h1 class="text-2xl font-bold text-gray-900">Nova contrasenya</h1>
             <p class="text-sm text-gray-500 mt-1">Trieu una contrasenya segura (mínim 8 caràcters).</p>

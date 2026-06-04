@@ -1,6 +1,6 @@
 @extends('associats.layouts.app')
 
-@section('title', 'Perfil · ' . setting('associats_org_name', 'AC Granollers'))
+@section('title', 'Perfil · ' . setting('associats_org_name', 'Entitat'))
 
 @section('content')
 <div style="max-width:540px; margin:0 auto;">

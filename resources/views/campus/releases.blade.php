@@ -120,7 +120,7 @@
                     ✦ &nbsp;Passaport Cultural Digital (mòdul Associats)
                 </div>
                 <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
-                    Primer pas de la digitalització dels carnets físics de l'AC Granollers.
+                    Primer pas de la digitalització dels carnets físics de l'entitat.
                     Cada soci pot accedir al portal amb correu i contrasenya i obtenir el seu
                     <strong>carnet digital</strong> amb codi QR únic que preserva el número
                     de soci historic. El mòdul s'activa des de la configuració i és completament

@@ -1,7 +1,7 @@
 <x-mail::message>
 # 🔑 Recuperar contrasenya
 
-Hem rebut una sol·licitud per restablir la contrasenya del vostre compte de soci a **{{ setting('associats_org_name', 'AC Granollers') }}**.
+Hem rebut una sol·licitud per restablir la contrasenya del vostre compte de soci a **{{ setting('associats_org_name', 'Entitat') }}**.
 
 Soci nº **{{ $member->member_number }}** — {{ $member->full_name }}
 
@@ -16,5 +16,5 @@ Restablir contrasenya
 > Si no heu sol·licitat aquest canvi, podeu ignorar aquest correu. El vostre compte no es modificarà.
 
 Gràcies,<br>
-{{ setting('associats_org_name', 'AC Granollers') }}
+{{ setting('associats_org_name', 'Entitat') }}
 </x-mail::message>

@@ -365,7 +365,7 @@
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
                         <div style="grid-column:span 2;">
                             <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Nom de l'entitat</label>
-                            <input type="text" wire:model="associats_org_name" placeholder="AC Granollers"
+                            <input type="text" wire:model="associats_org_name" placeholder="Nom de l'entitat"
                                    style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
                             <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.2rem;">Apareix al carnet digital i als correus als socis.</p>
                         </div>
@@ -389,7 +389,7 @@
                             </div>
                             <div style="grid-column:span 2;">
                                 <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Nom legal de l'entitat</label>
-                                <input type="text" wire:model="sepa_org_name" placeholder="Associació Cultural de Granollers"
+                                <input type="text" wire:model="sepa_org_name" placeholder="Nom legal de l'entitat"
                                        style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
                             </div>
                             <div>
