@@ -17,13 +17,61 @@
         </p>
     </div>
 
+    {{-- ── v1.7.0 ── --}}
+    <div style="margin-bottom:3rem;">
+        <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+            <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.7.0</span>
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
+                Nou
+            </span>
+            <span style="font-size:0.65rem; color:#9ca3af;">Juny 2026</span>
+        </div>
+
+        <div style="border-left:2px solid #6366f1; padding-left:1.5rem;">
+            <p style="color:#6b7280; font-size:0.9rem; line-height:1.8; margin-bottom:1.5rem;">
+                El LMS incorpora un <strong>curs d'introducció a GestorApp</strong> amb 6 sessions publicades,
+                suport per a <strong>imatges múltiples per sessió</strong> amb posicionament flexible,
+                i recuperació de contrasenya per a professors via <strong>codi OTP per correu</strong>.
+            </p>
+
+            <div style="margin-bottom:1rem;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Curs d'introducció GestorApp (LMS)
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    6 sessions publicades que guien l'administrador per la plataforma: configuració inicial,
+                    catàleg de cursos, tresoreria, mòdul d'associats i gestió de rols i usuaris.
+                    Accessible des del portal d'alumnes.
+                </p>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Imatges múltiples per sessió LMS
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    El professor pot afegir diverses imatges a cada sessió, triant en quin apartat
+                    apareixeran (després de la cita, la introducció, el tema…) i afegint un peu de foto opcional.
+                </p>
+            </div>
+
+            <div style="margin-bottom:0;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Recuperació de contrasenya professors (OTP)
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    El registre i la recuperació de contrasenya s'han migrat a codis OTP per correu.
+                    Sense contrasenyes temporals que caduquen: el professor introdueix un codi de 6 dígits
+                    i accedeix immediatament.
+                </p>
+            </div>
+        </div>
+    </div>
+
     {{-- ── v1.6.0 ── --}}
     <div style="margin-bottom:3rem;">
         <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.6.0</span>
-            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
-                Nou
-            </span>
             <span style="font-size:0.65rem; color:#9ca3af;">Juny 2026</span>
         </div>
 
