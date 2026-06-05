@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('course_id')->constrained('campus_courses')->cascadeOnDelete();
             $table->foreignId('student_id')->constrained('campus_students')->cascadeOnDelete();
+            $table->string('verb', 20)->default('passed'); // xAPI: passed | failed
             $table->timestamp('issued_at');
             $table->string('certificate_number', 30)->unique();
             $table->timestamps();

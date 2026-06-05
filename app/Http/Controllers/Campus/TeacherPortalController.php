@@ -35,6 +35,8 @@ class TeacherPortalController extends Controller
             ->where('campus_courses.slug', $slug)
             ->firstOrFail();
 
+        $lessons = $course->lessons()->orderBy('sort_order')->get();
+
         $enrollments = CampusEnrollment::with('student')
             ->where('course_id', $course->id)
             ->whereIn('status', ['paid', 'pending'])
@@ -51,7 +53,7 @@ class TeacherPortalController extends Controller
             ->orderBy('created_at')
             ->get();
 
-        return view('campus.teacher.portal.course', compact('course', 'enrollments', 'documents'));
+        return view('campus.teacher.portal.course', compact('course', 'enrollments', 'documents', 'lessons'));
     }
 
     public function uploadDocument(Request $request, string $slug)

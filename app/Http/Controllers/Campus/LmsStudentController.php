@@ -92,7 +92,7 @@ class LmsStudentController extends Controller
 
         LmsLessonProgress::firstOrCreate(
             ['lesson_id' => $lesson->id, 'student_id' => $student->id],
-            ['completed_at' => now()]
+            ['verb' => 'completed', 'completed_at' => now()]
         );
 
         // Auto-emetre certificat si totes les lliçons publicades estan completes
@@ -110,7 +110,7 @@ class LmsStudentController extends Controller
         if ($done >= $total && $total > 0) {
             LmsCourseCertificate::firstOrCreate(
                 ['course_id' => $lesson->course_id, 'student_id' => $student->id],
-                ['issued_at' => now()]
+                ['verb' => 'passed', 'issued_at' => now()]
             );
         }
 

@@ -10,6 +10,7 @@ class LmsLessonProgress extends Model
     protected $fillable = [
         'lesson_id',
         'student_id',
+        'verb',
         'completed_at',
     ];
 

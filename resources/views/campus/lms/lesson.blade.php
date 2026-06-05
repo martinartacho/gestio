@@ -49,6 +49,8 @@
 {{-- ═══════════════════════════════════════════════════
      BLOC 2 — INTRODUCCIÓ (cita + text)
 ═══════════════════════════════════════════════════ --}}
+@include('campus.lms.partials.cover-image', ['position' => 'after_quote'])
+
 @if($lesson->quote_text)
 <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;margin-bottom:0.75rem;">Introducció</p>
 <blockquote style="border-left:3px solid #4f46e5;padding:0.875rem 1.25rem;background:#f5f3ff;border-radius:0 0.5rem 0.5rem 0;margin:0 0 1.5rem;">
@@ -67,6 +69,8 @@
     <p style="font-size:1rem;line-height:1.8;color:#374151;margin-bottom:2rem;">{{ $lesson->intro_text }}</p>
 @endif
 
+@include('campus.lms.partials.cover-image', ['position' => 'after_intro'])
+
 {{-- ═══════════════════════════════════════════════════
      BLOC 3 — EL TEMA D'AVUI
 ═══════════════════════════════════════════════════ --}}
@@ -76,6 +80,10 @@
     <p style="font-size:1rem;line-height:1.8;color:#374151;">{{ $lesson->topic_text }}</p>
 </div>
 @endif
+
+@include('campus.lms.partials.cover-image', ['position' => 'after_topic'])
+
+@include('campus.lms.partials.cover-image', ['position' => 'before_concepts'])
 
 {{-- ═══════════════════════════════════════════════════
      BLOCS 4–7 — CONCEPTES I TEXTOS (intercalats per ordre)
@@ -181,6 +189,8 @@
 
 <hr style="border:none;border-top:1px solid #f3f4f6;margin:2rem 0;">
 
+@include('campus.lms.partials.cover-image', ['position' => 'before_reflection'])
+
 {{-- ═══════════════════════════════════════════════════
      BLOC 9 — REFLEXIÓ
 ═══════════════════════════════════════════════════ --}}
@@ -210,6 +220,8 @@
     @endif
 </div>
 @endif
+
+@include('campus.lms.partials.cover-image', ['position' => 'before_exercise'])
 
 {{-- ═══════════════════════════════════════════════════
      BLOC 10 — EXERCICI PRÀCTIC

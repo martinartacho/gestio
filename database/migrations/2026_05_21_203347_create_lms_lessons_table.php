@@ -14,6 +14,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('session_number');
             $table->string('title');
             $table->string('subtitle')->nullable();
+            $table->json('images')->nullable();
             $table->string('duration')->nullable();
             $table->text('quote_text')->nullable();
             $table->string('quote_author')->nullable();

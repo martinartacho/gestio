@@ -50,6 +50,48 @@
     </div>
 </div>
 
+{{-- ── Sessions LMS ─────────────────────────────────────────────────────────────── --}}
+<div class="mb-6">
+    <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold text-gray-900">
+            Sessions LMS
+            <span class="ml-2 text-sm font-normal text-gray-400">({{ $lessons->count() }})</span>
+        </h2>
+        <a href="{{ route('teacher.lms.lesson.create', $course->slug) }}"
+           class="inline-flex items-center gap-1.5 text-sm font-medium bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition">
+            + Nova sessió
+        </a>
+    </div>
+
+    @if ($lessons->isEmpty())
+        <div class="bg-white border border-gray-200 rounded-xl p-6 text-center text-sm text-gray-500">
+            Aquest curs encara no té sessions LMS.
+        </div>
+    @else
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            @foreach ($lessons as $lesson)
+                <div class="flex items-center gap-3 px-4 py-3 {{ !$loop->last ? 'border-b border-gray-100' : '' }}">
+                    <span class="text-xs font-mono text-gray-400 w-6 shrink-0">{{ $lesson->session_number }}</span>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">{{ $lesson->title }}</p>
+                        @if ($lesson->duration)
+                            <p class="text-xs text-gray-400">{{ $lesson->duration }}</p>
+                        @endif
+                    </div>
+                    <span class="text-xs px-2 py-0.5 rounded-full shrink-0
+                        {{ $lesson->status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                        {{ $lesson->status === 'published' ? 'Publicada' : 'Esborrany' }}
+                    </span>
+                    <a href="{{ route('teacher.lms.lesson.edit', [$course->slug, $lesson->id]) }}"
+                       class="text-xs text-indigo-600 hover:underline shrink-0">
+                        Editar
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
 {{-- ── Notificació ──────────────────────────────────────────────────────────────── --}}
 @if (session('success'))
     <div style="background-color:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:0.5rem;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.875rem;">

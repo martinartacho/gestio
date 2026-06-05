@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('password')->nullable();
             $table->rememberToken();
+            $table->string('verification_code', 10)->nullable();
+            $table->timestamp('verification_code_expires_at')->nullable();
+            $table->unsignedTinyInteger('verification_attempts')->default(0);
             $table->string('phone')->nullable();
             $table->string('specialization')->nullable();
             $table->text('bio')->nullable();
