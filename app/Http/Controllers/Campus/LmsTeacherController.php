@@ -8,6 +8,7 @@ use App\Models\CampusTeacher;
 use App\Models\LmsLesson;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class LmsTeacherController extends Controller
@@ -98,7 +99,12 @@ class LmsTeacherController extends Controller
 
         abort_if($lesson->course_id !== $course->id, 404);
 
-        $lesson->update($this->validateLesson($request));
+        $data = $this->validateLesson($request);
+        unset($data['session_number']); // no editable en actualització
+
+        $data['images'] = $this->processImages($request, $lesson->images ?? []);
+
+        $lesson->update($data);
 
         return back()->with('success', '✓ Sessió desada correctament.');
     }
@@ -169,6 +175,83 @@ class LmsTeacherController extends Controller
         $base['questions'] = is_array($decoded) ? $decoded : [];
 
         return $base;
+    }
+
+    // ─── Processament d'imatges múltiples ────────────────────────────────────
+
+    private function processImages(Request $request, array $existing): array
+    {
+        // Paths existents que l'usuari ha marcat per eliminar
+        $toRemove = $request->input('remove_image_paths', []);
+        foreach ($toRemove as $path) {
+            Storage::disk('public')->delete($path);
+        }
+
+        // Reconstruir imatges existents (upload) que no s'eliminen
+        $kept = [];
+        $existingPaths     = $request->input('existing_image_paths', []);
+        $existingPositions = $request->input('existing_image_positions', []);
+        $existingCaptions  = $request->input('existing_image_captions', []);
+
+        foreach ($existingPaths as $i => $path) {
+            if (in_array($path, $toRemove)) continue;
+            $kept[] = [
+                'type'     => 'upload',
+                'path'     => $path,
+                'position' => $existingPositions[$i] ?? 'after_intro',
+                'caption'  => $existingCaptions[$i] ?? '',
+            ];
+        }
+
+        // Reconstruir URLs existents
+        $existingUrls         = $request->input('existing_url_values', []);
+        $existingUrlPositions = $request->input('existing_url_positions', []);
+        $existingUrlCaptions  = $request->input('existing_url_captions', []);
+
+        foreach ($existingUrls as $i => $url) {
+            $url = trim($url);
+            if (! $url) continue;
+            $kept[] = [
+                'type'     => 'url',
+                'url'      => $url,
+                'position' => $existingUrlPositions[$i] ?? 'after_intro',
+                'caption'  => $existingUrlCaptions[$i] ?? '',
+            ];
+        }
+
+        // Afegir imatges noves pujades
+        $newFiles     = $request->file('new_images', []);
+        $newPositions = $request->input('new_image_positions', []);
+        $newCaptions  = $request->input('new_image_captions', []);
+
+        foreach ($newFiles as $i => $file) {
+            if (! $file || ! $file->isValid()) continue;
+            $path = $file->store('lms/covers', 'public');
+            $kept[] = [
+                'type'     => 'upload',
+                'path'     => $path,
+                'position' => $newPositions[$i] ?? 'after_intro',
+                'caption'  => $newCaptions[$i] ?? '',
+            ];
+        }
+
+        // Afegir URLs noves
+        $newUrls         = $request->input('new_url_values', []);
+        $newUrlPositions = $request->input('new_url_positions', []);
+        $newUrlCaptions  = $request->input('new_url_captions', []);
+
+        foreach ($newUrls as $i => $url) {
+            $url = trim($url);
+            if (! $url) continue;
+            $kept[] = [
+                'type'     => 'url',
+                'url'      => $url,
+                'position' => $newUrlPositions[$i] ?? 'after_intro',
+                'caption'  => $newUrlCaptions[$i] ?? '',
+            ];
+        }
+
+        return $kept;
     }
 
     // ─── Helper privat ────────────────────────────────────────────────────────

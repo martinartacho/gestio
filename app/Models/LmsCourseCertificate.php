@@ -10,6 +10,7 @@ class LmsCourseCertificate extends Model
     protected $fillable = [
         'course_id',
         'student_id',
+        'verb',
         'issued_at',
         'certificate_number',
     ];

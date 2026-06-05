@@ -92,6 +92,11 @@ Route::prefix('professorat')->name('teacher.')->middleware('campus.enabled')->gr
     Route::post('/login', [TeacherAuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [TeacherAuthController::class, 'logout'])->name('logout');
 
+    Route::get('/recuperar-contrasenya', [TeacherAuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/recuperar-contrasenya', [TeacherAuthController::class, 'sendPasswordReset'])->name('password.send');
+    Route::get('/recuperar-contrasenya/codi', [TeacherAuthController::class, 'showPasswordResetCode'])->name('password.code');
+    Route::post('/recuperar-contrasenya/codi', [TeacherAuthController::class, 'resetPassword'])->name('password.reset');
+
     // ── Portal professor (requereix auth) ─────────────────────────────────
     Route::middleware(\App\Http\Middleware\AuthenticateTeacher::class)
         ->prefix('portal')->name('portal.')->group(function () {

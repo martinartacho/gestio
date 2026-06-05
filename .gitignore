@@ -28,6 +28,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /temporal
+database/seeders/LmsIntroAppSeeder.php
 *.sqlite
 *.sqlite-journal
 *.sqlite-wal

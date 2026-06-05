@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('lesson_id')->constrained('lms_lessons')->cascadeOnDelete();
             $table->foreignId('student_id')->constrained('campus_students')->cascadeOnDelete();
+            $table->string('verb', 20)->default('completed'); // xAPI: attempted | completed
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
 

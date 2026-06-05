@@ -25,6 +25,7 @@ class CampusTeacher extends Authenticatable
         'data_consent', 'fiscal_responsibility', 'ceded_confirmation',
         'payment_status', 'payment_confirmed_at', 'payment_pdf_path',
         'metadata',
+        'verification_code', 'verification_code_expires_at', 'verification_attempts',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -47,6 +48,7 @@ class CampusTeacher extends Authenticatable
         'ceded_confirmation'     => 'boolean',
         'hiring_date'            => 'date',
         'payment_confirmed_at'   => 'datetime',
+        'verification_code_expires_at' => 'datetime',
     ];
 
     public const STATUSES = [
@@ -110,6 +112,28 @@ class CampusTeacher extends Authenticatable
     public function documents(): HasMany
     {
         return $this->hasMany(CampusDocument::class, 'teacher_id')->orderBy('sort_order');
+    }
+
+    public function generateOtp(): string
+    {
+        $digits  = (string) random_int(100, 999);
+        $letters = strtoupper(substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ'), 0, 3));
+        $code    = $digits . $letters;
+
+        $this->update([
+            'verification_code'            => $code,
+            'verification_code_expires_at' => now()->addMinutes(15),
+            'verification_attempts'        => 0,
+        ]);
+
+        return $code;
+    }
+
+    public function isValidOtp(string $code): bool
+    {
+        return $this->verification_code === strtoupper($code)
+            && $this->verification_code_expires_at?->isFuture()
+            && $this->verification_attempts < 3;
     }
 
     public function getFullNameAttribute(): string

@@ -42,7 +42,7 @@
     </div>
 @endif
 
-<form method="POST" action="{{ $formRoute }}" id="lesson-form">
+<form method="POST" action="{{ $formRoute }}" id="lesson-form" enctype="multipart/form-data">
     @csrf
     @if($isEdit) @method('PATCH') @endif
 
@@ -50,7 +50,17 @@
     <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
         <p style="font-size:0.75rem;font-weight:600;color:#4f46e5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;">Capçalera</p>
         <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;gap:1rem;margin-bottom:1rem;">
-            @include('campus.lms.teacher.partials.field', ['name'=>'session_number','label'=>'Núm. sessió','type'=>'number','value'=>old('session_number',$lesson->session_number),'required'=>true,'min'=>1])
+            <div>
+                <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Núm. sessió</label>
+                @if($isEdit)
+                    <input type="text" value="{{ $lesson->session_number }}" disabled
+                           style="width:100%;border:1px solid #e5e7eb;border-radius:0.4rem;padding:0.45rem 0.6rem;font-size:0.875rem;color:#6b7280;background:#f9fafb;box-sizing:border-box;">
+                    <input type="hidden" name="session_number" value="{{ $lesson->session_number }}">
+                @else
+                    <input type="number" name="session_number" value="{{ old('session_number',$lesson->session_number) }}" required min="1"
+                           style="width:100%;border:1px solid #d1d5db;border-radius:0.4rem;padding:0.45rem 0.6rem;font-size:0.875rem;color:#1e293b;background:#fff;box-sizing:border-box;">
+                @endif
+            </div>
             @include('campus.lms.teacher.partials.field', ['name'=>'title','label'=>'Títol','type'=>'text','value'=>old('title',$lesson->title),'required'=>true])
             @include('campus.lms.teacher.partials.field', ['name'=>'duration','label'=>'Durada','type'=>'text','value'=>old('duration',$lesson->duration),'placeholder'=>'ex. 45–60 min'])
             <div>
@@ -63,6 +73,102 @@
         </div>
         @include('campus.lms.teacher.partials.field', ['name'=>'subtitle','label'=>'Subtítol','type'=>'text','value'=>old('subtitle',$lesson->subtitle),'full'=>true])
         @include('campus.lms.teacher.partials.field', ['name'=>'sort_order','label'=>'Ordre de visualització','type'=>'number','value'=>old('sort_order',$lesson->sort_order ?? 0)])
+    </div>
+
+    {{-- ── BLOC 1b: Imatges de la sessió ──────────────────────────────── --}}
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;" id="images-block">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+            <p style="font-size:0.75rem;font-weight:600;color:#4f46e5;text-transform:uppercase;letter-spacing:0.08em;margin:0;">Imatges i recursos de la sessió</p>
+            <div style="display:flex;gap:0.5rem;">
+                <button type="button" onclick="addImageRow()"
+                        style="font-size:0.8125rem;font-weight:500;color:#4f46e5;border:1px solid #c7d2fe;background:#eef2ff;border-radius:0.4rem;padding:0.3rem 0.75rem;cursor:pointer;">
+                    📁 Pujar fitxer
+                </button>
+                <button type="button" onclick="addUrlRow()"
+                        style="font-size:0.8125rem;font-weight:500;color:#0891b2;border:1px solid #a5f3fc;background:#ecfeff;border-radius:0.4rem;padding:0.3rem 0.75rem;cursor:pointer;">
+                    🔗 URL externa
+                </button>
+            </div>
+        </div>
+
+        @php $posOptions = [
+            'after_quote'       => 'Després de la cita',
+            'after_intro'       => 'Després de la introducció',
+            'after_topic'       => 'Després del tema',
+            'before_concepts'   => 'Abans dels conceptes clau',
+            'before_reflection' => 'Abans de la reflexió',
+            'before_exercise'   => 'Abans de l\'exercici',
+        ]; @endphp
+
+        {{-- Recursos existents --}}
+        <div id="existing-images-list">
+        @foreach(($lesson->images ?? []) as $img)
+            @php
+                $imgType = $img['type'] ?? 'upload';
+                $imgPath = $img['path'] ?? '';
+                $imgUrl  = $img['url']  ?? '';
+                $imgPos  = $img['position'] ?? 'after_intro';
+                $imgCap  = $img['caption']  ?? '';
+                $isUrl   = $imgType === 'url';
+            @endphp
+            <div class="img-row" style="border:1px solid #e5e7eb;border-radius:0.5rem;padding:1rem;margin-bottom:0.75rem;background:#f9fafb;">
+                <div style="display:flex;gap:1rem;align-items:flex-start;">
+                    {{-- Previsualització --}}
+                    @if($isUrl)
+                        <div style="width:80px;height:60px;display:flex;align-items:center;justify-content:center;background:#ecfeff;border-radius:0.375rem;border:1px solid #a5f3fc;flex-shrink:0;font-size:1.5rem;">🔗</div>
+                    @else
+                        <img src="{{ Storage::url($imgPath) }}" alt=""
+                             style="width:80px;height:60px;object-fit:cover;border-radius:0.375rem;border:1px solid #e5e7eb;flex-shrink:0;">
+                    @endif
+
+                    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                        @if($isUrl)
+                            <div style="grid-column:span 2;">
+                                <label style="display:block;font-size:0.75rem;font-weight:500;color:#6b7280;margin-bottom:0.25rem;">URL del recurs</label>
+                                <input type="url" name="existing_url_values[]" value="{{ $imgUrl }}"
+                                       style="width:100%;border:1px solid #a5f3fc;border-radius:0.4rem;padding:0.4rem 0.5rem;font-size:0.8125rem;box-sizing:border-box;">
+                                <input type="hidden" name="existing_url_positions_map[]" value="">
+                            </div>
+                        @else
+                            <input type="hidden" name="existing_image_paths[]" value="{{ $imgPath }}">
+                        @endif
+                        <div>
+                            <label style="display:block;font-size:0.75rem;font-weight:500;color:#6b7280;margin-bottom:0.25rem;">On apareix</label>
+                            <select name="{{ $isUrl ? 'existing_url_positions[]' : 'existing_image_positions[]' }}"
+                                    style="width:100%;border:1px solid #d1d5db;border-radius:0.4rem;padding:0.4rem 0.5rem;font-size:0.8125rem;background:#fff;">
+                                @foreach($posOptions as $val => $label)
+                                    <option value="{{ $val }}" {{ $imgPos === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.75rem;font-weight:500;color:#6b7280;margin-bottom:0.25rem;">Peu / descripció (opcional)</label>
+                            <input type="text" name="{{ $isUrl ? 'existing_url_captions[]' : 'existing_image_captions[]' }}"
+                                   value="{{ $imgCap }}" placeholder="Descripció..."
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.4rem;padding:0.4rem 0.5rem;font-size:0.8125rem;box-sizing:border-box;">
+                        </div>
+                    </div>
+                    <button type="button"
+                            onclick="removeExistingImage(this, '{{ $isUrl ? '' : $imgPath }}')"
+                            style="font-size:0.75rem;color:#dc2626;border:1px solid #fee2e2;background:#fef2f2;border-radius:0.375rem;padding:0.3rem 0.6rem;cursor:pointer;flex-shrink:0;">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        @endforeach
+        </div>
+
+        {{-- Contenidor per a noves imatges (JS) --}}
+        <div id="new-images-list"></div>
+
+        {{-- Inputs ocults per als paths a eliminar --}}
+        <div id="remove-paths-container"></div>
+
+        @if(empty($lesson->images))
+            <p style="font-size:0.8125rem;color:#9ca3af;text-align:center;padding:1rem 0;">
+                Encara no hi ha imatges. Prem "+ Afegir imatge" per pujar-ne una.
+            </p>
+        @endif
     </div>
 
     {{-- ── BLOC 2: Introducció ───────────────────────────────────────────── --}}
@@ -452,6 +558,112 @@ renderQuestions();
 document.getElementById('lesson-form').addEventListener('submit', function() {
     syncJson();
 });
+</script>
+
+<script>
+let newImageCount = 0;
+
+function buildPosSelect(name, selectedVal) {
+    const opts = {
+        'after_quote':       'Després de la cita',
+        'after_intro':       'Després de la introducció',
+        'after_topic':       'Després del tema',
+        'before_concepts':   'Abans dels conceptes clau',
+        'before_reflection': 'Abans de la reflexió',
+        'before_exercise':   "Abans de l'exercici",
+    };
+    let html = `<select name="${name}" style="width:100%;border:1px solid #d1d5db;border-radius:0.4rem;padding:0.4rem 0.5rem;font-size:0.8125rem;background:#fff;">`;
+    for (const [val, label] of Object.entries(opts)) {
+        const sel = (val === (selectedVal || 'after_intro')) ? 'selected' : '';
+        html += `<option value="${val}" ${sel}>${label}</option>`;
+    }
+    html += '</select>';
+    return html;
+}
+
+function addImageRow() {
+    const i = newImageCount++;
+    const inputId = `new_image_input_${i}`;
+    const nameId  = `new_image_name_${i}`;
+    const row = document.createElement('div');
+    row.className = 'img-row';
+    row.style = 'border:1px solid #c7d2fe;border-radius:0.5rem;padding:1rem;margin-bottom:0.75rem;background:#f0f4ff;';
+    row.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+            <div style="grid-column:span 2;">
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#6b7280;margin-bottom:0.375rem;">
+                    Imatge <span style="font-weight:400;color:#9ca3af;">(JPG, PNG, WebP · màx. 2 MB)</span>
+                </label>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <input type="file" id="${inputId}" name="new_images[]"
+                           accept="image/jpeg,image/png,image/webp"
+                           style="display:none;"
+                           onchange="document.getElementById('${nameId}').textContent = this.files[0]?.name || 'Cap fitxer seleccionat'">
+                    <label for="${inputId}"
+                           style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.8125rem;font-weight:500;color:#4f46e5;border:1px solid #c7d2fe;background:#eef2ff;border-radius:0.4rem;padding:0.4rem 0.875rem;cursor:pointer;white-space:nowrap;">
+                        📎 Triar fitxer
+                    </label>
+                    <span id="${nameId}" style="font-size:0.8125rem;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Cap fitxer seleccionat</span>
+                </div>
+            </div>
+            <div>
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#6b7280;margin-bottom:0.25rem;">On apareix</label>
+                ${buildPosSelect('new_image_positions[]', 'after_intro')}
+            </div>
+            <div>
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#6b7280;margin-bottom:0.25rem;">Peu de foto (opcional)</label>
+                <input type="text" name="new_image_captions[]" placeholder="Descripció de la imatge..."
+                       style="width:100%;border:1px solid #d1d5db;border-radius:0.4rem;padding:0.4rem 0.5rem;font-size:0.8125rem;box-sizing:border-box;">
+            </div>
+        </div>
+        <button type="button" onclick="this.closest('.img-row').remove()"
+                style="font-size:0.75rem;color:#6b7280;border:1px solid #e5e7eb;background:#f9fafb;border-radius:0.375rem;padding:0.25rem 0.6rem;cursor:pointer;">
+            Cancel·lar
+        </button>
+    `;
+    document.getElementById('new-images-list').appendChild(row);
+}
+
+function addUrlRow() {
+    const row = document.createElement('div');
+    row.className = 'img-row';
+    row.style = 'border:1px solid #a5f3fc;border-radius:0.5rem;padding:1rem;margin-bottom:0.75rem;background:#ecfeff;';
+    row.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+            <div style="grid-column:span 2;">
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#0891b2;margin-bottom:0.375rem;">
+                    URL del recurs
+                    <span style="font-weight:400;color:#9ca3af;">(imatge, vídeo YouTube/Vimeo, PDF, enllaç...)</span>
+                </label>
+                <input type="url" name="new_url_values[]" placeholder="https://..."
+                       style="width:100%;border:1px solid #a5f3fc;border-radius:0.4rem;padding:0.45rem 0.6rem;font-size:0.875rem;box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#6b7280;margin-bottom:0.25rem;">On apareix</label>
+                ${buildPosSelect('new_url_positions[]', 'after_intro')}
+            </div>
+            <div>
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#6b7280;margin-bottom:0.25rem;">Peu / descripció (opcional)</label>
+                <input type="text" name="new_url_captions[]" placeholder="Descripció del recurs..."
+                       style="width:100%;border:1px solid #d1d5db;border-radius:0.4rem;padding:0.4rem 0.5rem;font-size:0.8125rem;box-sizing:border-box;">
+            </div>
+        </div>
+        <button type="button" onclick="this.closest('.img-row').remove()"
+                style="font-size:0.75rem;color:#6b7280;border:1px solid #e5e7eb;background:#f9fafb;border-radius:0.375rem;padding:0.25rem 0.6rem;cursor:pointer;">
+            Cancel·lar
+        </button>
+    `;
+    document.getElementById('new-images-list').appendChild(row);
+}
+
+function removeExistingImage(btn, path) {
+    btn.closest('.img-row').remove();
+    const hidden = document.createElement('input');
+    hidden.type  = 'hidden';
+    hidden.name  = 'remove_image_paths[]';
+    hidden.value = path;
+    document.getElementById('remove-paths-container').appendChild(hidden);
+}
 </script>
 
 @endsection

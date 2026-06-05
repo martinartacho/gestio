@@ -33,8 +33,8 @@ class SiteSettingsSeeder extends Seeder
             // ── Mòduls / Feature flags ───────────────────────────────────────
             'campus_enabled'             => true,
             'documents_enabled'          => true,
-            'lms_enabled'                => false,
-            'courses_learning_enabled'   => false,
+            'lms_enabled'                => true,
+            'courses_learning_enabled'   => true,
             'cataleg_enabled'            => true,
             'cataleg_periodes_enabled'   => true,
             'cataleg_categories_enabled' => true,

@@ -16,6 +16,7 @@ class LmsLesson extends Model
         'session_number',
         'title',
         'subtitle',
+        'images',
         'duration',
         // Introducció
         'quote_text',
@@ -40,6 +41,7 @@ class LmsLesson extends Model
     protected $casts = [
         'session_number'       => 'integer',
         'sort_order'           => 'integer',
+        'images'               => 'array',
         'concepts'             => 'array',
         'text_cards'           => 'array',
         'comparison'           => 'array',
