@@ -187,18 +187,35 @@ class LmsTeacherController extends Controller
             Storage::disk('public')->delete($path);
         }
 
-        // Reconstruir imatges existents (les que no s'eliminen, amb posició/caption actualitzats)
+        // Reconstruir imatges existents (upload) que no s'eliminen
         $kept = [];
-        $existingPaths    = $request->input('existing_image_paths', []);
+        $existingPaths     = $request->input('existing_image_paths', []);
         $existingPositions = $request->input('existing_image_positions', []);
         $existingCaptions  = $request->input('existing_image_captions', []);
 
         foreach ($existingPaths as $i => $path) {
             if (in_array($path, $toRemove)) continue;
             $kept[] = [
+                'type'     => 'upload',
                 'path'     => $path,
                 'position' => $existingPositions[$i] ?? 'after_intro',
                 'caption'  => $existingCaptions[$i] ?? '',
+            ];
+        }
+
+        // Reconstruir URLs existents
+        $existingUrls         = $request->input('existing_url_values', []);
+        $existingUrlPositions = $request->input('existing_url_positions', []);
+        $existingUrlCaptions  = $request->input('existing_url_captions', []);
+
+        foreach ($existingUrls as $i => $url) {
+            $url = trim($url);
+            if (! $url) continue;
+            $kept[] = [
+                'type'     => 'url',
+                'url'      => $url,
+                'position' => $existingUrlPositions[$i] ?? 'after_intro',
+                'caption'  => $existingUrlCaptions[$i] ?? '',
             ];
         }
 
@@ -211,9 +228,26 @@ class LmsTeacherController extends Controller
             if (! $file || ! $file->isValid()) continue;
             $path = $file->store('lms/covers', 'public');
             $kept[] = [
+                'type'     => 'upload',
                 'path'     => $path,
                 'position' => $newPositions[$i] ?? 'after_intro',
                 'caption'  => $newCaptions[$i] ?? '',
+            ];
+        }
+
+        // Afegir URLs noves
+        $newUrls         = $request->input('new_url_values', []);
+        $newUrlPositions = $request->input('new_url_positions', []);
+        $newUrlCaptions  = $request->input('new_url_captions', []);
+
+        foreach ($newUrls as $i => $url) {
+            $url = trim($url);
+            if (! $url) continue;
+            $kept[] = [
+                'type'     => 'url',
+                'url'      => $url,
+                'position' => $newUrlPositions[$i] ?? 'after_intro',
+                'caption'  => $newUrlCaptions[$i] ?? '',
             ];
         }
 
