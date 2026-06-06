@@ -5,9 +5,8 @@
     {{-- ── Tabs ─────────────────────────────────────────────────────────── --}}
     <div style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;margin-bottom:1.5rem;">
         @foreach([
-            'campus'     => '🏫 Campus',
+            'campus'     => '🏫 Site',
             'aparenca'   => '🎨 Aparença',
-            'email'      => '✉️ Correu',
             'moduls'     => '🔧 Mòduls',
             'pagament'   => '💳 Pagament',
             'cua'        => '🎟 Cua',
@@ -24,12 +23,12 @@
     <form wire:submit.prevent="save">
 
         {{-- ══════════════════════════════════════════════════════════════
-             TAB: DADES DEL CAMPUS
+             TAB: DADES DEL SITE
         ══════════════════════════════════════════════════════════════ --}}
         <div style="{{ $activeTab !== 'campus' ? 'display:none;' : '' }}">
 
             <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
-                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:1.25rem;">Dades del Campus</h2>
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:1.25rem;">Dades del Site</h2>
 
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                     <div style="grid-column:span 2;">
@@ -125,41 +124,6 @@
                     <div style="padding:2rem 1.5rem;background:{{ $hero_color }};color:{{ $hero_text_color }};">
                         <h3 style="font-size:1.5rem;font-weight:700;margin:0 0 0.5rem;">{{ $hero_title ?: 'Títol del hero' }}</h3>
                         <p style="margin:0;font-size:1rem;opacity:0.9;">{{ $hero_subtitle ?: 'Subtítol del hero' }}</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        {{-- ══════════════════════════════════════════════════════════════
-             TAB: CORREU ELECTRÒNIC
-        ══════════════════════════════════════════════════════════════ --}}
-        <div style="{{ $activeTab !== 'email' ? 'display:none;' : '' }}">
-
-            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
-                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Correu electrònic</h2>
-                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">
-                    Configuració del remitent dels correus automàtics del campus.<br>
-                    <strong>Nota:</strong> el servidor SMTP es configura a <code>.env</code> (MAIL_HOST, MAIL_PORT, etc.)
-                </p>
-
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                    <div>
-                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Nom del remitent</label>
-                        <input type="text" wire:model="mail_from_name"
-                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
-                    </div>
-
-                    <div>
-                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Adreça remitent</label>
-                        <input type="email" wire:model="mail_from_address"
-                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
-                    </div>
-
-                    <div style="grid-column:span 2;">
-                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Text del peu de correu</label>
-                        <textarea wire:model="mail_footer_text" rows="3"
-                                  style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;resize:vertical;"></textarea>
                     </div>
                 </div>
             </div>

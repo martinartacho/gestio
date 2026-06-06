@@ -27,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->revealablePasswords()
 
             // ── Marca visual ────────────────────────────────────────────────
             ->colors(['primary' => Color::Indigo])
@@ -61,6 +62,18 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authMiddleware([Authenticate::class]);
+            ->authMiddleware([Authenticate::class])
+            ->renderHook(
+                'panels::body.start',
+                fn () => request()->routeIs('filament.admin.auth.login')
+                    ? view('campus.partials.admin-login-nav')
+                    : '',
+            )
+            ->renderHook(
+                'panels::body.end',
+                fn () => request()->routeIs('filament.admin.auth.login')
+                    ? view('campus.partials.footer')
+                    : '',
+            );
     }
 }

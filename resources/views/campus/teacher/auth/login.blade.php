@@ -18,9 +18,25 @@
                 @enderror
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Contrasenya</label>
-                <input type="password" name="password" required
-                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <div class="flex items-center justify-between mb-1">
+                    <label class="block text-sm font-medium text-gray-700">Contrasenya</label>
+                    <a href="{{ route('teacher.password.request') }}"
+                       class="text-xs text-indigo-600 hover:underline">Heu oblidat la contrasenya?</a>
+                </div>
+                <div style="position:relative;">
+                    <input type="password" name="password" id="pwd" required
+                           style="padding-right:2.5rem;"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button type="button" tabindex="-1"
+                            onclick="var f=document.getElementById('pwd');f.type=f.type==='password'?'text':'password'"
+                            style="position:absolute;top:0;right:0;bottom:0;padding:0 0.625rem;display:flex;align-items:center;background:none;border:none;cursor:pointer;color:#9ca3af;"
+                            onmouseover="this.style.color='#4b5563'" onmouseout="this.style.color='#9ca3af'">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="width:1rem;height:1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="remember" id="remember" class="rounded">
@@ -32,9 +48,12 @@
             </button>
         </form>
 
-        <p class="mt-4 text-center text-sm text-gray-500">
-            <a href="{{ route('teacher.password.request') }}" class="text-indigo-600 hover:underline">Has oblidat la contrasenya?</a>
+        @if(setting('campus_contact_email'))
+        <p class="text-center text-sm text-gray-500 mt-4">
+            Sou professor/a nou/va?
+            <a href="mailto:{{ setting('campus_contact_email') }}" class="text-indigo-600 hover:underline">Sol·licitar alta</a>
         </p>
+        @endif
     </div>
 </div>
 @endsection

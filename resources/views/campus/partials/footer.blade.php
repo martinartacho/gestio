@@ -3,9 +3,11 @@
 
         {{-- Columna 1: Identificació del campus --}}
         <div style="display:flex;flex-direction:column;gap:0.25rem;font-size:0.75rem;color:#9ca3af;">
-            <span style="font-size:0.875rem;font-weight:600;color:#4b5563;">
+            <a href="{{ url('/') }}"
+               style="font-size:0.875rem;font-weight:600;color:#4b5563;text-decoration:none;"
+               onmouseover="this.style.color='#4f46e5'" onmouseout="this.style.color='#4b5563'">
                 {{ setting('campus_name', 'Campus de Formació Continuada') }}
-            </span>
+            </a>
             @if(setting('campus_contact_email'))
                 <a href="mailto:{{ setting('campus_contact_email') }}"
                    style="color:#9ca3af;text-decoration:none;"
