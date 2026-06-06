@@ -13,7 +13,7 @@
 
     <nav class="bg-white border-b border-gray-200 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="{{ route('campus.catalog.index') }}" class="text-xl font-bold text-indigo-700 hover:text-indigo-900">
+            <a href="{{ url('/') }}" class="text-xl font-bold text-indigo-700 hover:text-indigo-900">
                 {{ setting('campus_name', 'Campus') }}
             </a>
             <div class="flex items-center gap-4 text-sm">
