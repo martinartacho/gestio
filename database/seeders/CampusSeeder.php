@@ -92,105 +92,31 @@ class CampusSeeder extends Seeder
         $slDV10 = CampusTimeSlot::where('code', 'DV10')->first();
 
         // ── Professors ────────────────────────────────────────────────────
+        $mail = config('seeder.mail', 'app.test');
+        // Camps de guió: codi, nom, email, especialitat, situació fiscal, estat.
+        // La resta (phone, city, postal_code) els genera la factory via Faker.
         $teachersDefs = [
-            [
-                'code' => 'ANNBER', 'first_name' => 'Anna',    'last_name' => 'Bernad',
-                'email' => 'anna.bernad@campus.cat', 'phone' => '600 111 001',
-                'specialization' => 'Salut i infermeria', 'status' => 'active',
-                'dni' => '40100001A', 'city' => 'Granollers', 'postal_code' => '08401',
-                'fiscal_situation' => 'autonom', 'needs_payment' => true,
-                'invoice' => false, 'payment_type' => 'own',
-                'payment_status' => 'pending', 'data_consent' => true,
-                'fiscal_responsibility' => true, 'ceded_confirmation' => true,
-            ],
-            [
-                'code' => 'MARSOL', 'first_name' => 'Marta',   'last_name' => 'Soler',
-                'email' => 'marta.soler@campus.cat', 'phone' => '600 111 002',
-                'specialization' => 'Educació i pedagogia', 'status' => 'active',
-                'dni' => '40100002B', 'city' => 'La Garriga', 'postal_code' => '08530',
-                'fiscal_situation' => 'autonom', 'needs_payment' => true,
-                'invoice' => true, 'payment_type' => 'own',
-                'payment_status' => 'confirmed', 'data_consent' => true,
-                'fiscal_responsibility' => true, 'ceded_confirmation' => true,
-            ],
-            [
-                'code' => 'LAUMAR', 'first_name' => 'Laura',   'last_name' => 'Martínez',
-                'email' => 'laura.martinez@campus.cat', 'phone' => '600 111 003',
-                'specialization' => 'Ciències socials', 'status' => 'active',
-                'dni' => '40100003C', 'city' => 'Barcelona', 'postal_code' => '08002',
-                'fiscal_situation' => 'particular', 'needs_payment' => false,
-                'invoice' => false, 'payment_type' => 'waived',
-                'payment_status' => 'confirmed', 'data_consent' => true,
-                'fiscal_responsibility' => false, 'ceded_confirmation' => true,
-            ],
-            [
-                'code' => 'JOASEG', 'first_name' => 'Joan',    'last_name' => 'Segura',
-                'email' => 'joan.segura@campus.cat', 'phone' => '600 111 004',
-                'specialization' => 'Noves tecnologies', 'status' => 'active',
-                'dni' => '40100004D', 'city' => 'Montornès del Vallès', 'postal_code' => '08170',
-                'fiscal_situation' => 'empresa', 'needs_payment' => true,
-                'invoice' => true, 'payment_type' => 'own',
-                'payment_status' => 'paid', 'data_consent' => true,
-                'fiscal_responsibility' => true, 'ceded_confirmation' => true,
-            ],
-            [
-                'code' => 'CLAROS', 'first_name' => 'Clàudia', 'last_name' => 'Ros',
-                'email' => 'claudia.ros@campus.cat', 'phone' => '600 111 005',
-                'specialization' => 'Arts visuals i creativitat', 'status' => 'active',
-                'dni' => '40100005E', 'city' => 'Cardedeu', 'postal_code' => '08440',
-                'fiscal_situation' => 'autonom', 'needs_payment' => true,
-                'invoice' => false, 'payment_type' => 'own',
-                'payment_status' => 'pending', 'data_consent' => true,
-                'fiscal_responsibility' => true, 'ceded_confirmation' => false,
-            ],
-            [
-                'code' => 'MIGPUI', 'first_name' => 'Miquel',  'last_name' => 'Puig',
-                'email' => 'miquel.puig@campus.cat', 'phone' => '600 111 006',
-                'specialization' => 'Medi ambient i sostenibilitat', 'status' => 'active',
-                'dni' => '40100006F', 'city' => 'Llinars del Vallès', 'postal_code' => '08450',
-                'fiscal_situation' => 'entitat', 'needs_payment' => true,
-                'invoice' => true, 'payment_type' => 'beneficiary',
-                'payment_status' => 'pending', 'data_consent' => true,
-                'fiscal_responsibility' => true, 'ceded_confirmation' => true,
-            ],
-            [
-                'code' => 'BERPLA', 'first_name' => 'Bernat',  'last_name' => 'Planes',
-                'email' => 'bernat.planes@campus.cat', 'phone' => '600 111 007',
-                'specialization' => 'Psicologia i benestar', 'status' => 'inactive',
-                'dni' => '40100007G', 'city' => 'Mollet del Vallès', 'postal_code' => '08100',
-                'fiscal_situation' => 'autonom', 'needs_payment' => true,
-                'invoice' => false, 'payment_type' => 'own',
-                'payment_status' => 'cancelled', 'data_consent' => false,
-                'fiscal_responsibility' => false, 'ceded_confirmation' => false,
-            ],
-            [
-                'code' => 'NURFIT', 'first_name' => 'Núria',   'last_name' => 'Fité',
-                'email' => 'nuria.fite@campus.cat', 'phone' => '600 111 008',
-                'specialization' => 'Nutrició i dietètica', 'status' => 'active',
-                'dni' => '40100008H', 'city' => 'Canovelles', 'postal_code' => '08420',
-                'fiscal_situation' => 'autonom', 'needs_payment' => true,
-                'invoice' => true, 'payment_type' => 'own',
-                'payment_status' => 'pending', 'data_consent' => true,
-                'fiscal_responsibility' => true, 'ceded_confirmation' => true,
-            ],
+            ['code'=>'ANNBER','first_name'=>'Anna',   'last_name'=>'Bernad',  'email'=>"anna.bernad@{$mail}",    'specialization'=>'Salut i infermeria',          'status'=>'active',   'dni'=>'40100001A','fiscal_situation'=>'autonom',   'needs_payment'=>true, 'invoice'=>false,'payment_type'=>'own',        'payment_status'=>'pending',  'data_consent'=>true, 'fiscal_responsibility'=>true, 'ceded_confirmation'=>true],
+            ['code'=>'MARSOL','first_name'=>'Marta',  'last_name'=>'Soler',   'email'=>"marta.soler@{$mail}",    'specialization'=>'Educació i pedagogia',        'status'=>'active',   'dni'=>'40100002B','fiscal_situation'=>'autonom',   'needs_payment'=>true, 'invoice'=>true, 'payment_type'=>'own',        'payment_status'=>'confirmed','data_consent'=>true, 'fiscal_responsibility'=>true, 'ceded_confirmation'=>true],
+            ['code'=>'LAUMAR','first_name'=>'Laura',  'last_name'=>'Martínez','email'=>"laura.martinez@{$mail}", 'specialization'=>'Ciències socials',            'status'=>'active',   'dni'=>'40100003C','fiscal_situation'=>'particular','needs_payment'=>false,'invoice'=>false,'payment_type'=>'waived',     'payment_status'=>'confirmed','data_consent'=>true, 'fiscal_responsibility'=>false,'ceded_confirmation'=>true],
+            ['code'=>'JOASEG','first_name'=>'Joan',   'last_name'=>'Segura',  'email'=>"joan.segura@{$mail}",    'specialization'=>'Noves tecnologies',           'status'=>'active',   'dni'=>'40100004D','fiscal_situation'=>'empresa',   'needs_payment'=>true, 'invoice'=>true, 'payment_type'=>'own',        'payment_status'=>'paid',     'data_consent'=>true, 'fiscal_responsibility'=>true, 'ceded_confirmation'=>true],
+            ['code'=>'CLAROS','first_name'=>'Clàudia','last_name'=>'Ros',     'email'=>"claudia.ros@{$mail}",    'specialization'=>'Arts visuals i creativitat',  'status'=>'active',   'dni'=>'40100005E','fiscal_situation'=>'autonom',   'needs_payment'=>true, 'invoice'=>false,'payment_type'=>'own',        'payment_status'=>'pending',  'data_consent'=>true, 'fiscal_responsibility'=>true, 'ceded_confirmation'=>false],
+            ['code'=>'MIGPUI','first_name'=>'Miquel', 'last_name'=>'Puig',   'email'=>"miquel.puig@{$mail}",    'specialization'=>'Medi ambient i sostenibilitat','status'=>'active',   'dni'=>'40100006F','fiscal_situation'=>'entitat',   'needs_payment'=>true, 'invoice'=>true, 'payment_type'=>'beneficiary','payment_status'=>'pending',  'data_consent'=>true, 'fiscal_responsibility'=>true, 'ceded_confirmation'=>true],
+            ['code'=>'BERPLA','first_name'=>'Bernat', 'last_name'=>'Planes',  'email'=>"bernat.planes@{$mail}",  'specialization'=>'Psicologia i benestar',       'status'=>'inactive', 'dni'=>'40100007G','fiscal_situation'=>'autonom',   'needs_payment'=>true, 'invoice'=>false,'payment_type'=>'own',        'payment_status'=>'cancelled','data_consent'=>false,'fiscal_responsibility'=>false,'ceded_confirmation'=>false],
+            ['code'=>'NURFIT','first_name'=>'Núria',  'last_name'=>'Fité',    'email'=>"nuria.fite@{$mail}",     'specialization'=>'Nutrició i dietètica',        'status'=>'active',   'dni'=>'40100008H','fiscal_situation'=>'autonom',   'needs_payment'=>true, 'invoice'=>true, 'payment_type'=>'own',        'payment_status'=>'pending',  'data_consent'=>true, 'fiscal_responsibility'=>true, 'ceded_confirmation'=>true],
         ];
 
         $teacherPassword = config('seeder.teacher_password')
             ?? throw new \RuntimeException('SEEDER_TEACHER_PASSWORD no definit al .env');
 
         foreach ($teachersDefs as $d) {
-            CampusTeacher::firstOrCreate(
-                ['code' => $d['code']],
-                array_merge($d, [
-                    'areas'             => [],
-                    'hiring_date'       => '2022-09-01',
-                    'password'          => $teacherPassword,
-                    'needs_payment'     => $d['needs_payment'],
-                    'data_consent'      => $d['data_consent'],
-                    'fiscal_responsibility' => $d['fiscal_responsibility'],
-                    'ceded_confirmation' => $d['ceded_confirmation'],
-                ])
-            );
+            if (! CampusTeacher::where('code', $d['code'])->exists()) {
+                \App\Models\CampusTeacher::factory()->create(array_merge($d, [
+                    'areas'        => [],
+                    'hiring_date'  => '2022-09-01',
+                    'password'     => $teacherPassword,
+                ]));
+            }
         }
 
         $tAnna   = CampusTeacher::where('code', 'ANNBER')->first();

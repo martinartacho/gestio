@@ -22,6 +22,8 @@ class CampusTeacherFactory extends Factory
             'last_name'            => $lastName,
             'email'                => $this->faker->unique()->safeEmail(),
             'phone'                => $this->faker->phoneNumber(),
+            'city'                 => $this->faker->city(),
+            'postal_code'          => $this->faker->postcode(),
             'specialization'       => $this->faker->words(3, true),
             'bio'                  => null,
             'status'               => 'active',
