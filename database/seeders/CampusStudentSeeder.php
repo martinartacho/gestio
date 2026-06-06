@@ -13,31 +13,36 @@ class CampusStudentSeeder extends Seeder
 {
     public function run(): void
     {
-        $students = [
-            ['first_name' => 'Marc',    'last_name' => 'Puig',     'email' => 'marc.puig@test.cat',     'phone' => '611 001 001', 'city' => 'Barcelona'],
-            ['first_name' => 'Laura',   'last_name' => 'Ferrer',   'email' => 'laura.ferrer@test.cat',  'phone' => '611 001 002', 'city' => 'Granollers'],
-            ['first_name' => 'Jordi',   'last_name' => 'Vila',     'email' => 'jordi.vila@test.cat',    'phone' => '611 001 003', 'city' => 'Sabadell'],
-            ['first_name' => 'Marta',   'last_name' => 'Soler',    'email' => 'marta.soler@test.cat',   'phone' => '611 001 004', 'city' => 'Terrassa'],
-            ['first_name' => 'Pere',    'last_name' => 'Costa',    'email' => 'pere.costa@test.cat',    'phone' => '611 001 005', 'city' => 'Vic'],
-            ['first_name' => 'Núria',   'last_name' => 'Molas',    'email' => 'nuria.molas@test.cat',   'phone' => '611 001 006', 'city' => 'Mataró'],
-            ['first_name' => 'David',   'last_name' => 'Roca',     'email' => 'david.roca@test.cat',    'phone' => '611 001 007', 'city' => 'Manresa'],
-            ['first_name' => 'Sílvia',  'last_name' => 'Prat',     'email' => 'silvia.prat@test.cat',   'phone' => '611 001 008', 'city' => 'Girona'],
-            ['first_name' => 'Ricard',  'last_name' => 'Duran',    'email' => 'ricard.duran@test.cat',  'phone' => '611 001 009', 'city' => 'Lleida'],
-            ['first_name' => 'Gemma',   'last_name' => 'Mas',      'email' => 'gemma.mas@test.cat',     'phone' => '611 001 010', 'city' => 'Tarragona'],
-            ['first_name' => 'Arnau',   'last_name' => 'Gibert',   'email' => 'arnau.gibert@test.cat',  'phone' => '611 001 011', 'city' => 'Barcelona'],
-            ['first_name' => 'Cristina','last_name' => 'Vidal',    'email' => 'cristina.vidal@test.cat','phone' => '611 001 012', 'city' => 'Badalona'],
-        ];
-
+        $mail     = config('seeder.mail', 'app.test');
         $password = Hash::make(
             config('seeder.student_password') ?? throw new \RuntimeException('SEEDER_STUDENT_PASSWORD no està definit al .env')
         );
 
+        // Camps identificadors. La resta (phone, city, postal_code, address) els genera la factory.
+        $studentDefs = [
+            ['first_name' => 'Marc',    'last_name' => 'Puig',    'email' => "marc.puig@{$mail}"],
+            ['first_name' => 'Laura',   'last_name' => 'Ferrer',  'email' => "laura.ferrer@{$mail}"],
+            ['first_name' => 'Jordi',   'last_name' => 'Vila',    'email' => "jordi.vila@{$mail}"],
+            ['first_name' => 'Marta',   'last_name' => 'Soler',   'email' => "marta.soler@{$mail}"],
+            ['first_name' => 'Pere',    'last_name' => 'Costa',   'email' => "pere.costa@{$mail}"],
+            ['first_name' => 'Núria',   'last_name' => 'Molas',   'email' => "nuria.molas@{$mail}"],
+            ['first_name' => 'David',   'last_name' => 'Roca',    'email' => "david.roca@{$mail}"],
+            ['first_name' => 'Sílvia',  'last_name' => 'Prat',    'email' => "silvia.prat@{$mail}"],
+            ['first_name' => 'Ricard',  'last_name' => 'Duran',   'email' => "ricard.duran@{$mail}"],
+            ['first_name' => 'Gemma',   'last_name' => 'Mas',     'email' => "gemma.mas@{$mail}"],
+            ['first_name' => 'Arnau',   'last_name' => 'Gibert',  'email' => "arnau.gibert@{$mail}"],
+            ['first_name' => 'Cristina','last_name' => 'Vidal',   'email' => "cristina.vidal@{$mail}"],
+        ];
+
         $createdStudents = [];
-        foreach ($students as $data) {
-            $createdStudents[] = CampusStudent::firstOrCreate(
-                ['email' => $data['email']],
-                array_merge($data, ['password' => $password, 'data_consent' => true])
-            );
+        foreach ($studentDefs as $def) {
+            $student = CampusStudent::where('email', $def['email'])->first();
+            if (! $student) {
+                $student = CampusStudent::factory()->create(
+                    array_merge($def, ['password' => $password, 'data_consent' => true])
+                );
+            }
+            $createdStudents[] = $student;
         }
 
         // Agafar alguns cursos actius per fer inscripcions
