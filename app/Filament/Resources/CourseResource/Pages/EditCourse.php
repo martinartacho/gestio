@@ -17,8 +17,23 @@ class EditCourse extends EditRecord
         ];
     }
 
-    protected function getRedirectUrl(): string
+    // getRedirectUrl() no sobreescrit → Filament retorna null → queda a l'edit
+
+    protected function getFormActions(): array
     {
-        return $this->getResource()::getUrl('index');
+        return [
+            $this->getSaveFormAction()
+                ->label('Guardar'),
+
+            Actions\Action::make('saveAndReturn')
+                ->label('Guardar i tornar')
+                ->action(function (): void {
+                    $this->save(shouldRedirect: false);
+                    $this->redirect($this->previousUrl ?? $this->getResource()::getUrl('index'));
+                })
+                ->color('gray'),
+
+            $this->getCancelFormAction(),
+        ];
     }
 }
