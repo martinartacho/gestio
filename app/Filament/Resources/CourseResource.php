@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CourseResource\Pages;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
-use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction, Action};
+use Filament\Actions\{ActionGroup, BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction, Action};
 use Filament\Forms\Components\{DatePicker, Select, Textarea, TextInput, Toggle};
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -335,11 +335,7 @@ class CourseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
-                    ->label(__('site.code'))
-                    ->badge()->color('gray')
-                    ->searchable()->sortable(),
-
+                // Sempre visible — identificació mínima
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('site.course_title'))
                     ->searchable()->sortable()->weight('bold')
@@ -349,15 +345,23 @@ class CourseResource extends Resource
                             ? '📋 ' . __('site.template')
                             : null)),
 
-                Tables\Columns\TextColumn::make('category.name')
-                    ->label(__('site.category'))
+                Tables\Columns\TextColumn::make('status')
+                    ->label(__('site.status'))
+                    ->formatStateUsing(fn($state) => __('site.course_statuses')[$state] ?? $state)
                     ->badge()
-                    ->color(fn($record) => $record->category?->color ?? 'gray')
+                    ->color(fn($state) => CampusCourse::STATUS_COLORS[$state] ?? 'gray'),
+
+                // Activables ON per defecte
+                Tables\Columns\TextColumn::make('code')
+                    ->label(__('site.code'))
+                    ->badge()->color('gray')
+                    ->searchable()->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('season.name')
                     ->label(__('site.season'))
-                    ->badge()->color('info')->sortable(),
+                    ->badge()->color('info')->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('format')
                     ->label(__('site.course_format'))
@@ -369,26 +373,31 @@ class CourseResource extends Resource
                         'semipresencial' => 'warning',
                         'hibrid'         => 'purple',
                         default          => 'gray',
-                    }),
+                    })
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('price')
+                    ->label(__('site.course_price'))
+                    ->money('EUR')->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\IconColumn::make('is_public')
+                    ->label(__('site.public'))->boolean()
+                    ->trueColor('success')->falseColor('gray')
+                    ->toggleable(),
+
+                // Activables OFF per defecte
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label(__('site.category'))
+                    ->badge()
+                    ->color(fn($record) => $record->category?->color ?? 'gray')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('max_students')
                     ->label(__('site.course_max'))
                     ->formatStateUsing(fn($state) => $state ?? '∞')
-                    ->alignCenter(),
-
-                Tables\Columns\TextColumn::make('price')
-                    ->label(__('site.course_price'))
-                    ->money('EUR')->sortable(),
-
-                Tables\Columns\TextColumn::make('status')
-                    ->label(__('site.status'))
-                    ->formatStateUsing(fn($state) => __('site.course_statuses')[$state] ?? $state)
-                    ->badge()
-                    ->color(fn($state) => CampusCourse::STATUS_COLORS[$state] ?? 'gray'),
-
-                Tables\Columns\IconColumn::make('is_public')
-                    ->label(__('site.public'))->boolean()
-                    ->trueColor('success')->falseColor('gray'),
+                    ->alignCenter()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\IconColumn::make('open_enrollment')
                     ->label('∞ Inscr.')
@@ -431,16 +440,52 @@ class CourseResource extends Resource
                     ->trueLabel(__('site.only_public'))
                     ->falseLabel(__('site.only_private'))
                     ->native(false),
+
+                Tables\Filters\TernaryFilter::make('course_type')
+                    ->label('Tipus')
+                    ->placeholder('Tots')
+                    ->trueLabel('Sols plantilles / pare')
+                    ->falseLabel('Sols edicions')
+                    ->queries(
+                        true:  fn($query) => $query->whereNull('parent_id'),
+                        false: fn($query) => $query->whereNotNull('parent_id'),
+                    )
+                    ->native(false),
             ])
             ->actions([
-                Action::make('preview')
-                    ->label('Previsualitzar')
-                    ->icon('heroicon-o-eye')
-                    ->color('gray')
-                    ->url(fn(CampusCourse $r) => route('campus.catalog.show', ['slug' => $r->slug, 'preview' => 1]))
-                    ->openUrlInNewTab(),
                 EditAction::make()->label(__('site.edit')),
-                DeleteAction::make()->label(__('site.delete')),
+                ActionGroup::make([
+                    Action::make('clone')
+                        ->label('Clonar')
+                        ->icon('heroicon-o-document-duplicate')
+                        ->color('info')
+                        ->requiresConfirmation()
+                        ->modalHeading(fn(CampusCourse $r) => 'Clonar "' . $r->title . '"')
+                        ->modalDescription('Es crearà una còpia en estat Esborrany. Podràs ajustar temporada, dates i codi a continuació.')
+                        ->modalSubmitActionLabel('Clonar')
+                        ->action(function (CampusCourse $record) {
+                            $clone = $record->replicate();
+                            $clone->status         = 'draft';
+                            $clone->start_date     = null;
+                            $clone->end_date       = null;
+                            $clone->calendar_notes = null;
+                            $clone->code           = null;
+                            $clone->slug           = null;
+                            $clone->parent_id      = $record->parent_id ?? $record->id;
+                            $clone->save();
+
+                            return redirect(CourseResource::getUrl('edit', ['record' => $clone]));
+                        }),
+
+                    Action::make('preview')
+                        ->label('Previsualitzar')
+                        ->icon('heroicon-o-eye')
+                        ->color('gray')
+                        ->url(fn(CampusCourse $r) => route('campus.catalog.show', ['slug' => $r->slug, 'preview' => 1]))
+                        ->openUrlInNewTab(),
+
+                    DeleteAction::make()->label(__('site.delete')),
+                ])->iconButton()->tooltip('Més accions'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
