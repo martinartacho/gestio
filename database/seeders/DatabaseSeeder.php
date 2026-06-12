@@ -154,6 +154,7 @@ class DatabaseSeeder extends Seeder
         // ── Dades del campus ──────────────────────────────────────────────
         $this->call(CampusSeeder::class);
         $this->call(CampusStudentSeeder::class);
+        $this->call(DemoSeeder::class);
         $this->call(CampusDocumentSeeder::class);
         $this->call(LmsLessonSeeder::class);
 

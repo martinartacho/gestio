@@ -31,28 +31,28 @@
             @endphp
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-start justify-between gap-4">
                 <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-xs text-gray-400">{{ $enrollment->course->code }}</span>
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span class="text-xs font-mono text-gray-400">{{ $enrollment->course->code }}</span>
                         @if ($enrollment->course->category)
-                            <span class="text-xs px-2 py-0.5 rounded-full"
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-full"
                                   style="background-color: {{ $enrollment->course->category->color ?? '#e5e7eb' }}22; color: {{ $enrollment->course->category->color ?? '#6b7280' }}">
                                 {{ $enrollment->course->category->name }}
                             </span>
                         @endif
-                    </div>
-                    <h2 class="font-semibold text-gray-900">{{ $enrollment->course->title }}</h2>
-                     <div>
-                         @if ($enrollment->course->description !== null)
-                            {{ $enrollment->course->description }}
+                        @if ($enrollment->course->season)
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
+                                {{ $enrollment->course->season->name }}
+                            </span>
                         @endif
                     </div>
-                    <div class="text-sm text-gray-500 mt-1">
+                    <h2 class="font-semibold text-gray-900">{{ $enrollment->course->title }}</h2>
+                    @if ($enrollment->course->description)
+                        <p class="text-sm text-gray-500 mt-0.5 leading-snug">{{ $enrollment->course->description }}</p>
+                    @endif
+                    <div class="text-xs text-gray-400 mt-1">
                         @if ($enrollment->course->start_date)
                             {{ $enrollment->course->start_date->format('d/m/Y') }}
                             @if ($enrollment->course->end_date) — {{ $enrollment->course->end_date->format('d/m/Y') }} @endif
-                        @endif
-                        @if ($enrollment->course->season)
-                            · {{ $enrollment->course->season->name }}
                         @endif
                     </div>
                         @if ($enrollment->course->calendar_notes !== null)

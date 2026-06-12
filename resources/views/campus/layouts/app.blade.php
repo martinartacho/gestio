@@ -19,6 +19,23 @@
             <div class="flex items-center gap-4 text-sm">
                 <a href="{{ route('campus.catalog.index') }}" class="text-gray-600 hover:text-indigo-700">Catàleg</a>
                 @auth('student')
+                    @php
+                        $cartItemCount = \App\Models\CampusCart::where('student_id', auth('student')->id())
+                            ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+                            ->withCount('items')
+                            ->latest()->first()?->items_count ?? 0;
+                    @endphp
+                    <a href="{{ route('campus.cart.show') }}"
+                       class="relative flex items-center text-gray-600 hover:text-indigo-700" title="Carret">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/>
+                        </svg>
+                        @if ($cartItemCount > 0)
+                            <span class="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                {{ $cartItemCount }}
+                            </span>
+                        @endif
+                    </a>
                     <a href="{{ route('campus.portal.courses') }}" class="text-gray-600 hover:text-indigo-700">Els meus cursos</a>
                     <form method="POST" action="{{ route('campus.logout') }}" class="inline">
                         @csrf
