@@ -64,17 +64,14 @@ class ManualPaymentTest extends TestCase
     // ─── Tests ───────────────────────────────────────────────────────────────
 
     /** @test */
-    public function test_enrolled_student_sees_payment_method_selector(): void
+    public function test_student_sees_cart_button_for_paid_course(): void
     {
-        $this->enablePaymentMethod('transfer');
-        $this->enablePaymentMethod('bizum');
-
+        // Des del nou flux, el detall del curs mostra "Afegir al carret" per als
+        // cursos de pagament; el selector de mètode de pagament és al carret.
         $this->actingAs($this->student, 'student')
             ->get(route('campus.catalog.show', $this->course->slug))
             ->assertSuccessful()
-            ->assertSee('payment_method')
-            ->assertSee('Transferència bancària')
-            ->assertSee('Bizum');
+            ->assertSee('Afegir al carret');
     }
 
     /** @test */

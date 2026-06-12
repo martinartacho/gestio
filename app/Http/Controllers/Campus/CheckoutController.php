@@ -17,8 +17,13 @@ use Stripe\Stripe;
 
 class CheckoutController extends Controller
 {
-    /** Màxim d'inscripcions pendents simultànies per alumne (anti seat-squatting). */
     private const MAX_PENDING = 3;
+
+    private function isPreviewMode(): bool
+    {
+        return request()->boolean('preview')
+            && auth('web')->user()?->hasPermissionTo('courses.edit');
+    }
 
     public function create(Request $request, string $slug): RedirectResponse|View
     {
@@ -48,8 +53,8 @@ class CheckoutController extends Controller
                     . 'Completa-les o cancel·la-les abans d\'inscriure\'t a un nou curs.');
         }
 
-        // Verificar que les inscripcions estan obertes (tret que el curs ho permeti sempre)
-        if (! $course->open_enrollment) {
+        // Verificar que les inscripcions estan obertes (tret que el curs ho permeti sempre o sigui preview)
+        if (! $course->open_enrollment && ! $this->isPreviewMode()) {
             $season = $course->season;
             if (! $season || ! $season->isActive() || ! $season->enrollmentIsOpen()) {
                 return redirect()->route('campus.catalog.show', $slug)

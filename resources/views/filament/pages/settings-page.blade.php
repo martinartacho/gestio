@@ -507,14 +507,38 @@
                 <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Concepte del pagament</h2>
                 <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1rem;">
                     Text que es mostrarà a l'alumne com a concepte de la transferència/Bizum/PayPal.
-                    Variables: <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{NOM}</code>,
-                    <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{CURS}</code>,
+                    Variables disponibles:
+                    <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{NOM}</code> nom de l'alumne,
+                    <code style="background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:0.25rem;">{CURS}</code> títol del curs,
                     <code style="background:#eef2ff;color:#4f46e5;padding:0.1rem 0.4rem;border-radius:0.25rem;">{REFERENCIA}</code>
-                    <span style="font-size:0.75rem;color:#9ca3af;">(codi únic per matriculació)</span>.
+                    <span style="font-size:0.75rem;color:#92400e;font-weight:500;">codi únic de ticket/carret</span>
+                    <span style="font-size:0.75rem;color:#9ca3af;">(un sol codi per tots els cursos d'un mateix carret — obligatori per identificar el pagament)</span>.
                 </p>
                 <input type="text" wire:model="payment_concept_template"
-                       placeholder="{NOM} - {CURS} - {REFERENCIA}"
+                       placeholder="{NOM} - {REFERENCIA}"
                        style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.375rem;">
+                    Recomanat: <code style="background:#f3f4f6;padding:0.1rem 0.3rem;border-radius:0.2rem;">{NOM} - {REFERENCIA}</code>.
+                    Si el carret conté múltiples cursos, <code style="background:#f3f4f6;padding:0.1rem 0.3rem;border-radius:0.2rem;">{CURS}</code> mostrarà el títol del primer curs.
+                </p>
+            </div>
+
+            {{-- Límit de cursos al carret --}}
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Límit de cursos al carret</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1rem;">
+                    Nombre màxim de cursos que un alumne pot tenir en un mateix carret (per transacció).
+                    Útil per evitar reserves massives en períodes d'alta demanda.
+                </p>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <input type="number" wire:model="payment_max_cart_items"
+                           min="1" max="20"
+                           style="width:5.5rem;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.875rem;text-align:center;">
+                    <span style="font-size:0.875rem;color:#6b7280;">cursos per carret</span>
+                </div>
+                <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.375rem;">
+                    Valor recomanat: <strong>5</strong>. Mínim: 1.
+                </p>
             </div>
 
             {{-- Caducitat --}}

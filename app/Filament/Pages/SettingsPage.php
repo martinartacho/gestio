@@ -94,6 +94,7 @@ class SettingsPage extends Page
     public string $payment_bizum_number     = '';
     public string $payment_paypal_email     = '';
     public string $payment_concept_template = '{NOM} - {CURS}';
+    public int    $payment_max_cart_items   = 5;
     public int    $payment_expiry_value     = 5;
     public string $payment_expiry_unit      = 'days';
 
@@ -179,6 +180,7 @@ class SettingsPage extends Page
         $this->payment_bizum_number     = (string) $store->get('payment_bizum_number', '');
         $this->payment_paypal_email     = (string) $store->get('payment_paypal_email', '');
         $this->payment_concept_template = (string) $store->get('payment_concept_template', '{NOM} - {CURS}');
+        $this->payment_max_cart_items   = (int)    $store->get('payment_max_cart_items', 5);
         $this->payment_expiry_value     = (int)    $store->get('payment_expiry_value', 5);
         $this->payment_expiry_unit      = (string) $store->get('payment_expiry_unit', 'days');
 
@@ -261,6 +263,7 @@ class SettingsPage extends Page
             'payment_bizum_number'     => $this->payment_bizum_number ?: null,
             'payment_paypal_email'     => $this->payment_paypal_email ?: null,
             'payment_concept_template' => $this->payment_concept_template ?: '{NOM} - {CURS}',
+            'payment_max_cart_items'   => max(1, $this->payment_max_cart_items),
             'payment_expiry_value'     => max(0, $this->payment_expiry_value),
             'payment_expiry_unit'      => in_array($this->payment_expiry_unit, ['hours', 'days'])
                                             ? $this->payment_expiry_unit

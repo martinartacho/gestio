@@ -23,7 +23,6 @@ class StripeWebhookController extends Controller
             if ($secret) {
                 $event = Webhook::constructEvent($payload, $sigHeader, $secret);
             } else {
-                // Dev: sense secret configurat, parsem l'event sense verificar signatura
                 $event = \Stripe\Event::constructFrom(json_decode($payload, true));
             }
         } catch (SignatureVerificationException $e) {
@@ -40,24 +39,30 @@ class StripeWebhookController extends Controller
 
     private function handleCheckoutCompleted(object $session): void
     {
-        $enrollment = CampusEnrollment::where('stripe_session_id', $session->id)->first();
+        // Trobar totes les inscripcions per aquesta sessió Stripe (pot ser 1 o N del carret)
+        $enrollments = CampusEnrollment::where('stripe_session_id', $session->id)->get();
 
-        if (! $enrollment || $enrollment->isPaid()) {
+        if ($enrollments->isEmpty()) {
             return;
         }
 
-        $enrollment->update([
-            'status'                 => 'paid',
-            'stripe_payment_intent'  => $session->payment_intent,
-            'paid_at'                => now(),
-        ]);
+        foreach ($enrollments as $enrollment) {
+            if ($enrollment->isPaid()) {
+                continue;
+            }
 
-        // Inserir al pivot de confirmats
-        $enrollment->course->students()->syncWithoutDetaching([
-            $enrollment->student_id => [
-                'enrollment_id' => $enrollment->id,
-                'enrolled_at'   => now(),
-            ],
-        ]);
+            $enrollment->update([
+                'status'                => 'paid',
+                'stripe_payment_intent' => $session->payment_intent,
+                'paid_at'               => now(),
+            ]);
+
+            $enrollment->course->students()->syncWithoutDetaching([
+                $enrollment->student_id => [
+                    'enrollment_id' => $enrollment->id,
+                    'enrolled_at'   => now(),
+                ],
+            ]);
+        }
     }
 }

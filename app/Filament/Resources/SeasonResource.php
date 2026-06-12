@@ -80,6 +80,22 @@ class SeasonResource extends Resource
                     ->required()->native(false)
                     ->afterOrEqual('start_date'),
             ]),
+
+            Section::make('Període d\'inscripcions')
+                ->description('Finestra de dates en què els alumnes poden inscriure\'s. Si es deixa en blanc, les inscripcions estan sempre obertes mentre la temporada sigui activa.')
+                ->columns(2)
+                ->schema([
+                    DatePicker::make('start_date_enrollment')
+                        ->label('Inici inscripcions')
+                        ->native(false)
+                        ->nullable(),
+
+                    DatePicker::make('end_date_enrollment')
+                        ->label('Fi inscripcions')
+                        ->native(false)
+                        ->nullable()
+                        ->afterOrEqual('start_date_enrollment'),
+                ]),
         ]);
     }
 
