@@ -4,6 +4,7 @@ use App\Http\Controllers\Associats\MemberAuthController;
 use App\Http\Controllers\Associats\MemberPasswordController;
 use App\Http\Controllers\Associats\MemberPortalController;
 use App\Http\Controllers\Campus\CatalogController;
+use App\Http\Controllers\Campus\CartController;
 use App\Http\Controllers\Campus\CheckoutController;
 use App\Http\Controllers\Campus\LmsPreviewController;
 use App\Http\Controllers\Campus\LmsStudentController;
@@ -77,6 +78,15 @@ Route::prefix('portal')->name('campus.')->middleware('campus.enabled')->group(fu
     // ── Portal alumne (requereix auth) ────────────────────────────────────────
     Route::middleware(\App\Http\Middleware\AuthenticateStudent::class)->group(function () {
         Route::get('/meus-cursos', [PortalController::class, 'courses'])->name('portal.courses');
+
+        // ── Carret de compra ──────────────────────────────────────────────────────
+        Route::get('/carret', [CartController::class, 'show'])->name('cart.show');
+        Route::post('/carret/afegir', [CartController::class, 'add'])->name('cart.add');
+        Route::delete('/carret/eliminar/{item}', [CartController::class, 'remove'])->name('cart.remove');
+        Route::post('/carret/checkout', [CartController::class, 'checkout'])
+            ->middleware(['throttle:checkout', \App\Http\Middleware\EnsureStudentEmailIsVerified::class])
+            ->name('cart.checkout');
+
         Route::post('/checkout/{slug}', [CheckoutController::class, 'create'])
             ->middleware(['throttle:checkout', \App\Http\Middleware\EnsureStudentEmailIsVerified::class])
             ->name('checkout.create');

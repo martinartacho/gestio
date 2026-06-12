@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
+use App\Models\CampusCart;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
 use Illuminate\Http\Request;
@@ -92,9 +93,18 @@ class CatalogController extends Controller
         $seasonIsPast   = ! $openEnrollment && ($season?->isClosed() || $season?->isPast());
         $seasonIsFuture = ! $openEnrollment && ($season?->isDraft() || $season?->isFuture());
 
+        // Comprova si el curs ja és al carret actiu de l'alumne
+        $inCart = false;
+        if ($student && ! $alreadyEnrolled) {
+            $activeCart = CampusCart::where('student_id', $student->id)
+                ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+                ->latest()->first();
+            $inCart = $activeCart?->items()->where('course_id', $course->id)->exists() ?? false;
+        }
+
         return view('campus.catalog.show', compact(
             'course', 'myEnrollment', 'alreadyEnrolled',
-            'enrollmentOpen', 'seasonIsPast', 'seasonIsFuture', 'isPreview'
+            'enrollmentOpen', 'seasonIsPast', 'seasonIsFuture', 'isPreview', 'inCart'
         ));
     }
 }
