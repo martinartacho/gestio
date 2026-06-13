@@ -3,16 +3,24 @@
 
 Hola, **{{ $student->first_name }}**!
 
-Hem rebut la vostra sol·licitud d'inscripció al curs **{{ $course->title }}**.
+Hem rebut la vostra sol·licitud d'inscripció. La plaça queda **reservada** fins que l'equip confirmi la recepció del pagament.
 
-La vostra plaça queda **reservada** fins que l'equip confirmi la recepció del pagament.
+---
+
+## Cursos reservats
+
+@foreach ($enrollments as $enrollment)
+- **{{ $enrollment->course->title }}** — {{ number_format($enrollment->course->price, 2, ',', '.') }} €
+@endforeach
+
+**Total: {{ number_format($enrollments->sum(fn($e) => $e->course->price), 2, ',', '.') }} €**
 
 ---
 
 ## Dades del pagament
 
-@if ($enrollment->payment_reference)
-**Referència:** `{{ $enrollment->payment_reference }}`
+@if ($reference)
+**Referència:** `{{ $reference }}`
 
 @endif
 @if ($method === 'transfer')
@@ -39,11 +47,9 @@ La vostra plaça queda **reservada** fins que l'equip confirmi la recepció del 
 
 **Concepte:** {{ $concept }}
 
-**Import:** {{ number_format($course->price, 2, ',', '.') }} €
-
-@if ($enrollment->payment_expires_at)
+@php $exp = $enrollments->first()->payment_expires_at; @endphp
+@if ($exp)
 @php
-    $exp = $enrollment->payment_expires_at;
     $expText = $exp->isToday()
         ? 'avui a les ' . $exp->format('H:i') . ' h'
         : ($exp->isTomorrow()
@@ -51,12 +57,12 @@ La vostra plaça queda **reservada** fins que l'equip confirmi la recepció del 
             : $exp->format('d/m/Y') . ' a les ' . $exp->format('H:i') . ' h');
 @endphp
 
-> ⚠️ La reserva caduca el **{{ $expText }}**. Passat aquest termini, la plaça quedarà lliure.
+> ⚠️ La reserva caduca el **{{ $expText }}**. Passat aquest termini, les places quedaran lliures.
 @endif
 
 ---
 
-Un cop rebut el pagament, us confirmarem la plaça per correu electrònic.
+Un cop rebut el pagament, us confirmarem les places per correu electrònic.
 
 Gràcies,<br>
 {{ config('app.name') }}

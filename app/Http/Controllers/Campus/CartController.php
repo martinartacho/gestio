@@ -197,12 +197,9 @@ class CartController extends Controller
                     ->with('error', 'Ho sentim, "' . $fullCourse . '" ja no té places disponibles.');
             }
 
-            // Enviar correu amb totes les inscripcions
-            foreach ($enrollments as $enrollment) {
-                Mail::to($student->email)->send(
-                    new ManualPaymentPendingMail($student, $enrollment->course, $enrollment, $method)
-                );
-            }
+            Mail::to($student->email)->send(
+                new ManualPaymentPendingMail($student, $enrollments, $method)
+            );
 
             return view('campus.cart.pending', compact('cart', 'student', 'enrollments', 'method', 'settings', 'reference'));
         }

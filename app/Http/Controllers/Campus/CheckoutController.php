@@ -150,7 +150,7 @@ class CheckoutController extends Controller
             }
 
             Mail::to($student->email)
-                ->send(new ManualPaymentPendingMail($student, $course, $enrollment, $method));
+                ->send(new ManualPaymentPendingMail($student, collect([$enrollment->load('course')]), $method));
 
             return view('campus.checkout.pending', compact('course', 'student', 'enrollment', 'method', 'settings'));
         }
