@@ -69,6 +69,7 @@ class SettingsPage extends Page
     public bool $gestio_enabled              = true;
     public bool $gestio_administracio_enabled = true;
     public bool $gestio_calendari_enabled    = true;
+    public bool $noticies_enabled            = true;
 
     // Tab: Associats
     public bool   $associats_enabled        = false;
@@ -158,6 +159,7 @@ class SettingsPage extends Page
         $this->gestio_enabled               = (bool) $store->get('gestio_enabled', true);
         $this->gestio_administracio_enabled = (bool) $store->get('gestio_administracio_enabled', true);
         $this->gestio_calendari_enabled     = (bool) $store->get('gestio_calendari_enabled', true);
+        $this->noticies_enabled             = (bool) $store->get('noticies_enabled', true);
 
         $this->associats_enabled        = (bool) $store->get('associats_enabled', false);
         $this->associats_socis_enabled  = (bool) $store->get('associats_socis_enabled', true);
@@ -241,6 +243,7 @@ class SettingsPage extends Page
             'gestio_enabled'               => $this->gestio_enabled,
             'gestio_administracio_enabled' => $this->gestio_administracio_enabled,
             'gestio_calendari_enabled'     => $this->gestio_calendari_enabled,
+            'noticies_enabled'             => $this->noticies_enabled,
 
             'associats_enabled'        => $this->associats_enabled,
             'associats_socis_enabled'  => $this->associats_socis_enabled,

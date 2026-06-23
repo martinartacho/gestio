@@ -400,6 +400,16 @@
                 </div>
                 @endif
 
+                {{-- ── Mòdul Notícies ── --}}
+                <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem 0;border-top:1px solid #e5e7eb;margin-top:0.5rem;cursor:pointer;">
+                    <input type="checkbox" wire:model.live="noticies_enabled"
+                           style="margin-top:0.125rem;width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                    <div>
+                        <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin:0 0 0.125rem;">Mòdul Notícies</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">Notícies i comunicats del site. Si es desactiva, desapareix del sidebar de l'administrador i de la pàgina pública <code>/noticies</code>.</p>
+                    </div>
+                </label>
+
             </div>
 
         </div>

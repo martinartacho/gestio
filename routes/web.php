@@ -17,9 +17,20 @@ use App\Http\Controllers\Campus\StripeWebhookController;
 use App\Http\Controllers\Campus\DocumentController;
 use App\Http\Controllers\Campus\TeacherAuthController;
 use App\Http\Controllers\Campus\TeacherPortalController;
+use App\Models\CampusNews;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => view('campus.home'))->name('home');
+Route::get('/', function () {
+    $noticies = CampusNews::published()->orderByDesc('published_at')->limit(3)->get();
+    return view('campus.home', compact('noticies'));
+})->name('home');
+
+Route::get('/noticies', function () {
+    $noticies   = CampusNews::published()->orderByDesc('published_at')->get();
+    $categories = ['campus' => 'Campus', 'associats' => 'Associats', 'sistema' => 'Sistema'];
+    return view('campus.noticies', compact('noticies', 'categories'));
+})->name('campus.noticies');
+
 Route::get('/novetats', fn() => view('campus.releases'))->name('campus.releases');
 
 // ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────

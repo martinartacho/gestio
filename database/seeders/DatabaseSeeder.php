@@ -41,6 +41,8 @@ class DatabaseSeeder extends Seeder
             'quotes.view', 'quotes.create', 'quotes.edit', 'quotes.delete',
             // Remeses SEPA de socis
             'sepa.view', 'sepa.create', 'sepa.edit', 'sepa.delete',
+            // Notícies
+            'news.view', 'news.create', 'news.edit', 'news.delete',
         ];
 
         foreach ($permissions as $perm) {
@@ -61,6 +63,7 @@ class DatabaseSeeder extends Seeder
             'timeslots.view',
             'teachers.view', 'teachers.create', 'teachers.edit',
             'courses.view', 'courses.create', 'courses.edit',
+            'news.view', 'news.create', 'news.edit',
         ]);
 
         // Secretaria: professors, alumnes i socis + visualització de quotes
@@ -161,5 +164,8 @@ class DatabaseSeeder extends Seeder
         // ── Dades del mòdul associats ─────────────────────────────────────
         $this->call(AssociatMemberSeeder::class);
         $this->call(AssociatQuoteSeeder::class);
+
+        // ── Notícies per defecte ──────────────────────────────────────────
+        $this->call(CampusNewsSeeder::class);
     }
 }
