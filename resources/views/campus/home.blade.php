@@ -1,3 +1,19 @@
+@php
+    $campusActiu    = (bool) setting('campus_enabled', true);
+    $lmsActiu       = $campusActiu && (bool) setting('lms_enabled', false);
+    $associatsActiu = (bool) setting('associats_enabled', false);
+
+    $numCards  = 1; // Gestió sempre visible
+    if ($campusActiu)    $numCards += 2; // Alumnat + Professorat
+    if ($associatsActiu) $numCards += 1; // Socis
+
+    $gridClass = match(true) {
+        $numCards >= 4  => 'grid grid-cols-1 sm:grid-cols-4 gap-6',
+        $numCards === 3 => 'grid grid-cols-1 sm:grid-cols-3 gap-6',
+        $numCards === 2 => 'grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-xl mx-auto',
+        default         => 'grid grid-cols-1 gap-6 max-w-xs mx-auto',
+    };
+@endphp
 <!DOCTYPE html>
 <html lang="ca">
 <head>
@@ -11,15 +27,15 @@
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
 
-    {{-- Hero (només si campus actiu) ----------------------------------------}}
-    @if(setting('campus_enabled', true))
+    {{-- Hero (només si el mòdul campus és actiu) --}}
+    @if($campusActiu)
     <div style="background-color:{{ setting('hero_color', '#3730a3') }};">
         <div class="max-w-5xl mx-auto px-6 py-16 text-center">
             <h1 class="text-4xl font-extrabold tracking-tight mb-3" style="color:{{ setting('hero_text_color', '#ffffff') }};">
-                {{ setting('hero_title', setting('campus_name', 'Campus de Formació Continuada')) }}
+                {{ setting('hero_title', setting('campus_name', 'Campus de Formació')) }}
             </h1>
             <p class="text-lg mb-8" style="color:{{ setting('hero_text_color', '#ffffff') }};opacity:0.85;">
-                {{ setting('hero_subtitle', 'Formació professional i personal al teu ritme') }}
+                {{ setting('hero_subtitle', 'Descobreix la nostra oferta formativa') }}
             </p>
             <div class="flex flex-wrap justify-center gap-4">
                 <a href="{{ route('campus.catalog.index') }}"
@@ -37,27 +53,14 @@
     </div>
     @endif
 
-    {{-- Access cards --------------------------------------------------------}}
+    {{-- Targetes d'accés per perfil --}}
     <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-14">
 
         <h2 class="text-center text-sm font-semibold uppercase tracking-widest text-gray-400 mb-8">Accés per perfil</h2>
 
-        @php
-            $campusActiu    = setting('campus_enabled', true);
-            $associatsActiu = setting('associats_enabled', false);
-
-            $cols = 1 + (int) $campusActiu * 2 + (int) $associatsActiu;
-            $gridClass = match(true) {
-                $cols >= 4  => 'grid grid-cols-1 sm:grid-cols-4 gap-6',
-                $cols === 3 => 'grid grid-cols-1 sm:grid-cols-3 gap-6',
-                $cols === 2 => 'grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-xl mx-auto',
-                default     => 'grid grid-cols-1 gap-6 max-w-xs mx-auto',
-            };
-        @endphp
-
         <div class="{{ $gridClass }}">
 
-            {{-- Alumnat (campus) --}}
+            {{-- Alumnat — mòdul campus --}}
             @if($campusActiu)
             <a href="{{ route('campus.login') }}"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
@@ -68,12 +71,15 @@
                 </div>
                 <div>
                     <p class="font-bold text-gray-900 text-base">Alumnat</p>
-                    <p class="text-sm text-gray-500 mt-0.5">Portal d'inscripcions i cursos</p>
+                    <p class="text-sm text-gray-500 mt-0.5">Inscripcions i pagaments de cursos</p>
+                    @if($lmsActiu)
+                    <p class="text-xs text-indigo-400 mt-1">+ Continguts en línia · Certificats</p>
+                    @endif
                 </div>
                 <span class="mt-auto text-xs text-indigo-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
 
-            {{-- Professorat (campus) --}}
+            {{-- Professorat — mòdul campus --}}
             <a href="{{ route('teacher.login') }}"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
                 <div class="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition">
@@ -83,13 +89,13 @@
                 </div>
                 <div>
                     <p class="font-bold text-gray-900 text-base">Professorat</p>
-                    <p class="text-sm text-gray-500 mt-0.5">Cursos, alumnes i liquidacions</p>
+                    <p class="text-sm text-gray-500 mt-0.5">Cursos, sessions i liquidacions</p>
                 </div>
                 <span class="mt-auto text-xs text-emerald-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
             @endif
 
-            {{-- Socis (associats) --}}
+            {{-- Socis — mòdul associats --}}
             @if($associatsActiu)
             <a href="{{ route('member.login') }}"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
@@ -100,13 +106,14 @@
                 </div>
                 <div>
                     <p class="font-bold text-gray-900 text-base">Socis</p>
-                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('associats_org_name', 'Entitat') }} · Passaport Cultural</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('associats_org_name', 'La teva associació') }}</p>
+                    <p class="text-xs text-violet-400 mt-1">Carnet digital QR · Quotes · Historial</p>
                 </div>
                 <span class="mt-auto text-xs text-violet-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
             @endif
 
-            {{-- Gestió (sempre visible) --}}
+            {{-- Gestió — sempre visible --}}
             <a href="/admin"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
                 <div class="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition">
@@ -117,7 +124,7 @@
                 </div>
                 <div>
                     <p class="font-bold text-gray-900 text-base">Gestió</p>
-                    <p class="text-sm text-gray-500 mt-0.5">Administració del campus</p>
+                    <p class="text-sm text-gray-500 mt-0.5">Cursos, alumnes, pagaments i socis</p>
                 </div>
                 <span class="mt-auto text-xs text-amber-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
@@ -125,6 +132,60 @@
         </div>
 
     </main>
+
+    {{-- Secció de notícies (darreres 3 publicades) --}}
+    @if($noticies->isNotEmpty())
+    <section class="bg-white border-t border-gray-100">
+        <div class="max-w-5xl mx-auto px-6 py-14">
+
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Darreres notícies</h2>
+                <a href="{{ route('campus.noticies') }}"
+                   class="text-xs font-medium text-indigo-600 hover:underline">
+                    Veure totes &rarr;
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                @foreach($noticies as $noticia)
+                @php
+                    $badgeColor = match($noticia->category) {
+                        'campus'    => 'bg-indigo-100 text-indigo-700',
+                        'associats' => 'bg-amber-100 text-amber-700',
+                        default     => 'bg-gray-100 text-gray-600',
+                    };
+                    $categoryLabel = match($noticia->category) {
+                        'campus'    => 'Campus',
+                        'associats' => 'Associats',
+                        default     => 'Sistema',
+                    };
+                @endphp
+                <a href="{{ route('campus.noticies') }}"
+                   class="group bg-gray-50 rounded-2xl border border-gray-200 hover:shadow-md transition p-6 flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeColor }}">
+                            {{ $categoryLabel }}
+                        </span>
+                        @if($noticia->version)
+                        <span class="text-xs text-gray-400">{{ $noticia->version }}</span>
+                        @endif
+                    </div>
+                    <p class="font-bold text-gray-900 text-sm leading-snug group-hover:text-indigo-700 transition">
+                        {{ $noticia->title }}
+                    </p>
+                    @if($noticia->summary)
+                    <p class="text-xs text-gray-500 leading-relaxed line-clamp-3">{{ $noticia->summary }}</p>
+                    @endif
+                    <span class="mt-auto text-xs text-gray-400">
+                        {{ $noticia->published_at->translatedFormat('d M Y') }}
+                    </span>
+                </a>
+                @endforeach
+            </div>
+
+        </div>
+    </section>
+    @endif
 
     @include('campus.partials.footer')
 

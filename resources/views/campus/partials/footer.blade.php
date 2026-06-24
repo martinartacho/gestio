@@ -43,9 +43,9 @@
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
                onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Socis</a>
             @endif
-            <a href="{{ route('campus.releases') }}"
+            <a href="{{ route('campus.noticies') }}"
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Novetats</a>
+               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Notícies</a>
             <a href="/admin"
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;"
                onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Administració</a>

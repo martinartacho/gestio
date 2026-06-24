@@ -23,6 +23,7 @@ trait InteractsWithFilamentAdmin
         'members.view', 'members.create', 'members.edit', 'members.delete',
         'quotes.view', 'quotes.create', 'quotes.edit', 'quotes.delete',
         'sepa.view', 'sepa.create', 'sepa.edit', 'sepa.delete',
+        'news.view', 'news.create', 'news.edit', 'news.delete',
     ];
 
     protected function seedAllPermissions(): void
