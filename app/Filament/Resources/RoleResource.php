@@ -60,6 +60,15 @@ class RoleResource extends Resource
     public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('roles.delete') ?? false; }
     public static function canDeleteAny(): bool                                       { return auth()->user()?->hasPermissionTo('roles.delete') ?? false; }
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        if (! auth()->user()?->hasRole('super-admin')) {
+            $query->where('name', '!=', 'super-admin');
+        }
+        return $query;
+    }
+
     // ── Formulari ──────────────────────────────────────────────────────────
     public static function form(Schema $schema): Schema
     {
