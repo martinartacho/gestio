@@ -22,6 +22,20 @@ class SettingStore
 
     public function get(string $key, mixed $default = null): mixed
     {
+        // super-admin veu tots els mòduls sempre (bypass per a guards de navegació)
+        if (str_ends_with($key, '_enabled')
+            && auth()->check()
+            && auth()->user() instanceof \App\Models\User
+            && auth()->user()->hasRole('super-admin')) {
+            return true;
+        }
+
+        return $this->getRaw($key, $default);
+    }
+
+    /** Retorna el valor real de la DB, sense el bypass de super-admin. */
+    public function getRaw(string $key, mixed $default = null): mixed
+    {
         return array_key_exists($key, $this->data)
             ? $this->data[$key]
             : $default;

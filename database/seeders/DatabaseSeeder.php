@@ -19,6 +19,13 @@ class DatabaseSeeder extends Seeder
             ?? throw new \RuntimeException('SEEDER_USER_PASSWORD no està definit al .env');
         $mail = config('seeder.mail', 'app.test');
 
+        // super-admin: només si s'ha definit un email real a .env (mai hardcodejat al codi)
+        if ($superAdminEmail = config('seeder.super_admin_email')) {
+            User::firstOrCreate(['email' => $superAdminEmail], [
+                'name' => 'Super Admin', 'password' => bcrypt($adminPassword), 'active' => true,
+            ])->syncRoles(['super-admin']);
+        }
+
         User::firstOrCreate(['email' => "admin@{$mail}"], [
             'name' => 'Administrador', 'password' => bcrypt($adminPassword), 'active' => true,
         ])->syncRoles(['admin']);
