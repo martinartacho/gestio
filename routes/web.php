@@ -27,7 +27,14 @@ Route::get('/', function () {
 
 Route::get('/noticies', function () {
     $noticies   = CampusNews::published()->visibleForCurrentUser()->orderByDesc('published_at')->get();
-    $categories = ['campus' => 'Campus', 'associats' => 'Associats', 'sistema' => 'Sistema'];
+    $categories = [
+        'campus'     => 'Campus',
+        'associats'  => 'Associats',
+        'tresoreria' => 'Tresoreria',
+        'secretaria' => 'Secretaria',
+        'admin'      => 'Administració',
+        'sistema'    => 'Sistema',
+    ];
     return view('campus.noticies', compact('noticies', 'categories'));
 })->name('campus.noticies');
 

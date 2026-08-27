@@ -160,23 +160,31 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 @foreach($noticies as $noticia)
                 @php
-                    $badgeColor = match($noticia->category) {
-                        'campus'    => 'bg-indigo-100 text-indigo-700',
-                        'associats' => 'bg-amber-100 text-amber-700',
-                        default     => 'bg-gray-100 text-gray-600',
-                    };
-                    $categoryLabel = match($noticia->category) {
-                        'campus'    => 'Campus',
-                        'associats' => 'Associats',
-                        default     => 'Sistema',
-                    };
+                    $badgeColors = [
+                        'campus'     => 'bg-indigo-100 text-indigo-700',
+                        'associats'  => 'bg-amber-100 text-amber-700',
+                        'tresoreria' => 'bg-emerald-100 text-emerald-700',
+                        'secretaria' => 'bg-rose-100 text-rose-700',
+                        'admin'      => 'bg-violet-100 text-violet-700',
+                        'sistema'    => 'bg-gray-100 text-gray-600',
+                    ];
+                    $labelNames = [
+                        'campus'     => 'Campus',
+                        'associats'  => 'Associats',
+                        'tresoreria' => 'Tresoreria',
+                        'secretaria' => 'Secretaria',
+                        'admin'      => 'Administració',
+                        'sistema'    => 'Sistema',
+                    ];
                 @endphp
                 <a href="{{ route('campus.noticies') }}"
                    class="group bg-gray-50 rounded-2xl border border-gray-200 hover:shadow-md transition p-6 flex flex-col gap-3">
                     <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeColor }}">
-                            {{ $categoryLabel }}
+                        @foreach($noticia->labels ?? [] as $label)
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeColors[$label] ?? 'bg-gray-100 text-gray-600' }}">
+                            {{ $labelNames[$label] ?? $label }}
                         </span>
+                        @endforeach
                         @if($noticia->version)
                         <span class="text-xs text-gray-400">{{ $noticia->version }}</span>
                         @endif
