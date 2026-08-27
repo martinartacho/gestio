@@ -8,6 +8,7 @@
             'campus'     => '🏫 Site',
             'aparenca'   => '🎨 Aparença',
             'moduls'     => '🔧 Mòduls',
+            'cataleg'    => '📚 Catàleg',
             'pagament'   => '💳 Pagament',
             'cua'        => '🎟 Cua',
             'avançat'    => '⚙️ Avançat',
@@ -409,6 +410,45 @@
                         <p style="font-size:0.8125rem;color:#6b7280;margin:0;">Notícies i comunicats del site. Si es desactiva, desapareix del sidebar de l'administrador i de la pàgina pública <code>/noticies</code>.</p>
                     </div>
                 </label>
+
+            </div>
+
+        </div>
+
+        {{-- ══════════════════════════════════════════════════════════════
+             TAB: CATÀLEG (camps visibles a la fitxa pública de curs)
+        ══════════════════════════════════════════════════════════════ --}}
+        <div style="{{ $activeTab !== 'cataleg' ? 'display:none;' : '' }}">
+
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Camps del catàleg públic</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.5rem;">
+                    Tria quines dades es mostren a les targetes i fitxes de curs de <code>/cursos</code>. El títol sempre es mostra.
+                </p>
+
+                @foreach ([
+                    ['key' => 'catalog_show_category',    'label' => 'Categoria',            'desc' => 'Etiqueta de categoria del curs.'],
+                    ['key' => 'catalog_show_code',         'label' => 'Codi',                 'desc' => 'Codi intern del curs (ex: AULOBE).'],
+                    ['key' => 'catalog_show_dates',        'label' => 'Dates',                'desc' => 'Data d\'inici i final del curs.'],
+                    ['key' => 'catalog_show_space',        'label' => 'Espai',                'desc' => 'Aula o sala on s\'imparteix.'],
+                    ['key' => 'catalog_show_format',       'label' => 'Format',               'desc' => 'Presencial, Online o Híbrid.'],
+                    ['key' => 'catalog_show_sessions',     'label' => 'Sessions',             'desc' => 'Nombre de sessions del curs.'],
+                    ['key' => 'catalog_show_hours',        'label' => 'Hores',                'desc' => 'Durada total en hores.'],
+                    ['key' => 'catalog_show_places',       'label' => 'Places',               'desc' => 'Aforament i disponibilitat.'],
+                    ['key' => 'catalog_show_price',        'label' => 'Preu',                 'desc' => 'Import del curs.'],
+                    ['key' => 'catalog_show_description',  'label' => 'Descripció',           'desc' => 'Text descriptiu del curs.'],
+                    ['key' => 'catalog_show_objectives',   'label' => 'Objectius',            'desc' => 'Objectius d\'aprenentatge (fitxa de detall).'],
+                    ['key' => 'catalog_show_requirements', 'label' => 'Requisits',            'desc' => 'Requisits previs (fitxa de detall).'],
+                ] as $sub)
+                <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid #f3f4f6;cursor:pointer;">
+                    <input type="checkbox" wire:model.live="{{ $sub['key'] }}"
+                           style="margin-top:0.125rem;width:1.125rem;height:1.125rem;border-radius:0.25rem;cursor:pointer;">
+                    <div>
+                        <p style="font-size:0.9375rem;font-weight:500;color:#111827;margin:0 0 0.125rem;">{{ $sub['label'] }}</p>
+                        <p style="font-size:0.8125rem;color:#6b7280;margin:0;">{{ $sub['desc'] }}</p>
+                    </div>
+                </label>
+                @endforeach
 
             </div>
 
