@@ -1,11 +1,14 @@
 @php
-    $campusActiu    = (bool) setting('campus_enabled', true);
-    $lmsActiu       = $campusActiu && (bool) setting('lms_enabled', false);
-    $associatsActiu = (bool) setting('associats_enabled', false);
+    $campusActiu      = (bool) setting('campus_enabled', true);
+    $alumnatActiu     = $campusActiu && (bool) setting('home_alumnat_enabled', true);
+    $professoratActiu = $campusActiu && (bool) setting('home_professorat_enabled', true);
+    $lmsActiu         = $campusActiu && (bool) setting('lms_enabled', false);
+    $associatsActiu   = (bool) setting('associats_enabled', false);
 
-    $numCards  = 1; // Gestió sempre visible
-    if ($campusActiu)    $numCards += 2; // Alumnat + Professorat
-    if ($associatsActiu) $numCards += 1; // Socis
+    $numCards = 1; // Gestió sempre visible
+    if ($alumnatActiu)     $numCards++;
+    if ($professoratActiu) $numCards++;
+    if ($associatsActiu)   $numCards++;
 
     $gridClass = match(true) {
         $numCards >= 4  => 'grid grid-cols-1 sm:grid-cols-4 gap-6',
@@ -38,16 +41,20 @@
                 {{ setting('hero_subtitle', 'Descobreix la nostra oferta formativa') }}
             </p>
             <div class="flex flex-wrap justify-center gap-4">
+                @if(setting('hero_btn_catalog_enabled', true))
                 <a href="{{ route('campus.catalog.index') }}"
                    class="font-semibold px-6 py-3 rounded-xl transition shadow"
                    style="background-color:#ffffff;color:#3730a3;">
-                    Veure el catàleg de cursos
+                    {{ setting('hero_btn_catalog_text', 'Veure el catàleg de cursos') }}
                 </a>
+                @endif
+                @if(setting('hero_btn_register_enabled', true))
                 <a href="{{ route('campus.register') }}"
                    class="font-semibold px-6 py-3 rounded-xl transition"
                    style="border:2px solid #ffffff;color:#ffffff;background-color:transparent;">
-                    Inscriure's
+                    {{ setting('hero_btn_register_text', "Inscriure's") }}
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -56,12 +63,14 @@
     {{-- Targetes d'accés per perfil --}}
     <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-14">
 
-        <h2 class="text-center text-sm font-semibold uppercase tracking-widest text-gray-400 mb-8">Accés per perfil</h2>
+        <h2 class="text-center text-sm font-semibold uppercase tracking-widest text-gray-400 mb-8">
+            {{ setting('home_access_header', 'Accés per perfil') }}
+        </h2>
 
         <div class="{{ $gridClass }}">
 
-            {{-- Alumnat — mòdul campus --}}
-            @if($campusActiu)
+            {{-- Alumnat --}}
+            @if($alumnatActiu)
             <a href="{{ route('campus.login') }}"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
                 <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition">
@@ -70,16 +79,18 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-bold text-gray-900 text-base">Alumnat</p>
-                    <p class="text-sm text-gray-500 mt-0.5">Inscripcions i pagaments de cursos</p>
+                    <p class="font-bold text-gray-900 text-base">{{ setting('home_alumnat_title', 'Alumnat') }}</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_alumnat_subtitle', 'Inscripcions i pagaments de cursos') }}</p>
                     @if($lmsActiu)
                     <p class="text-xs text-indigo-400 mt-1">+ Continguts en línia · Certificats</p>
                     @endif
                 </div>
                 <span class="mt-auto text-xs text-indigo-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
+            @endif
 
-            {{-- Professorat — mòdul campus --}}
+            {{-- Professorat --}}
+            @if($professoratActiu)
             <a href="{{ route('teacher.login') }}"
                class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition p-8 text-center flex flex-col items-center gap-3">
                 <div class="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition">
@@ -88,8 +99,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-bold text-gray-900 text-base">Professorat</p>
-                    <p class="text-sm text-gray-500 mt-0.5">Cursos, sessions i liquidacions</p>
+                    <p class="font-bold text-gray-900 text-base">{{ setting('home_professorat_title', 'Professorat') }}</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_professorat_subtitle', 'Cursos, sessions i liquidacions') }}</p>
                 </div>
                 <span class="mt-auto text-xs text-emerald-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
@@ -123,8 +134,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-bold text-gray-900 text-base">Gestió</p>
-                    <p class="text-sm text-gray-500 mt-0.5">Cursos, alumnes, pagaments i socis</p>
+                    <p class="font-bold text-gray-900 text-base">{{ setting('home_gestio_title', 'Gestió') }}</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_gestio_subtitle', 'Cursos, alumnes, pagaments i socis') }}</p>
                 </div>
                 <span class="mt-auto text-xs text-amber-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
