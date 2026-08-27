@@ -140,6 +140,17 @@ return [
         5 => 'Divendres',
     ],
 
+    // ── Festius ───────────────────────────────────────────────────────────
+    'holidays'                 => 'Festius',
+    'holiday'                  => 'Festiu',
+    'holiday_date'             => 'Data',
+    'holiday_date_end'         => 'Fins a',
+    'holiday_date_end_hint'    => 'Deixa-ho buit per a un festiu d\'un sol dia. Omple-ho per cobrir tot un període (ex: vacances de Nadal).',
+    'holiday_label'            => 'Nom',
+    'holiday_type'             => 'Tipus',
+    'holiday_recurring'        => 'Es repeteix cada any',
+    'holiday_recurring_hint'   => 'Marca-ho per a festius fixos com Nadal o Reis, que cauen el mateix dia cada any.',
+
     // ── Professors ────────────────────────────────────────────────────────
     'teachers'           => 'Professors',
     'teacher'            => 'Professor/a',

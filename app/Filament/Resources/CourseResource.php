@@ -207,6 +207,9 @@ class CourseResource extends Resource
                                 $date  = \Carbon\Carbon::parse($startDate);
                                 $dates = [];
                                 for ($i = 0; $i < $sessions; $i++) {
+                                    while (\App\Models\CampusHoliday::fallsOn($date)) {
+                                        $date->addWeek();
+                                    }
                                     $dates[] = $date->day . '/' . $date->month;
                                     $date->addWeek();
                                 }

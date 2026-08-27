@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CampusCourse;
+use App\Models\CampusHoliday;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class CalendarEventsController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        abort_unless(Auth::user()?->hasAnyRole(['admin', 'manager']), 403);
+        abort_unless(Auth::user()?->hasAnyRole(['super-admin', 'admin', 'manager']), 403);
 
         $seasonId = $request->integer('season');
 
@@ -87,7 +88,58 @@ class CalendarEventsController extends Controller
             }
         }
 
+        foreach ($this->holidayEvents($request) as $event) {
+            $events[] = $event;
+        }
+
         return response()->json($events);
+    }
+
+    /**
+     * Esdeveniments de fons pels festius/dies no lectius, dins el rang visible
+     * del calendari. Els recurrents es repeteixen per a cada any del rang.
+     */
+    private function holidayEvents(Request $request): array
+    {
+        $rangeStart = $request->date('start');
+        $rangeEnd   = $request->date('end');
+        $years      = $rangeStart && $rangeEnd
+            ? range($rangeStart->year, $rangeEnd->year)
+            : [now()->year];
+
+        $events = [];
+
+        foreach (CampusHoliday::all() as $holiday) {
+            $end = $holiday->date_end ?? $holiday->date;
+
+            $ranges = $holiday->recurring_yearly
+                ? collect($years)->map(function ($year) use ($holiday, $end) {
+                    try {
+                        $start = Carbon::createFromDate($year, $holiday->date->month, $holiday->date->day);
+                        // Si el rang travessa l'any (ex. 23/12–7/1), el final cau l'any següent.
+                        $endYear = $end->format('md') < $holiday->date->format('md') ? $year + 1 : $year;
+                        $rangeEnd = Carbon::createFromDate($endYear, $end->month, $end->day);
+                        return [$start, $rangeEnd];
+                    } catch (\Throwable) {
+                        return null;
+                    }
+                })->filter()
+                : collect([[$holiday->date, $end]]);
+
+            foreach ($ranges as [$start, $rangeEnd]) {
+                $events[] = [
+                    'id'            => 'holiday-' . $holiday->id . '-' . $start->format('Ymd'),
+                    'title'         => $holiday->label,
+                    'start'         => $start->toDateString(),
+                    'end'           => $rangeEnd->copy()->addDay()->toDateString(), // FullCalendar: end exclusiu
+                    'display'       => 'background',
+                    'color'         => $holiday->type === 'festiu' ? '#B23A3A' : '#B8862B',
+                    'extendedProps' => ['type' => 'holiday', 'holidayType' => $holiday->type],
+                ];
+            }
+        }
+
+        return $events;
     }
 
     /**
