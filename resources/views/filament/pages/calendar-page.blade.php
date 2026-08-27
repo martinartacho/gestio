@@ -225,7 +225,7 @@
             const config = {
                 eventsUrl: '{{ route('calendar.events') }}',
                 seasonId:  {{ $currentSeasonId ?? 'null' }},
-                editable:  @js(auth()->user()?->hasRole('admin')),
+                editable:  @js(auth()->user()?->hasAnyRole(['super-admin', 'admin'])),
             };
 
             window._calendarConfig = config;

@@ -15,6 +15,7 @@ trait InteractsWithFilamentAdmin
         'categories.view', 'categories.create', 'categories.edit', 'categories.delete',
         'spaces.view', 'spaces.create', 'spaces.edit', 'spaces.delete',
         'timeslots.view', 'timeslots.create', 'timeslots.edit', 'timeslots.delete',
+        'holidays.view', 'holidays.create', 'holidays.edit', 'holidays.delete',
         'teachers.view', 'teachers.create', 'teachers.edit', 'teachers.delete',
         'courses.view', 'courses.create', 'courses.edit', 'courses.delete',
         'enrollments.view', 'enrollments.create', 'enrollments.edit', 'enrollments.delete',
@@ -83,6 +84,7 @@ trait InteractsWithFilamentAdmin
             'seasons.view',
             'categories.view', 'categories.create', 'categories.edit',
             'spaces.view', 'timeslots.view',
+            'holidays.view', 'holidays.create', 'holidays.edit',
             'teachers.view', 'teachers.create', 'teachers.edit',
             'courses.view', 'courses.create', 'courses.edit',
         ]);

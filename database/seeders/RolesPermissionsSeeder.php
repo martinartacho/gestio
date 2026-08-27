@@ -29,6 +29,8 @@ class RolesPermissionsSeeder extends Seeder
             'spaces.view', 'spaces.create', 'spaces.edit', 'spaces.delete',
             // Franges horàries
             'timeslots.view', 'timeslots.create', 'timeslots.edit', 'timeslots.delete',
+            // Festius i dies no lectius
+            'holidays.view', 'holidays.create', 'holidays.edit', 'holidays.delete',
             // Professors
             'teachers.view', 'teachers.create', 'teachers.edit', 'teachers.delete',
             // Cursos
@@ -69,6 +71,7 @@ class RolesPermissionsSeeder extends Seeder
             'categories.view', 'categories.create', 'categories.edit',
             'spaces.view',
             'timeslots.view',
+            'holidays.view', 'holidays.create', 'holidays.edit',
             'teachers.view', 'teachers.create', 'teachers.edit',
             'courses.view', 'courses.create', 'courses.edit',
             'news.view', 'news.create', 'news.edit',
@@ -80,6 +83,7 @@ class RolesPermissionsSeeder extends Seeder
             'categories.view',
             'spaces.view',
             'timeslots.view',
+            'holidays.view',
             'teachers.view',
             'courses.view',
             'enrollments.view',
