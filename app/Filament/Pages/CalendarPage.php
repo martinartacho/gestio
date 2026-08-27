@@ -24,15 +24,21 @@ class CalendarPage extends Page
     public static function canAccess(): bool
     {
         $s = app(\App\Settings\SettingStore::class);
-        return $s->get('gestio_enabled', true)
-            && $s->get('gestio_calendari_enabled', true)
-            && (Auth::user()?->hasAnyRole(['admin', 'manager']) ?? false);
+        return $s->getRaw('gestio_enabled', true)
+            && $s->getRaw('gestio_calendari_enabled', true)
+            && (Auth::user()?->hasAnyRole(['super-admin', 'admin', 'manager']) ?? false);
     }
 
     // ── Estat Livewire ────────────────────────────────────────────────────
     public ?int $currentSeasonId = null;
     public bool   $showCourseModal = false;
     public ?int   $selectedCourseId = null;
+    public string $viewMode = 'month'; // 'month' | 'week'
+
+    private const DAY_NAMES = [
+        1 => 'Dilluns', 2 => 'Dimarts', 3 => 'Dimecres',
+        4 => 'Dijous', 5 => 'Divendres', 6 => 'Dissabte',
+    ];
 
     public function mount(): void
     {
@@ -78,6 +84,53 @@ class CalendarPage extends Page
             ->toArray();
     }
 
+    /**
+     * Graella d'horari setmanal recurrent: files = franges horàries úniques
+     * (independents del dia), columnes = Dilluns→Dissabte. Mostra els cursos
+     * de la temporada seleccionada assignats a cada dia+franja.
+     *
+     * @return array<int, array{start: string, end: string, days: array<int, \Illuminate\Support\Collection>}>
+     */
+    public function getWeeklyGrid(): array
+    {
+        $courses = CampusCourse::with(['timeSlot', 'space', 'category'])
+            ->whereHas('timeSlot')
+            ->when($this->currentSeasonId, fn($q) => $q->where('season_id', $this->currentSeasonId))
+            ->get();
+
+        $timeRanges = $courses
+            ->map(fn($c) => $c->timeSlot->start_time . '|' . $c->timeSlot->end_time)
+            ->unique()
+            ->sort()
+            ->values()
+            ->map(fn($key) => explode('|', $key));
+
+        $grid = [];
+        foreach ($timeRanges as [$start, $end]) {
+            $days = [];
+            for ($day = 1; $day <= 6; $day++) {
+                $days[$day] = $courses->filter(fn($c) =>
+                    $c->timeSlot->day_of_week === $day
+                    && $c->timeSlot->start_time === $start
+                    && $c->timeSlot->end_time === $end
+                )->values();
+            }
+            $grid[] = ['start' => $start, 'end' => $end, 'days' => $days];
+        }
+
+        return $grid;
+    }
+
+    public function getDayNames(): array
+    {
+        return self::DAY_NAMES;
+    }
+
+    public function colorHex(?string $color): string
+    {
+        return self::COLOR_HEX[$color] ?? '#6b7280';
+    }
+
     public function getSelectedCourse(): ?CampusCourse
     {
         if (! $this->selectedCourseId) return null;
@@ -89,6 +142,11 @@ class CalendarPage extends Page
     public function updatedCurrentSeasonId(): void
     {
         $this->dispatch('calendarSeasonChanged', seasonId: $this->currentSeasonId);
+    }
+
+    public function updatedViewMode(): void
+    {
+        $this->dispatch('calendarViewModeChanged', mode: $this->viewMode);
     }
 
     #[On('openCourseModal')]
@@ -107,7 +165,7 @@ class CalendarPage extends Page
     #[On('courseDropped')]
     public function handleCourseDropped(int $courseId, string $newStart, string $newEnd = ''): void
     {
-        if (! Auth::user()?->hasRole('admin')) {
+        if (! Auth::user()?->hasAnyRole(['super-admin', 'admin'])) {
             $this->dispatch('calendarRevertDrop');
             return;
         }

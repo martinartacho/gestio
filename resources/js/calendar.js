@@ -63,6 +63,21 @@ window.addEventListener('calendarSeasonChanged', function () {
     window._campusCalendar?.refetchEvents();
 });
 
+// El contenidor #campus-calendar s'elimina del DOM en canviar a la vista
+// setmanal (en lloc de només amagar-lo) i es torna a crear en tornar a
+// la mensual — cal reinicialitzar FullCalendar de debò, no només
+// redimensionar-lo, o queda en blanc.
+window.addEventListener('calendarViewModeChanged', function (event) {
+    if (event.detail?.mode === 'week') {
+        window._campusCalendar?.destroy();
+        window._campusCalendar = null;
+        return;
+    }
+    requestAnimationFrame(() => {
+        if (window._calendarConfig) window.initCalendar(window._calendarConfig);
+    });
+});
+
 window.addEventListener('calendarRevertDrop', function () {
     window._pendingDrop?.revert();
     window._pendingDrop = null;
