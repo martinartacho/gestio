@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CampusNewsResource\Pages;
 use App\Models\CampusNews;
 use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction};
-use Filament\Forms\Components\{CheckboxList, DateTimePicker, RichEditor, Textarea, TextInput};
+use Filament\Forms\Components\{CheckboxList, DateTimePicker, RichEditor, Select, Textarea, TextInput};
 use Filament\Schemas\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -65,6 +65,13 @@ class CampusNewsResource extends Resource
                     ->columns(3)
                     ->columnSpanFull(),
 
+                Select::make('recipients')
+                    ->label('Destinataris')
+                    ->options(CampusNews::RECIPIENTS)
+                    ->default('all')
+                    ->required()
+                    ->helperText('Qui pot veure aquesta notícia al portal públic.'),
+
                 TextInput::make('version')
                     ->label('Versió')
                     ->placeholder('ex: v1.8.0')
@@ -102,6 +109,19 @@ class CampusNewsResource extends Resource
                     })
                     ->formatStateUsing(fn(string $state) => CampusNews::LABELS[$state] ?? $state)
                     ->separator(','),
+
+                Tables\Columns\TextColumn::make('recipients')
+                    ->label('Destinataris')
+                    ->badge()
+                    ->color(fn(string $state) => match($state) {
+                        'all'      => 'gray',
+                        'private'  => 'warning',
+                        'teachers' => 'success',
+                        'students' => 'primary',
+                        'members'  => 'info',
+                        default    => 'gray',
+                    })
+                    ->formatStateUsing(fn(string $state) => CampusNews::RECIPIENTS[$state] ?? $state),
 
                 Tables\Columns\TextColumn::make('version')
                     ->label('Versió')

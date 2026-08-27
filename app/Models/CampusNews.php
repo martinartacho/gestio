@@ -15,12 +15,21 @@ class CampusNews extends Model
         'sistema'    => 'Sistema',
     ];
 
+    const RECIPIENTS = [
+        'all'      => 'Tots (públic)',
+        'private'  => 'Privat (panel)',
+        'teachers' => 'Professorat',
+        'students' => 'Alumnat',
+        'members'  => 'Associats',
+    ];
+
     protected $fillable = [
         'title',
         'summary',
         'body',
         'labels',
         'version',
+        'recipients',
         'published_at',
     ];
 
@@ -32,6 +41,30 @@ class CampusNews extends Model
     public function scopePublished($query)
     {
         return $query->whereNotNull('published_at')->where('published_at', '<=', now());
+    }
+
+    /**
+     * Filtra les notícies visibles per a l'usuari actual segons el seu context d'autenticació.
+     * 'all' és sempre visible. Els altres valors requereixen autenticació al guarda corresponent.
+     */
+    public function scopeVisibleForCurrentUser($query)
+    {
+        $allowed = ['all'];
+
+        if (auth('student')->check()) {
+            $allowed[] = 'students';
+        }
+        if (auth('teacher')->check()) {
+            $allowed[] = 'teachers';
+        }
+        if (auth('member')->check()) {
+            $allowed[] = 'members';
+        }
+        if (auth('web')->check() && ! auth('web')->user()?->hasRole('viewer')) {
+            $allowed[] = 'private';
+        }
+
+        return $query->whereIn('recipients', $allowed);
     }
 
     public function scopeByLabel($query, string $label)
