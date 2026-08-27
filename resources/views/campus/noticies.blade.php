@@ -37,16 +37,22 @@
             @php
                 $filtres = ['totes' => 'Totes'] + $categories;
                 $colors  = [
-                    'totes'     => 'bg-gray-900 text-white',
-                    'campus'    => 'bg-indigo-600 text-white',
-                    'associats' => 'bg-amber-500 text-white',
-                    'sistema'   => 'bg-gray-500 text-white',
+                    'totes'      => 'bg-gray-900 text-white',
+                    'campus'     => 'bg-indigo-600 text-white',
+                    'associats'  => 'bg-amber-500 text-white',
+                    'tresoreria' => 'bg-emerald-600 text-white',
+                    'secretaria' => 'bg-rose-500 text-white',
+                    'admin'      => 'bg-violet-600 text-white',
+                    'sistema'    => 'bg-gray-500 text-white',
                 ];
                 $colorsInactiu = [
-                    'totes'     => 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50',
-                    'campus'    => 'bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50',
-                    'associats' => 'bg-white text-amber-600 border border-amber-200 hover:bg-amber-50',
-                    'sistema'   => 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50',
+                    'totes'      => 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50',
+                    'campus'     => 'bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50',
+                    'associats'  => 'bg-white text-amber-600 border border-amber-200 hover:bg-amber-50',
+                    'tresoreria' => 'bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-50',
+                    'secretaria' => 'bg-white text-rose-600 border border-rose-200 hover:bg-rose-50',
+                    'admin'      => 'bg-white text-violet-600 border border-violet-200 hover:bg-violet-50',
+                    'sistema'    => 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50',
                 ];
             @endphp
             @foreach($filtres as $clau => $etiqueta)
@@ -62,7 +68,7 @@
         @php
             $noticiesFiltrades = $categoriaActiva === 'totes'
                 ? $noticies
-                : $noticies->where('category', $categoriaActiva);
+                : $noticies->filter(fn($n) => in_array($categoriaActiva, $n->labels ?? []));
         @endphp
 
         @if($noticiesFiltrades->isEmpty())
@@ -71,22 +77,30 @@
         <div class="flex flex-col gap-8">
             @foreach($noticiesFiltrades as $noticia)
             @php
-                $badgeColor = match($noticia->category) {
-                    'campus'    => 'bg-indigo-100 text-indigo-700',
-                    'associats' => 'bg-amber-100 text-amber-700',
-                    default     => 'bg-gray-100 text-gray-600',
-                };
-                $categoryLabel = match($noticia->category) {
-                    'campus'    => 'Campus',
-                    'associats' => 'Associats',
-                    default     => 'Sistema',
-                };
+                $badgeColors = [
+                    'campus'     => 'bg-indigo-100 text-indigo-700',
+                    'associats'  => 'bg-amber-100 text-amber-700',
+                    'tresoreria' => 'bg-emerald-100 text-emerald-700',
+                    'secretaria' => 'bg-rose-100 text-rose-700',
+                    'admin'      => 'bg-violet-100 text-violet-700',
+                    'sistema'    => 'bg-gray-100 text-gray-600',
+                ];
+                $labelNames = [
+                    'campus'     => 'Campus',
+                    'associats'  => 'Associats',
+                    'tresoreria' => 'Tresoreria',
+                    'secretaria' => 'Secretaria',
+                    'admin'      => 'Administració',
+                    'sistema'    => 'Sistema',
+                ];
             @endphp
             <article class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
                 <div class="flex items-center gap-3 mb-4">
-                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full {{ $badgeColor }}">
-                        {{ $categoryLabel }}
+                    @foreach($noticia->labels ?? [] as $label)
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full {{ $badgeColors[$label] ?? 'bg-gray-100 text-gray-600' }}">
+                        {{ $labelNames[$label] ?? $label }}
                     </span>
+                    @endforeach
                     @if($noticia->version)
                     <span class="text-xs text-gray-400 font-mono">{{ $noticia->version }}</span>
                     @endif

@@ -21,13 +21,20 @@ use App\Models\CampusNews;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $noticies = CampusNews::published()->orderByDesc('published_at')->limit(3)->get();
+    $noticies = CampusNews::published()->visibleForCurrentUser()->orderByDesc('published_at')->limit(3)->get();
     return view('campus.home', compact('noticies'));
 })->name('home');
 
 Route::get('/noticies', function () {
-    $noticies   = CampusNews::published()->orderByDesc('published_at')->get();
-    $categories = ['campus' => 'Campus', 'associats' => 'Associats', 'sistema' => 'Sistema'];
+    $noticies   = CampusNews::published()->visibleForCurrentUser()->orderByDesc('published_at')->get();
+    $categories = [
+        'campus'     => 'Campus',
+        'associats'  => 'Associats',
+        'tresoreria' => 'Tresoreria',
+        'secretaria' => 'Secretaria',
+        'admin'      => 'Administració',
+        'sistema'    => 'Sistema',
+    ];
     return view('campus.noticies', compact('noticies', 'categories'));
 })->name('campus.noticies');
 

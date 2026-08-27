@@ -19,7 +19,7 @@ class SettingsPage extends Page
 
     public static function canAccess(): bool
     {
-        return Auth::user()?->hasRole('admin') ?? false;
+        return Auth::user()?->hasAnyRole(['super-admin', 'admin']) ?? false;
     }
 
     public function getTitle(): string { return 'Configuració del lloc'; }
@@ -40,6 +40,23 @@ class SettingsPage extends Page
     public string $hero_subtitle   = '';
     public string $hero_color      = '#4f46e5';
     public string $hero_text_color = '#ffffff';
+
+    // Botons del hero
+    public bool   $hero_btn_catalog_enabled  = true;
+    public string $hero_btn_catalog_text     = 'Veure el catàleg de cursos';
+    public bool   $hero_btn_register_enabled = true;
+    public string $hero_btn_register_text    = "Inscriure's";
+
+    // Targetes d'accés
+    public string $home_access_header        = 'Accés per perfil';
+    public bool   $home_alumnat_enabled      = true;
+    public string $home_alumnat_title        = 'Alumnat';
+    public string $home_alumnat_subtitle     = 'Inscripcions i pagaments de cursos';
+    public bool   $home_professorat_enabled  = true;
+    public string $home_professorat_title    = 'Professorat';
+    public string $home_professorat_subtitle = 'Cursos, sessions i liquidacions';
+    public string $home_gestio_title         = 'Gestió';
+    public string $home_gestio_subtitle      = 'Cursos, alumnes, pagaments i socis';
 
     // Tab: Correu electrònic
     public string $mail_from_name    = '';
@@ -147,38 +164,53 @@ class SettingsPage extends Page
         $this->hero_color      = (string) $store->get('hero_color', '#4f46e5');
         $this->hero_text_color = (string) $store->get('hero_text_color', '#ffffff');
 
+        $this->hero_btn_catalog_enabled  = (bool)   $store->getRaw('hero_btn_catalog_enabled', true);
+        $this->hero_btn_catalog_text     = (string) $store->get('hero_btn_catalog_text', 'Veure el catàleg de cursos');
+        $this->hero_btn_register_enabled = (bool)   $store->getRaw('hero_btn_register_enabled', true);
+        $this->hero_btn_register_text    = (string) $store->get('hero_btn_register_text', "Inscriure's");
+
+        $this->home_access_header        = (string) $store->get('home_access_header', 'Accés per perfil');
+        $this->home_alumnat_enabled      = (bool)   $store->getRaw('home_alumnat_enabled', true);
+        $this->home_alumnat_title        = (string) $store->get('home_alumnat_title', 'Alumnat');
+        $this->home_alumnat_subtitle     = (string) $store->get('home_alumnat_subtitle', 'Inscripcions i pagaments de cursos');
+        $this->home_professorat_enabled  = (bool)   $store->getRaw('home_professorat_enabled', true);
+        $this->home_professorat_title    = (string) $store->get('home_professorat_title', 'Professorat');
+        $this->home_professorat_subtitle = (string) $store->get('home_professorat_subtitle', 'Cursos, sessions i liquidacions');
+        $this->home_gestio_title         = (string) $store->get('home_gestio_title', 'Gestió');
+        $this->home_gestio_subtitle      = (string) $store->get('home_gestio_subtitle', 'Cursos, alumnes, pagaments i socis');
+
         $this->mail_from_name    = (string) $store->get('mail_from_name', '');
         $this->mail_from_address = (string) $store->get('mail_from_address', '');
         $this->mail_footer_text  = (string) $store->get('mail_footer_text', '');
 
-        $this->campus_enabled             = (bool) $store->get('campus_enabled', true);
-        $this->documents_enabled          = (bool) $store->get('documents_enabled', true);
-        $this->lms_enabled                = (bool) $store->get('lms_enabled', false);
-        $this->courses_learning_enabled   = (bool) $store->get('courses_learning_enabled', false);
-        $this->cataleg_enabled            = (bool) $store->get('cataleg_enabled', true);
-        $this->cataleg_periodes_enabled   = (bool) $store->get('cataleg_periodes_enabled', true);
-        $this->cataleg_categories_enabled = (bool) $store->get('cataleg_categories_enabled', true);
-        $this->cataleg_espais_enabled     = (bool) $store->get('cataleg_espais_enabled', true);
-        $this->cataleg_franges_enabled    = (bool) $store->get('cataleg_franges_enabled', true);
-        $this->campus_cursos_enabled      = (bool) $store->get('campus_cursos_enabled', true);
-        $this->campus_professorat_enabled = (bool) $store->get('campus_professorat_enabled', true);
-        $this->tresoreria_enabled              = (bool) $store->get('tresoreria_enabled', true);
-        $this->tresoreria_inscripcions_enabled = (bool) $store->get('tresoreria_inscripcions_enabled', true);
-        $this->tresoreria_pagaments_enabled    = (bool) $store->get('tresoreria_pagaments_enabled', true);
-        $this->tresoreria_liquidacions_enabled = (bool) $store->get('tresoreria_liquidacions_enabled', true);
-        $this->tresoreria_alumnes_enabled      = (bool) $store->get('tresoreria_alumnes_enabled', true);
-        $this->tresoreria_ips_enabled          = (bool) $store->get('tresoreria_ips_enabled', true);
-        $this->tresoreria_quotes_socis_enabled = (bool) $store->get('tresoreria_quotes_socis_enabled', true);
-        $this->tresoreria_sepa_socis_enabled   = (bool) $store->get('tresoreria_sepa_socis_enabled', true);
-        $this->gestio_enabled               = (bool) $store->get('gestio_enabled', true);
-        $this->gestio_administracio_enabled = (bool) $store->get('gestio_administracio_enabled', true);
-        $this->gestio_calendari_enabled     = (bool) $store->get('gestio_calendari_enabled', true);
-        $this->noticies_enabled             = (bool) $store->get('noticies_enabled', true);
+        $this->campus_enabled             = (bool) $store->getRaw('campus_enabled', true);
+        $this->documents_enabled          = (bool) $store->getRaw('documents_enabled', true);
+        $this->lms_enabled                = (bool) $store->getRaw('lms_enabled', false);
+        $this->courses_learning_enabled   = (bool) $store->getRaw('courses_learning_enabled', false);
+        $this->cataleg_enabled            = (bool) $store->getRaw('cataleg_enabled', true);
+        $this->cataleg_periodes_enabled   = (bool) $store->getRaw('cataleg_periodes_enabled', true);
+        $this->cataleg_categories_enabled = (bool) $store->getRaw('cataleg_categories_enabled', true);
+        $this->cataleg_espais_enabled     = (bool) $store->getRaw('cataleg_espais_enabled', true);
+        $this->cataleg_franges_enabled    = (bool) $store->getRaw('cataleg_franges_enabled', true);
+        $this->campus_cursos_enabled      = (bool) $store->getRaw('campus_cursos_enabled', true);
+        $this->campus_professorat_enabled = (bool) $store->getRaw('campus_professorat_enabled', true);
+        $this->tresoreria_enabled              = (bool) $store->getRaw('tresoreria_enabled', true);
+        $this->tresoreria_inscripcions_enabled = (bool) $store->getRaw('tresoreria_inscripcions_enabled', true);
+        $this->tresoreria_pagaments_enabled    = (bool) $store->getRaw('tresoreria_pagaments_enabled', true);
+        $this->tresoreria_liquidacions_enabled = (bool) $store->getRaw('tresoreria_liquidacions_enabled', true);
+        $this->tresoreria_alumnes_enabled      = (bool) $store->getRaw('tresoreria_alumnes_enabled', true);
+        $this->tresoreria_ips_enabled          = (bool) $store->getRaw('tresoreria_ips_enabled', true);
+        $this->tresoreria_quotes_socis_enabled = (bool) $store->getRaw('tresoreria_quotes_socis_enabled', true);
+        $this->tresoreria_sepa_socis_enabled   = (bool) $store->getRaw('tresoreria_sepa_socis_enabled', true);
+        $this->gestio_enabled               = (bool) $store->getRaw('gestio_enabled', true);
+        $this->gestio_administracio_enabled = (bool) $store->getRaw('gestio_administracio_enabled', true);
+        $this->gestio_calendari_enabled     = (bool) $store->getRaw('gestio_calendari_enabled', true);
+        $this->noticies_enabled             = (bool) $store->getRaw('noticies_enabled', true);
 
-        $this->associats_enabled        = (bool) $store->get('associats_enabled', false);
-        $this->associats_socis_enabled  = (bool) $store->get('associats_socis_enabled', true);
-        $this->associats_quotes_enabled = (bool) $store->get('associats_quotes_enabled', true);
-        $this->associats_sepa_enabled   = (bool) $store->get('associats_sepa_enabled', true);
+        $this->associats_enabled        = (bool) $store->getRaw('associats_enabled', false);
+        $this->associats_socis_enabled  = (bool) $store->getRaw('associats_socis_enabled', true);
+        $this->associats_quotes_enabled = (bool) $store->getRaw('associats_quotes_enabled', true);
+        $this->associats_sepa_enabled   = (bool) $store->getRaw('associats_sepa_enabled', true);
         $this->associats_org_name       = (string) $store->get('associats_org_name', 'Entitat');
         $this->associats_member_prefix  = (string) $store->get('associats_member_prefix', '');
 
@@ -187,10 +219,10 @@ class SettingsPage extends Page
         $this->sepa_iban        = (string) $store->get('sepa_iban', '');
         $this->sepa_bic         = (string) $store->get('sepa_bic', '');
 
-        $this->payment_transfer_enabled = (bool)   $store->get('payment_transfer_enabled', false);
-        $this->payment_bizum_enabled    = (bool)   $store->get('payment_bizum_enabled', false);
-        $this->payment_cash_enabled     = (bool)   $store->get('payment_cash_enabled', false);
-        $this->payment_paypal_enabled   = (bool)   $store->get('payment_paypal_enabled', false);
+        $this->payment_transfer_enabled = (bool)   $store->getRaw('payment_transfer_enabled', false);
+        $this->payment_bizum_enabled    = (bool)   $store->getRaw('payment_bizum_enabled', false);
+        $this->payment_cash_enabled     = (bool)   $store->getRaw('payment_cash_enabled', false);
+        $this->payment_paypal_enabled   = (bool)   $store->getRaw('payment_paypal_enabled', false);
         $this->payment_iban             = (string) $store->get('payment_iban', '');
         $this->payment_bank_holder      = (string) $store->get('payment_bank_holder', '');
         $this->payment_bizum_number     = (string) $store->get('payment_bizum_number', '');
@@ -243,6 +275,21 @@ class SettingsPage extends Page
             'hero_subtitle'   => $this->hero_subtitle,
             'hero_color'      => $this->hero_color,
             'hero_text_color' => $this->hero_text_color,
+
+            'hero_btn_catalog_enabled'  => $this->hero_btn_catalog_enabled,
+            'hero_btn_catalog_text'     => $this->hero_btn_catalog_text ?: 'Veure el catàleg de cursos',
+            'hero_btn_register_enabled' => $this->hero_btn_register_enabled,
+            'hero_btn_register_text'    => $this->hero_btn_register_text ?: "Inscriure's",
+
+            'home_access_header'        => $this->home_access_header ?: 'Accés per perfil',
+            'home_alumnat_enabled'      => $this->home_alumnat_enabled,
+            'home_alumnat_title'        => $this->home_alumnat_title ?: 'Alumnat',
+            'home_alumnat_subtitle'     => $this->home_alumnat_subtitle ?: 'Inscripcions i pagaments de cursos',
+            'home_professorat_enabled'  => $this->home_professorat_enabled,
+            'home_professorat_title'    => $this->home_professorat_title ?: 'Professorat',
+            'home_professorat_subtitle' => $this->home_professorat_subtitle ?: 'Cursos, sessions i liquidacions',
+            'home_gestio_title'         => $this->home_gestio_title ?: 'Gestió',
+            'home_gestio_subtitle'      => $this->home_gestio_subtitle ?: 'Cursos, alumnes, pagaments i socis',
 
             'mail_from_name'    => $this->mail_from_name,
             'mail_from_address' => $this->mail_from_address ?: null,

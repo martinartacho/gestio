@@ -125,7 +125,121 @@
                     <div style="padding:2rem 1.5rem;background:{{ $hero_color }};color:{{ $hero_text_color }};">
                         <h3 style="font-size:1.5rem;font-weight:700;margin:0 0 0.5rem;">{{ $hero_title ?: 'Títol del hero' }}</h3>
                         <p style="margin:0;font-size:1rem;opacity:0.9;">{{ $hero_subtitle ?: 'Subtítol del hero' }}</p>
+                        <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                            @if($hero_btn_catalog_enabled)
+                            <span style="background:#fff;color:#3730a3;font-size:0.8125rem;font-weight:600;padding:0.375rem 1rem;border-radius:0.5rem;">
+                                {{ $hero_btn_catalog_text ?: 'Veure el catàleg de cursos' }}
+                            </span>
+                            @endif
+                            @if($hero_btn_register_enabled)
+                            <span style="border:2px solid #fff;color:#fff;font-size:0.8125rem;font-weight:600;padding:0.375rem 1rem;border-radius:0.5rem;">
+                                {{ $hero_btn_register_text ?: "Inscriure's" }}
+                            </span>
+                            @endif
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            {{-- ── Botons del hero ── --}}
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:1.25rem;">Botons de la capçalera</h2>
+
+                <div style="display:grid;grid-template-columns:auto 1fr;align-items:center;gap:0.75rem 1rem;">
+
+                    <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;white-space:nowrap;">
+                        <input type="checkbox" wire:model.live="hero_btn_catalog_enabled"
+                               style="width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;accent-color:#4f46e5;">
+                        <span style="font-size:0.875rem;font-weight:500;color:#374151;">Botó catàleg</span>
+                    </label>
+                    <input type="text" wire:model="hero_btn_catalog_text"
+                           placeholder="Veure el catàleg de cursos"
+                           {{ $hero_btn_catalog_enabled ? '' : 'disabled' }}
+                           style="border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;{{ $hero_btn_catalog_enabled ? '' : 'opacity:0.4;' }}">
+
+                    <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;white-space:nowrap;">
+                        <input type="checkbox" wire:model.live="hero_btn_register_enabled"
+                               style="width:1rem;height:1rem;border-radius:0.25rem;cursor:pointer;accent-color:#4f46e5;">
+                        <span style="font-size:0.875rem;font-weight:500;color:#374151;">Botó registre</span>
+                    </label>
+                    <input type="text" wire:model="hero_btn_register_text"
+                           placeholder="Inscriure's"
+                           {{ $hero_btn_register_enabled ? '' : 'disabled' }}
+                           style="border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;{{ $hero_btn_register_enabled ? '' : 'opacity:0.4;' }}">
+                </div>
+            </div>
+
+            {{-- ── Targetes d'accés per perfil ── --}}
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
+                <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.375rem;">Targetes d'accés per perfil</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">Textos de les targetes de la pàgina d'inici. Els mateixos títols s'utilitzen al peu de pàgina.</p>
+
+                <div style="display:grid;gap:1rem;">
+
+                    <div>
+                        <label style="display:block;font-size:0.8125rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">Capçalera de la secció</label>
+                        <input type="text" wire:model="home_access_header" placeholder="Accés per perfil"
+                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                    </div>
+
+                    {{-- Alumnat --}}
+                    <div style="padding:0.875rem;background:#f9fafb;border-radius:0.5rem;border-left:3px solid #4f46e5;">
+                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+                            <input type="checkbox" wire:model.live="home_alumnat_enabled"
+                                   style="width:1rem;height:1rem;cursor:pointer;accent-color:#4f46e5;">
+                            <span style="font-size:0.875rem;font-weight:600;color:#374151;">Alumnat</span>
+                            <span style="font-size:0.75rem;color:#9ca3af;">— mostra la targeta i l'enllaç al peu de pàgina</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;{{ $home_alumnat_enabled ? '' : 'opacity:0.4;pointer-events:none;' }}">
+                            <div>
+                                <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Títol</label>
+                                <input type="text" wire:model="home_alumnat_title" placeholder="Alumnat" {{ $home_alumnat_enabled ? '' : 'disabled' }}
+                                       style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Subtítol</label>
+                                <input type="text" wire:model="home_alumnat_subtitle" {{ $home_alumnat_enabled ? '' : 'disabled' }}
+                                       style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Professorat --}}
+                    <div style="padding:0.875rem;background:#f9fafb;border-radius:0.5rem;border-left:3px solid #059669;">
+                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+                            <input type="checkbox" wire:model.live="home_professorat_enabled"
+                                   style="width:1rem;height:1rem;cursor:pointer;accent-color:#059669;">
+                            <span style="font-size:0.875rem;font-weight:600;color:#374151;">Professorat</span>
+                            <span style="font-size:0.75rem;color:#9ca3af;">— mostra la targeta i l'enllaç al peu de pàgina</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;{{ $home_professorat_enabled ? '' : 'opacity:0.4;pointer-events:none;' }}">
+                            <div>
+                                <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Títol</label>
+                                <input type="text" wire:model="home_professorat_title" placeholder="Professorat" {{ $home_professorat_enabled ? '' : 'disabled' }}
+                                       style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Subtítol</label>
+                                <input type="text" wire:model="home_professorat_subtitle" {{ $home_professorat_enabled ? '' : 'disabled' }}
+                                       style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Gestió (sempre visible, sense toggle) --}}
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;padding:0.875rem;background:#f9fafb;border-radius:0.5rem;border-left:3px solid #d97706;">
+                        <div>
+                            <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Gestió — títol</label>
+                            <input type="text" wire:model="home_gestio_title" placeholder="Gestió"
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Gestió — subtítol</label>
+                            <input type="text" wire:model="home_gestio_subtitle"
+                                   style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;box-sizing:border-box;">
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
