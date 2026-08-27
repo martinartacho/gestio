@@ -106,6 +106,20 @@ class SettingsPage extends Page
     public int    $queue_slot_minutes          = 15;
     public int    $queue_access_window_minutes = 30;
 
+    // Tab: Catàleg (camps visibles a la fitxa pública de curs)
+    public bool $catalog_show_category    = true;
+    public bool $catalog_show_code        = true;
+    public bool $catalog_show_dates       = true;
+    public bool $catalog_show_space       = true;
+    public bool $catalog_show_format      = true;
+    public bool $catalog_show_sessions    = true;
+    public bool $catalog_show_hours       = true;
+    public bool $catalog_show_places      = true;
+    public bool $catalog_show_price       = true;
+    public bool $catalog_show_description = true;
+    public bool $catalog_show_objectives  = true;
+    public bool $catalog_show_requirements = true;
+
     // Tab: Avançat
     public string $timezone = 'Europe/Madrid';
     public string $locale   = 'ca';
@@ -192,6 +206,19 @@ class SettingsPage extends Page
         $this->queue_slot_minutes          = (int)    $store->get('queue_slot_minutes', 15);
         $this->queue_access_window_minutes = (int)    $store->get('queue_access_window_minutes', 30);
 
+        $this->catalog_show_category     = (bool) $store->getRaw('catalog_show_category', true);
+        $this->catalog_show_code         = (bool) $store->getRaw('catalog_show_code', true);
+        $this->catalog_show_dates        = (bool) $store->getRaw('catalog_show_dates', true);
+        $this->catalog_show_space        = (bool) $store->getRaw('catalog_show_space', true);
+        $this->catalog_show_format       = (bool) $store->getRaw('catalog_show_format', true);
+        $this->catalog_show_sessions     = (bool) $store->getRaw('catalog_show_sessions', true);
+        $this->catalog_show_hours        = (bool) $store->getRaw('catalog_show_hours', true);
+        $this->catalog_show_places       = (bool) $store->getRaw('catalog_show_places', true);
+        $this->catalog_show_price        = (bool) $store->getRaw('catalog_show_price', true);
+        $this->catalog_show_description  = (bool) $store->getRaw('catalog_show_description', true);
+        $this->catalog_show_objectives   = (bool) $store->getRaw('catalog_show_objectives', true);
+        $this->catalog_show_requirements = (bool) $store->getRaw('catalog_show_requirements', true);
+
         $this->timezone = (string) $store->get('timezone', 'Europe/Madrid');
         $this->locale   = (string) $store->get('locale', 'ca');
     }
@@ -277,6 +304,19 @@ class SettingsPage extends Page
             'queue_batch_size'            => max(1, $this->queue_batch_size),
             'queue_slot_minutes'          => max(1, $this->queue_slot_minutes),
             'queue_access_window_minutes' => max(5, $this->queue_access_window_minutes),
+
+            'catalog_show_category'     => $this->catalog_show_category,
+            'catalog_show_code'         => $this->catalog_show_code,
+            'catalog_show_dates'        => $this->catalog_show_dates,
+            'catalog_show_space'        => $this->catalog_show_space,
+            'catalog_show_format'       => $this->catalog_show_format,
+            'catalog_show_sessions'     => $this->catalog_show_sessions,
+            'catalog_show_hours'        => $this->catalog_show_hours,
+            'catalog_show_places'       => $this->catalog_show_places,
+            'catalog_show_price'        => $this->catalog_show_price,
+            'catalog_show_description'  => $this->catalog_show_description,
+            'catalog_show_objectives'   => $this->catalog_show_objectives,
+            'catalog_show_requirements' => $this->catalog_show_requirements,
 
             'timezone' => $this->timezone,
             'locale'   => $this->locale,

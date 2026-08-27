@@ -31,13 +31,15 @@
     <div class="bg-white rounded-xl border shadow-sm p-8
                 {{ $isPreview && (! $course->is_public || $course->status !== 'active') ? 'border-amber-200' : 'border-gray-200' }}">
         <div class="flex items-center gap-3 mb-2 flex-wrap">
-            @if ($course->category)
+            @if ($course->category && setting('catalog_show_category', true))
                 <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
                       style="background-color: {{ $course->category->color ?? '#e5e7eb' }}22; color: {{ $course->category->color ?? '#6b7280' }}">
                     {{ $course->category->name }}
                 </span>
             @endif
-            <span class="text-xs text-gray-400">{{ $course->code }}</span>
+            @if (setting('catalog_show_code', true))
+                <span class="text-xs text-gray-400">{{ $course->code }}</span>
+            @endif
             @if ($course->season)
                 <span class="text-xs text-gray-400">· {{ $course->season->name }}</span>
             @endif
@@ -50,30 +52,30 @@
 
         <h1 class="text-2xl font-bold text-gray-900 mb-4">{{ $course->title }}</h1>
 
-        @if ($course->description)
+        @if ($course->description && setting('catalog_show_description', true))
             <p class="text-gray-600 mb-6">{{ $course->description }}</p>
         @endif
 
         <div class="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
-            @if ($course->start_date)
+            @if ($course->start_date && setting('catalog_show_dates', true))
                 <div><span class="font-medium text-gray-800">Inici:</span> {{ $course->start_date->format('d/m/Y') }}</div>
             @endif
-            @if ($course->end_date)
+            @if ($course->end_date && setting('catalog_show_dates', true))
                 <div><span class="font-medium text-gray-800">Final:</span> {{ $course->end_date->format('d/m/Y') }}</div>
             @endif
-            @if ($course->sessions)
+            @if ($course->sessions && setting('catalog_show_sessions', true))
                 <div><span class="font-medium text-gray-800">Sessions:</span> {{ $course->sessions }}</div>
             @endif
-            @if ($course->hours)
+            @if ($course->hours && setting('catalog_show_hours', true))
                 <div><span class="font-medium text-gray-800">Hores:</span> {{ $course->hours }}h</div>
             @endif
-            @if ($course->space)
+            @if ($course->space && setting('catalog_show_space', true))
                 <div><span class="font-medium text-gray-800">Lloc:</span> {{ $course->space->name }}</div>
             @endif
-            @if ($course->format)
+            @if ($course->format && setting('catalog_show_format', true))
                 <div><span class="font-medium text-gray-800">Format:</span> {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}</div>
             @endif
-            @if (! $course->hasUnlimitedPlaces())
+            @if (! $course->hasUnlimitedPlaces() && setting('catalog_show_places', true))
                 @php $slots = $course->availableSlots(); @endphp
                 <div>
                     <span class="font-medium text-gray-800">Places:</span>
@@ -88,14 +90,14 @@
             @endif
         </div>
 
-        @if ($course->objectives)
+        @if ($course->objectives && setting('catalog_show_objectives', true))
             <div class="mb-6">
                 <h2 class="font-semibold text-gray-800 mb-1">Objectius</h2>
                 <p class="text-gray-600 text-sm">{{ $course->objectives }}</p>
             </div>
         @endif
 
-        @if ($course->requirements)
+        @if ($course->requirements && setting('catalog_show_requirements', true))
             <div class="mb-6">
                 <h2 class="font-semibold text-gray-800 mb-1">Requisits previs</h2>
                 <p class="text-gray-600 text-sm">{{ $course->requirements }}</p>
@@ -105,12 +107,14 @@
         <div class="border-t border-gray-100 pt-6 mt-4">
 
             {{-- Preu --}}
+            @if (setting('catalog_show_price', true))
             <div class="flex items-baseline justify-between mb-4">
                 <span class="text-sm text-gray-500">Preu del curs</span>
                 <span class="text-2xl font-bold text-indigo-700">
                     {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
                 </span>
             </div>
+            @endif
 
             {{-- Accions --}}
             @if (! $alreadyEnrolled && $course->isFull())

@@ -94,7 +94,7 @@
                     $catName = $course->category?->name ?? null;
                 @endphp
                 <div class="flex items-start justify-between mb-3">
-                    @if ($catName)
+                    @if ($catName && setting('catalog_show_category', true))
                         <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
                               style="background-color:{{ $catBg }};color:{{ $catHex }}">
                             {{ $catName }}
@@ -102,21 +102,23 @@
                     @else
                         <span></span>
                     @endif
-                    <span class="text-xs text-gray-400">{{ $course->code }}</span>
+                    @if (setting('catalog_show_code', true))
+                        <span class="text-xs text-gray-400">{{ $course->code }}</span>
+                    @endif
                 </div>
                 <h2 class="font-semibold text-gray-900 text-base mb-2 flex-1">{{ $course->title }}</h2>
                 <div class="text-sm text-gray-500 space-y-1 mt-auto">
-                    @if ($course->start_date)
+                    @if ($course->start_date && setting('catalog_show_dates', true))
                         <div>{{ $course->start_date->format('d/m/Y') }}
                             @if ($course->end_date) — {{ $course->end_date->format('d/m/Y') }} @endif
                         </div>
                     @endif
                     <div>
-                        @if ($course->space)
+                        @if ($course->space && setting('catalog_show_space', true))
                             {{ $course->space->name }}
-                            @if ($course->format) · @endif
+                            @if ($course->format && setting('catalog_show_format', true)) · @endif
                         @endif
-                        @if ($course->format)
+                        @if ($course->format && setting('catalog_show_format', true))
                             {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}
                         @endif
                     </div>
@@ -126,10 +128,12 @@
                     @endphp
                     <div class="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
                         <span class="text-indigo-700 font-bold text-base">
-                            {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
+                            @if (setting('catalog_show_price', true))
+                                {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
+                            @endif
                         </span>
                         <div class="flex flex-col items-end gap-0.5">
-                            @if ($course->sessions)
+                            @if ($course->sessions && setting('catalog_show_sessions', true))
                                 <span class="text-xs text-gray-400">{{ $course->sessions }} sessions</span>
                             @endif
 
