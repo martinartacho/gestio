@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\AssociatMember;
 use App\Models\CampusTeacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,7 +18,11 @@ class UserResource extends JsonResource
             'last_name'  => $this->last_name,
             'email'      => $this->email,
             'phone'      => $this->phone,
-            'role'       => $this->resource instanceof CampusTeacher ? 'teacher' : 'student',
+            'role'       => match (true) {
+                $this->resource instanceof CampusTeacher   => 'teacher',
+                $this->resource instanceof AssociatMember  => 'member',
+                default                                    => 'student',
+            },
         ];
     }
 }

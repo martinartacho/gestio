@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\AssociatMember;
 use App\Models\CampusStudent;
 use App\Models\CampusTeacher;
 use Illuminate\Http\Request;
@@ -37,6 +38,12 @@ class AuthController extends Controller
             return $this->respondWithToken($teacher, 'teacher');
         }
 
+        $member = AssociatMember::where('email', $credentials['email'])->first();
+
+        if ($member && Hash::check($credentials['password'], $member->password)) {
+            return $this->respondWithToken($member, 'member');
+        }
+
         throw ValidationException::withMessages([
             'email' => __('auth.failed'),
         ]);
@@ -54,7 +61,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Sessió tancada correctament.']);
     }
 
-    private function respondWithToken(CampusStudent|CampusTeacher $user, string $role)
+    private function respondWithToken(CampusStudent|CampusTeacher|AssociatMember $user, string $role)
     {
         $token = $user->createToken('gestio-app')->plainTextToken;
 
