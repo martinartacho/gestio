@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,10 +13,11 @@ use Laravel\Sanctum\HasApiTokens;
 
 class CampusTeacher extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, BelongsToTenant;
     protected $table = 'campus_teachers';
 
     protected $fillable = [
+        'tenant_id',
         'user_id', 'code', 'first_name', 'last_name', 'email', 'password', 'phone', 'specialization', 'bio', 'status',
         'dni', 'address', 'postal_code', 'city', 'observacions',
         'degree', 'title', 'areas', 'hiring_date',

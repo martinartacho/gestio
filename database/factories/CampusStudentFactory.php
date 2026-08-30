@@ -12,6 +12,7 @@ class CampusStudentFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id'         => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'first_name'        => $this->faker->firstName(),
             'last_name'         => $this->faker->lastName(),
             'email'             => $this->faker->unique()->safeEmail(),

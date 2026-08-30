@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,11 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 class CampusDocument extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $table = 'campus_documents';
 
     protected $fillable = [
+        'tenant_id',
         'title', 'description', 'type',
         'file_path', 'file_name', 'file_size', 'mime_type',
         'url',

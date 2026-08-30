@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AssociatQuote extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'associat_quotes';
 
     protected $fillable = [
+        'tenant_id',
         'member_id', 'remittance_id', 'year', 'period', 'period_number',
         'amount', 'status', 'due_date', 'paid_at', 'failure_reason',
     ];

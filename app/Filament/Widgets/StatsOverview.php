@@ -9,6 +9,7 @@ use App\Models\CampusSeason;
 use App\Models\CampusTeacher;
 use App\Models\LmsLesson;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Spatie\Permission\Models\Permission;
@@ -20,12 +21,17 @@ class StatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $activeSeason  = CampusSeason::where('status', 'active')->first();
-        $totalCourses  = CampusCourse::count();
-        $activeCourses = CampusCourse::where('status', 'active')->count();
-        $totalTeachers = CampusTeacher::where('status', 'active')->count();
-        $totalUsers    = User::count();
-        $activeUsers   = User::where('active', true)->count();
+        // Cap d'aquestes consultes passa pel query builder automàtic de
+        // Resource de Filament (que sí que filtra sol) — un widget és codi
+        // nostre, cal filtrar-lo pel tenant actiu explícitament.
+        $tenantId = Filament::getTenant()?->id;
+
+        $activeSeason  = CampusSeason::where('tenant_id', $tenantId)->where('status', 'active')->first();
+        $totalCourses  = CampusCourse::where('tenant_id', $tenantId)->count();
+        $activeCourses = CampusCourse::where('tenant_id', $tenantId)->where('status', 'active')->count();
+        $totalTeachers = CampusTeacher::where('tenant_id', $tenantId)->where('status', 'active')->count();
+        $totalUsers    = User::where('tenant_id', $tenantId)->count();
+        $activeUsers   = User::where('tenant_id', $tenantId)->where('active', true)->count();
 
         $stats = [
             Stat::make(__('site.courses'), $totalCourses)
@@ -53,8 +59,10 @@ class StatsOverview extends BaseWidget
 
         // ── Mòdul LMS ────────────────────────────────────────────────────────
         if (setting('lms_enabled')) {
-            $totalSessions     = LmsLesson::count();
-            $publishedSessions = LmsLesson::where('status', 'published')->count();
+            // lms_lessons no té tenant_id propi: es filtra via el curs (que sí en té).
+            $lmsQuery = LmsLesson::whereHas('course', fn ($q) => $q->where('tenant_id', $tenantId));
+            $totalSessions     = (clone $lmsQuery)->count();
+            $publishedSessions = (clone $lmsQuery)->where('status', 'published')->count();
 
             $stats[] = Stat::make('Sessions LMS', $totalSessions)
                 ->description($publishedSessions . ' publicades')
@@ -64,8 +72,8 @@ class StatsOverview extends BaseWidget
 
         // ── Mòdul Associats ──────────────────────────────────────────────────
         if (setting('associats_enabled')) {
-            $totalMembers  = AssociatMember::count();
-            $activeMembers = AssociatMember::where('status', 'active')->count();
+            $totalMembers  = AssociatMember::where('tenant_id', $tenantId)->count();
+            $activeMembers = AssociatMember::where('tenant_id', $tenantId)->where('status', 'active')->count();
             $orgName       = setting('associats_org_name', 'Associats');
 
             $stats[] = Stat::make($orgName, $totalMembers)
@@ -76,8 +84,8 @@ class StatsOverview extends BaseWidget
 
         // ── Mòdul Tresoreria / Inscripcions ──────────────────────────────────
         if (setting('tresoreria_enabled') && setting('tresoreria_inscripcions_enabled')) {
-            $totalEnrollments   = CampusEnrollment::count();
-            $pendingEnrollments = CampusEnrollment::where('status', 'pending')->count();
+            $totalEnrollments   = CampusEnrollment::where('tenant_id', $tenantId)->count();
+            $pendingEnrollments = CampusEnrollment::where('tenant_id', $tenantId)->where('status', 'pending')->count();
 
             $stats[] = Stat::make('Inscripcions', $totalEnrollments)
                 ->description($pendingEnrollments . ' pendents')

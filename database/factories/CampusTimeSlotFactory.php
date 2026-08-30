@@ -13,6 +13,7 @@ class CampusTimeSlotFactory extends Factory
         $end = sprintf('%02d:%s', (int)$h + 2, $m);
 
         return [
+            'tenant_id'   => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'day_of_week' => $this->faker->numberBetween(1, 5),
             'code'        => strtoupper($this->faker->unique()->lexify('??')),
             'start_time'  => $start,

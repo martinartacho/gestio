@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class CampusHoliday extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'campus_holidays';
 
     protected $fillable = [
+        'tenant_id',
         'date', 'date_end', 'label', 'type', 'recurring_yearly',
     ];
 

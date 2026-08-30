@@ -13,6 +13,7 @@ class CampusTeacherFactory extends Factory
         $lastName  = $this->faker->lastName();
 
         return [
+            'tenant_id'            => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'user_id'              => null,
             'code'                 => strtoupper(
                 substr(Str::ascii($firstName), 0, 3) .

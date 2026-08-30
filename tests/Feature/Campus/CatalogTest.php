@@ -14,7 +14,7 @@ class CatalogTest extends TestCase
 
     public function test_catalog_index_is_accessible(): void
     {
-        $this->get('/cursos')->assertSuccessful();
+        $this->get('/campus/cursos')->assertSuccessful();
     }
 
     public function test_catalog_shows_public_active_courses(): void
@@ -35,7 +35,7 @@ class CatalogTest extends TestCase
             'title'     => 'Curs Ocult',
         ]);
 
-        $this->get('/cursos')
+        $this->get('/campus/cursos')
              ->assertSee('Curs Visible')
              ->assertDontSee('Curs Ocult');
     }
@@ -50,13 +50,13 @@ class CatalogTest extends TestCase
             'title'     => 'Curs de Proves',
         ]);
 
-        $this->get('/cursos/' . $course->slug)->assertSuccessful()->assertSee('Curs de Proves');
+        $this->get('/campus/cursos/' . $course->slug)->assertSuccessful()->assertSee('Curs de Proves');
     }
 
     public function test_non_public_course_returns_404(): void
     {
         $course = CampusCourse::factory()->create(['is_public' => false]);
 
-        $this->get('/cursos/' . $course->slug)->assertNotFound();
+        $this->get('/campus/cursos/' . $course->slug)->assertNotFound();
     }
 }

@@ -12,24 +12,24 @@ class StudentAuthTest extends TestCase
 
     public function test_login_page_is_accessible(): void
     {
-        $this->get('/portal/login')->assertSuccessful();
+        $this->get('/campus/portal/login')->assertSuccessful();
     }
 
     public function test_register_page_is_accessible(): void
     {
-        $this->get('/portal/registre')->assertSuccessful();
+        $this->get('/campus/portal/registre')->assertSuccessful();
     }
 
     public function test_student_can_register(): void
     {
-        $this->post('/portal/registre', [
+        $this->post('/campus/portal/registre', [
             'first_name'            => 'Marc',
             'last_name'             => 'Puig',
             'email'                 => 'marc@test.cat',
             'password'              => 'password123',
             'password_confirmation' => 'password123',
             'data_consent'          => '1',
-        ])->assertRedirect('/portal/verificar-email'); // redirigeix a la pàgina de verificació
+        ])->assertRedirect('/campus/portal/verificar-email'); // redirigeix a la pàgina de verificació
 
         $this->assertDatabaseHas('campus_students', [
             'email'             => 'marc@test.cat',
@@ -44,10 +44,10 @@ class StudentAuthTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $this->post('/portal/login', [
+        $this->post('/campus/portal/login', [
             'email'    => 'marc@test.cat',
             'password' => 'password123',
-        ])->assertRedirect('/portal/meus-cursos');
+        ])->assertRedirect('/campus/portal/meus-cursos');
     }
 
     public function test_wrong_password_is_rejected(): void
@@ -57,7 +57,7 @@ class StudentAuthTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $this->post('/portal/login', [
+        $this->post('/campus/portal/login', [
             'email'    => 'marc@test.cat',
             'password' => 'wrong',
         ])->assertSessionHasErrors('email');
@@ -65,7 +65,7 @@ class StudentAuthTest extends TestCase
 
     public function test_portal_redirects_unauthenticated_student(): void
     {
-        $this->get('/portal/meus-cursos')->assertRedirect('/portal/login');
+        $this->get('/campus/portal/meus-cursos')->assertRedirect('/campus/portal/login');
     }
 
     public function test_authenticated_student_can_access_portal(): void
@@ -73,7 +73,7 @@ class StudentAuthTest extends TestCase
         $student = CampusStudent::factory()->create();
 
         $this->actingAs($student, 'student')
-             ->get('/portal/meus-cursos')
+             ->get('/campus/portal/meus-cursos')
              ->assertSuccessful();
     }
 }

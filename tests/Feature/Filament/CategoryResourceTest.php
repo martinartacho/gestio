@@ -25,14 +25,14 @@ class CategoryResourceTest extends TestCase
         CampusCategory::factory()->count(3)->create();
 
         $this->actingAs($this->admin)
-             ->get('/admin/categories')
+             ->get('/admin/campus/categories')
              ->assertSuccessful();
     }
 
     public function test_can_access_create_category_form(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/categories/create')
+             ->get('/admin/campus/categories/create')
              ->assertSuccessful();
     }
 
@@ -41,7 +41,7 @@ class CategoryResourceTest extends TestCase
         $category = CampusCategory::factory()->create();
 
         $this->actingAs($this->admin)
-             ->get("/admin/categories/{$category->id}/edit")
+             ->get("/admin/campus/categories/{$category->id}/edit")
              ->assertSuccessful();
     }
 

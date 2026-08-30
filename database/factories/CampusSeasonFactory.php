@@ -13,6 +13,7 @@ class CampusSeasonFactory extends Factory
         $name = ($quad === 1 ? 'Tardor' : 'Primavera') . " {$year}";
 
         return [
+            'tenant_id'    => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'name'         => $name,
             'year'         => $year,
             'quadrimester' => $quad,

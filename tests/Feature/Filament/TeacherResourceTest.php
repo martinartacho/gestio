@@ -25,14 +25,14 @@ class TeacherResourceTest extends TestCase
         CampusTeacher::factory()->count(3)->create();
 
         $this->actingAs($this->admin)
-             ->get('/admin/teachers')
+             ->get('/admin/campus/teachers')
              ->assertSuccessful();
     }
 
     public function test_admin_can_access_create_teacher_form(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/teachers/create')
+             ->get('/admin/campus/teachers/create')
              ->assertSuccessful();
     }
 
@@ -41,7 +41,7 @@ class TeacherResourceTest extends TestCase
         $teacher = CampusTeacher::factory()->create();
 
         $this->actingAs($this->admin)
-             ->get("/admin/teachers/{$teacher->id}/edit")
+             ->get("/admin/campus/teachers/{$teacher->id}/edit")
              ->assertSuccessful();
     }
 
@@ -51,7 +51,7 @@ class TeacherResourceTest extends TestCase
         CampusTeacher::factory()->count(2)->create();
 
         $this->actingAs($user)
-             ->get('/admin/teachers')
+             ->get('/admin/campus/teachers')
              ->assertSuccessful();
     }
 

@@ -16,7 +16,7 @@ class AuthTest extends TestCase
         $admin = $this->createAdmin();
 
         $this->actingAs($admin)
-             ->get('/admin')
+             ->get('/admin/campus')
              ->assertSuccessful();
     }
 
@@ -26,7 +26,7 @@ class AuthTest extends TestCase
         $admin->update(['active' => false]);
 
         $this->actingAs($admin)
-             ->get('/admin')
+             ->get('/admin/campus')
              ->assertStatus(403);
     }
 
@@ -35,13 +35,13 @@ class AuthTest extends TestCase
         $viewer = $this->createViewer();
 
         $this->actingAs($viewer)
-             ->get('/admin')
+             ->get('/admin/campus')
              ->assertStatus(403);
     }
 
     public function test_guest_is_redirected_to_login(): void
     {
-        $this->get('/admin')->assertRedirect();
+        $this->get('/admin/campus')->assertRedirect();
     }
 
     public function test_active_tresoreria_can_access_panel(): void
@@ -49,7 +49,7 @@ class AuthTest extends TestCase
         $user = $this->createTresoreria();
 
         $this->actingAs($user)
-             ->get('/admin')
+             ->get('/admin/campus')
              ->assertSuccessful();
     }
 
@@ -58,7 +58,7 @@ class AuthTest extends TestCase
         $user = $this->createManager();
 
         $this->actingAs($user)
-             ->get('/admin')
+             ->get('/admin/campus')
              ->assertSuccessful();
     }
 }

@@ -26,6 +26,7 @@ class TresoreriaQuoteResourceTest extends TestCase
     private function makeMember(): AssociatMember
     {
         return AssociatMember::create([
+            'tenant_id'     => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'member_number' => 1001,
             'first_name'    => 'Joan',
             'last_name'     => 'Puig',
@@ -39,6 +40,7 @@ class TresoreriaQuoteResourceTest extends TestCase
     {
         $member = $this->makeMember();
         return AssociatQuote::create([
+            'tenant_id'     => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'member_id'     => $member->id,
             'year'          => 2026,
             'period'        => 'annual',
@@ -51,14 +53,14 @@ class TresoreriaQuoteResourceTest extends TestCase
     public function test_admin_can_list_tresoreria_quotes(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/tresoreria-quotes')
+             ->get('/admin/campus/tresoreria-quotes')
              ->assertSuccessful();
     }
 
     public function test_admin_can_access_create_tresoreria_quote_form(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/tresoreria-quotes/create')
+             ->get('/admin/campus/tresoreria-quotes/create')
              ->assertSuccessful();
     }
 
@@ -67,7 +69,7 @@ class TresoreriaQuoteResourceTest extends TestCase
         $quote = $this->makeQuote();
 
         $this->actingAs($this->admin)
-             ->get("/admin/tresoreria-quotes/{$quote->id}/edit")
+             ->get("/admin/campus/tresoreria-quotes/{$quote->id}/edit")
              ->assertSuccessful();
     }
 
@@ -76,7 +78,7 @@ class TresoreriaQuoteResourceTest extends TestCase
         $user = $this->createTresoreria();
 
         $this->actingAs($user)
-             ->get('/admin/tresoreria-quotes')
+             ->get('/admin/campus/tresoreria-quotes')
              ->assertSuccessful();
     }
 
@@ -85,7 +87,7 @@ class TresoreriaQuoteResourceTest extends TestCase
         $user = $this->createTresoreria();
 
         $this->actingAs($user)
-             ->get('/admin/tresoreria-quotes/create')
+             ->get('/admin/campus/tresoreria-quotes/create')
              ->assertSuccessful();
     }
 
@@ -94,7 +96,7 @@ class TresoreriaQuoteResourceTest extends TestCase
         $user = $this->createManager();
 
         $this->actingAs($user)
-             ->get('/admin/tresoreria-quotes')
+             ->get('/admin/campus/tresoreria-quotes')
              ->assertStatus(403);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,12 +12,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 class AssociatMember extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, BelongsToTenant;
 
     protected $table = 'associat_members';
     protected $guard = 'member';
 
     protected $fillable = [
+        'tenant_id',
         'member_number', 'first_name', 'last_name', 'email', 'password',
         'phone', 'dni', 'address', 'postal_code', 'city',
         'status', 'joined_at', 'cancelled_at', 'data_consent',

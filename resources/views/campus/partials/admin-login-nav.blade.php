@@ -6,15 +6,14 @@
             {{ setting('campus_name', 'Campus') }}
         </a>
         <div style="display:flex;align-items:center;gap:1.25rem;font-size:0.875rem;">
-            <a href="{{ route('campus.catalog.index') }}"
+            {{-- Aquesta pàgina és anterior a saber quin tenant és (login
+                 sense tenant encara) — no es pot construir un enllaç
+                 correcte a "el" catàleg/login d'alumnat/professorat sense
+                 saber de quina entitat. Es porta a l'inici, que ja mostra
+                 les targetes d'accés per rol de l'entitat per defecte. --}}
+            <a href="{{ url('/') }}"
                style="color:#6b7280;text-decoration:none;"
-               onmouseover="this.style.color='#4338ca'" onmouseout="this.style.color='#6b7280'">Catàleg</a>
-            <a href="{{ route('campus.login') }}"
-               style="color:#6b7280;text-decoration:none;"
-               onmouseover="this.style.color='#4338ca'" onmouseout="this.style.color='#6b7280'">Alumnat</a>
-            <a href="{{ route('teacher.login') }}"
-               style="color:#6b7280;text-decoration:none;"
-               onmouseover="this.style.color='#4338ca'" onmouseout="this.style.color='#6b7280'">Professorat</a>
+               onmouseover="this.style.color='#4338ca'" onmouseout="this.style.color='#6b7280'">Tornar al lloc</a>
         </div>
     </div>
 </nav>

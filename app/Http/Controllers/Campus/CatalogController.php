@@ -21,8 +21,9 @@ class CatalogController extends Controller
         $isPreview = $request->boolean('preview') && $this->canPreview();
 
         $seasons = $isPreview
-            ? CampusSeason::orderByDesc('start_date')->get()
-            : CampusSeason::whereIn('status', ['active', 'closed'])->orderByDesc('start_date')->get();
+            ? CampusSeason::where('tenant_id', current_tenant()?->id)->orderByDesc('start_date')->get()
+            : CampusSeason::where('tenant_id', current_tenant()?->id)
+                ->whereIn('status', ['active', 'closed'])->orderByDesc('start_date')->get();
 
         $activeSeason = $seasons->firstWhere('status', 'active') ?? $seasons->first();
 
@@ -31,7 +32,8 @@ class CatalogController extends Controller
             : $activeSeason;
         $selectedSeason ??= $activeSeason;
 
-        $courses = CampusCourse::with(['category', 'space', 'teachers'])
+        $courses = CampusCourse::where('tenant_id', current_tenant()?->id)
+            ->with(['category', 'space', 'teachers'])
             ->withCount(['enrollments as active_enrollments_count' => fn($q) =>
                 $q->whereIn('status', CampusCourse::ACTIVE_STATUSES)
             ])
@@ -67,7 +69,8 @@ class CatalogController extends Controller
     {
         $isPreview = $request->boolean('preview') && $this->canPreview();
 
-        $course = CampusCourse::with(['category', 'space', 'teachers', 'season'])
+        $course = CampusCourse::where('tenant_id', current_tenant()?->id)
+            ->with(['category', 'space', 'teachers', 'season'])
             ->withCount(['enrollments as active_enrollments_count' => fn($q) =>
                 $q->whereIn('status', CampusCourse::ACTIVE_STATUSES)
             ])

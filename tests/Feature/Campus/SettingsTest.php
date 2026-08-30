@@ -117,7 +117,7 @@ class SettingsTest extends TestCase
         $store2 = app(SettingStore::class);
         $store2->set('documents_enabled', false);
 
-        $response = $this->get('/documents/9999/download');
+        $response = $this->get('/campus/documents/9999/download');
         $response->assertStatus(404);
     }
 
@@ -133,7 +133,7 @@ class SettingsTest extends TestCase
         $store2 = app(SettingStore::class);
         $store2->set('documents_enabled', true);
 
-        $response = $this->get('/documents/9999/download');
+        $response = $this->get('/campus/documents/9999/download');
         // No hauria de ser 404 per feature flag — pot ser 404 per model
         // o 403 per accés. En qualsevol cas, no és el 404 del middleware.
         // Simplement comprovem que no és l'abort(404) del middleware.

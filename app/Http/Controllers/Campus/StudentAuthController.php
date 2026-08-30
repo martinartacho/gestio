@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
@@ -28,6 +29,8 @@ class StudentAuthController extends Controller
             'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
+        // L'email no és únic entre tenants: cal limitar l'intent al tenant de la URL.
+        $credentials['tenant_id'] = current_tenant()?->id;
 
         if (! Auth::guard('student')->attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');
@@ -64,13 +67,15 @@ class StudentAuthController extends Controller
         $data = $request->validate([
             'first_name'   => ['required', 'string', 'max:100'],
             'last_name'    => ['required', 'string', 'max:100'],
-            'email'        => ['required', 'email', 'unique:campus_students,email'],
+            'email'        => ['required', 'email', Rule::unique('campus_students', 'email')
+                ->where('tenant_id', current_tenant()?->id)],
             'password'     => ['required', 'confirmed', Password::min(8)],
             'phone'        => ['nullable', 'string', 'max:20'],
             'data_consent' => ['accepted'],
         ]);
 
         $data['data_consent'] = true;
+        $data['tenant_id']    = current_tenant()?->id;
 
         $student = CampusStudent::create($data);
 

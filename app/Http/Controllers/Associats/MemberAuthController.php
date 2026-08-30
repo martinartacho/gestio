@@ -21,6 +21,8 @@ class MemberAuthController extends Controller
             'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
+        // L'email no és únic entre tenants: cal limitar l'intent al tenant de la URL.
+        $credentials['tenant_id'] = current_tenant()?->id;
 
         if (! Auth::guard('member')->attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');

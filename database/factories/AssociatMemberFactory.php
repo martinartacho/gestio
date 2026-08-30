@@ -12,6 +12,7 @@ class AssociatMemberFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id'     => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'member_number' => (string) $this->faker->unique()->numberBetween(1000, 9999),
             'first_name'    => $this->faker->firstName(),
             'last_name'     => $this->faker->lastName(),

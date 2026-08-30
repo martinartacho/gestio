@@ -24,6 +24,8 @@ class TeacherAuthController extends Controller
             'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
+        // L'email no és únic entre tenants: cal limitar l'intent al tenant de la URL.
+        $credentials['tenant_id'] = current_tenant()?->id;
 
         if (Auth::guard('teacher')->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();

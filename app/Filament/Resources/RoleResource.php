@@ -19,6 +19,9 @@ use Spatie\Permission\Models\Role;
 
 class RoleResource extends Resource
 {
+    // TODO: activar quan el model tingui tenant_id + relacio tenant()
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = Role::class;
 
     protected static ?int $navigationSort = 2;
