@@ -13,6 +13,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::patch('/profile', [ProfileController::class, 'update']);
+    Route::get('/available-roles', [AuthController::class, 'availableRoles']);
+    Route::post('/switch-role', [AuthController::class, 'switchRole']);
 
     Route::get('/student/courses', [StudentCourseController::class, 'index']);
 
