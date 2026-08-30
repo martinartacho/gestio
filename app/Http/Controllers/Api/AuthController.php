@@ -89,6 +89,58 @@ class AuthController extends Controller
         return new UserResource($request->user());
     }
 
+    /**
+     * Rols disponibles per a l'usuari autenticat (mateix email a més d'una
+     * taula). Serveix perquè l'app mostri el botó de "canviar de rol" només
+     * quan té sentit.
+     */
+    public function availableRoles(Request $request)
+    {
+        $email = $request->user()->email;
+
+        return response()->json([
+            'roles' => array_keys($this->matchingAccounts($email)),
+        ]);
+    }
+
+    /**
+     * Canvia de rol dins la mateixa sessió, sense tornar a demanar la
+     * contrasenya: la confiança ja l'estableix el token vàlid actual: només
+     * cal que hi hagi un compte amb el mateix email per al rol demanat.
+     */
+    public function switchRole(Request $request)
+    {
+        $data = $request->validate([
+            'role' => ['required', 'in:student,teacher,member'],
+        ]);
+
+        $matches = $this->matchingAccounts($request->user()->email);
+
+        abort_unless(isset($matches[$data['role']]), 404, 'No tens cap compte amb aquest rol.');
+
+        $request->user()->currentAccessToken()->delete();
+
+        return $this->respondWithRole($matches[$data['role']], $data['role']);
+    }
+
+    /** @return array<string, CampusStudent|CampusTeacher|AssociatMember> */
+    private function matchingAccounts(string $email): array
+    {
+        $matches = [];
+
+        if ($student = CampusStudent::where('email', $email)->first()) {
+            $matches['student'] = $student;
+        }
+        if ($teacher = CampusTeacher::where('email', $email)->first()) {
+            $matches['teacher'] = $teacher;
+        }
+        if ($member = AssociatMember::where('email', $email)->first()) {
+            $matches['member'] = $member;
+        }
+
+        return $matches;
+    }
+
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
