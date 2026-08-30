@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withProviders([
         App\Providers\Filament\AdminPanelProvider::class,
+        App\Providers\Filament\TenantAdminPanelProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
@@ -30,6 +31,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // Bloqueig per IP aplicat a totes les peticions web
         $middleware->prependToGroup('web', \App\Http\Middleware\BlockSuspiciousIp::class);
+
+        // Resol el tenant (si n'hi ha) ABANS que s'obri la sessió — la sessió
+        // es guarda a BD (SESSION_DRIVER=database), així que cal que la
+        // connexió ja estigui canviada quan StartSession s'executi. No fa
+        // res si el primer segment de la URL no coincideix amb cap tenant.
+        $middleware->prependToGroup('web', \App\Http\Middleware\ResolveTenant::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

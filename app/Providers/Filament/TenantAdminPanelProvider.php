@@ -18,22 +18,26 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class AdminPanelProvider extends PanelProvider
+/**
+ * Mateix panell que AdminPanelProvider (mateixos Resources/Pages, es
+ * descobreixen als mateixos directoris), però muntat a /{tenant}/admin en
+ * lloc de /admin. ResolveTenant, el primer middleware, canvia la connexió
+ * de BD abans que res més s'executi — per això cada tenant veu les seves
+ * pròpies dades encara que el codi de l'admin sigui idèntic.
+ */
+class TenantAdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
-            ->id('admin')
-            ->path('admin')
+            ->id('tenant-admin')
+            ->path('{tenant}/admin')
             ->login()
             ->revealablePasswords()
 
-            // ── Marca visual ────────────────────────────────────────────────
             ->colors(['primary' => Color::Indigo])
             ->brandName('GestorApp')
 
-            // ── Descubrimiento automático de recursos, páginas y widgets ───
             ->discoverResources(
                 in: app_path('Filament/Resources'),
                 for: 'App\\Filament\\Resources'
@@ -45,16 +49,11 @@ class AdminPanelProvider extends PanelProvider
             ->pages([Pages\Dashboard::class])
             ->widgets([StatsOverview::class])
 
-            // ── Navegación ──────────────────────────────────────────────────
             ->navigationGroups([
                 'Administración',
             ])
 
-            // ── Middleware estándar de Filament ─────────────────────────────
             ->middleware([
-                // Els panells de Filament no passen pel grup 'web' de Laravel
-                // (repliquen els seus components a sota), així que cal
-                // resoldre el tenant aquí també, abans de StartSession.
                 \App\Http\Middleware\ResolveTenant::class,
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -66,18 +65,6 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authMiddleware([Authenticate::class])
-            ->renderHook(
-                'panels::body.start',
-                fn () => request()->routeIs('filament.admin.auth.login')
-                    ? view('campus.partials.admin-login-nav')
-                    : '',
-            )
-            ->renderHook(
-                'panels::body.end',
-                fn () => request()->routeIs('filament.admin.auth.login')
-                    ? view('campus.partials.footer')
-                    : '',
-            );
+            ->authMiddleware([Authenticate::class]);
     }
 }
