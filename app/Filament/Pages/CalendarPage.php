@@ -42,7 +42,7 @@ class CalendarPage extends Page
 
     public function mount(): void
     {
-        $active = CampusSeason::where('status', 'active')->first();
+        $active = CampusSeason::where('tenant_id', current_tenant()?->id)->where('status', 'active')->first();
         $this->currentSeasonId = $active?->id;
     }
 
@@ -62,7 +62,8 @@ class CalendarPage extends Page
 
     public function getLegendCategories(): \Illuminate\Support\Collection
     {
-        return CampusCategory::whereHas('courses', function ($q) {
+        return CampusCategory::where('tenant_id', current_tenant()?->id)
+            ->whereHas('courses', function ($q) {
                 if ($this->currentSeasonId) {
                     $q->where('season_id', $this->currentSeasonId);
                 }
@@ -77,7 +78,8 @@ class CalendarPage extends Page
 
     public function getSeasonOptions(): array
     {
-        return CampusSeason::orderByDesc('year')
+        return CampusSeason::where('tenant_id', current_tenant()?->id)
+            ->orderByDesc('year')
             ->orderByDesc('quadrimester')
             ->get()
             ->mapWithKeys(fn($s) => [$s->id => $s->name])
@@ -93,7 +95,8 @@ class CalendarPage extends Page
      */
     public function getWeeklyGrid(): array
     {
-        $courses = CampusCourse::with(['timeSlot', 'space', 'category'])
+        $courses = CampusCourse::where('tenant_id', current_tenant()?->id)
+            ->with(['timeSlot', 'space', 'category'])
             ->whereHas('timeSlot')
             ->when($this->currentSeasonId, fn($q) => $q->where('season_id', $this->currentSeasonId))
             ->get();
@@ -134,7 +137,8 @@ class CalendarPage extends Page
     public function getSelectedCourse(): ?CampusCourse
     {
         if (! $this->selectedCourseId) return null;
-        return CampusCourse::with(['category', 'teachers', 'space', 'timeSlot', 'season'])
+        return CampusCourse::where('tenant_id', current_tenant()?->id)
+            ->with(['category', 'teachers', 'space', 'timeSlot', 'season'])
             ->find($this->selectedCourseId);
     }
 
@@ -170,7 +174,7 @@ class CalendarPage extends Page
             return;
         }
 
-        $course = CampusCourse::findOrFail($courseId);
+        $course = CampusCourse::where('tenant_id', current_tenant()?->id)->findOrFail($courseId);
         $start  = Carbon::parse($newStart)->toDateString();
         $end    = blank($newEnd)
             ? $start

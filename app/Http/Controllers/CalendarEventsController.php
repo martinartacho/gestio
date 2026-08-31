@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CampusCourse;
 use App\Models\CampusHoliday;
+use App\Models\Tenant;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,9 +29,15 @@ class CalendarEventsController extends Controller
     {
         abort_unless(Auth::user()?->hasAnyRole(['super-admin', 'admin', 'manager']), 403);
 
+        // Aquesta ruta viu fora del panell/prefix {tenant} (és un endpoint
+        // JSON intern cridat per JS des de la pàgina de calendari), així que
+        // current_tenant() no el troba sol — cal rebre'l per query string.
+        $tenantId = Tenant::where('slug', $request->query('tenant'))->value('id');
+
         $seasonId = $request->integer('season');
 
-        $query = CampusCourse::with(['category', 'teachers', 'space', 'timeSlot'])
+        $query = CampusCourse::where('tenant_id', $tenantId)
+            ->with(['category', 'teachers', 'space', 'timeSlot'])
             ->whereNotNull('start_date')
             ->whereNotNull('end_date');
 
@@ -88,7 +95,7 @@ class CalendarEventsController extends Controller
             }
         }
 
-        foreach ($this->holidayEvents($request) as $event) {
+        foreach ($this->holidayEvents($request, $tenantId) as $event) {
             $events[] = $event;
         }
 
@@ -99,7 +106,7 @@ class CalendarEventsController extends Controller
      * Esdeveniments de fons pels festius/dies no lectius, dins el rang visible
      * del calendari. Els recurrents es repeteixen per a cada any del rang.
      */
-    private function holidayEvents(Request $request): array
+    private function holidayEvents(Request $request, ?int $tenantId): array
     {
         $rangeStart = $request->date('start');
         $rangeEnd   = $request->date('end');
@@ -109,7 +116,7 @@ class CalendarEventsController extends Controller
 
         $events = [];
 
-        foreach (CampusHoliday::all() as $holiday) {
+        foreach (CampusHoliday::where('tenant_id', $tenantId)->get() as $holiday) {
             $end = $holiday->date_end ?? $holiday->date;
 
             $ranges = $holiday->recurring_yearly

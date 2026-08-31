@@ -21,9 +21,10 @@ class WooCommerceExportService
         'Atribut global 1',
     ];
 
-    public function generate(?int $seasonId): string
+    public function generate(?int $seasonId, ?int $tenantId = null): string
     {
-        $courses = CampusCourse::with(['category', 'children' => fn($q) => $q->when($seasonId, fn($q) => $q->where('season_id', $seasonId))])
+        $courses = CampusCourse::where('tenant_id', $tenantId)
+            ->with(['category', 'children' => fn($q) => $q->when($seasonId, fn($q) => $q->where('season_id', $seasonId))])
             ->whereNull('parent_id')
             ->when($seasonId, fn($q) => $q->where('season_id', $seasonId))
             ->where('status', '!=', 'draft')

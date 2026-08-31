@@ -49,7 +49,7 @@
             {{-- Exportació WooCommerce --}}
             <x-filament::button
                 tag="a"
-                :href="route('calendar.export.woocommerce', ['season' => $currentSeasonId])"
+                :href="route('calendar.export.woocommerce', ['season' => $currentSeasonId, 'tenant' => current_tenant()?->slug])"
                 color="gray"
                 size="sm"
                 icon="heroicon-o-arrow-down-tray"
@@ -283,7 +283,7 @@
     <script>
         (function () {
             const config = {
-                eventsUrl: '{{ route('calendar.events') }}',
+                eventsUrl: '{{ route('calendar.events', ['tenant' => current_tenant()?->slug]) }}',
                 seasonId:  {{ $currentSeasonId ?? 'null' }},
                 editable:  @js(auth()->user()?->hasAnyRole(['super-admin', 'admin'])),
             };
