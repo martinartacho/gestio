@@ -302,7 +302,7 @@ class TeacherResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) CampusTeacher::where('status', 'active')->count();
+        return (string) CampusTeacher::where('tenant_id', current_tenant()?->id)->where('status', 'active')->count();
     }
 
     public static function getPages(): array

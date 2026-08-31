@@ -230,6 +230,6 @@ class UserResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) static::getModel()::count();
+        return (string) User::where('tenant_id', current_tenant()?->id)->count();
     }
 }

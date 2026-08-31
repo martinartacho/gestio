@@ -300,7 +300,7 @@ class EnrollmentResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) CampusEnrollment::where('status', 'pending')->count() ?: null;
+        return (string) CampusEnrollment::where('tenant_id', current_tenant()?->id)->where('status', 'pending')->count() ?: null;
     }
 
     public static function getPages(): array

@@ -3,9 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CourseResource\Pages;
+use App\Models\CampusCategory;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
-use Filament\Actions\{ActionGroup, BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction, Action};
+use Filament\Actions\{ActionGroup, BulkAction, BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction, Action};
 use Filament\Forms\Components\{DatePicker, Select, Textarea, TextInput, Toggle};
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -492,6 +493,62 @@ class CourseResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    BulkAction::make('bulkEditField')
+                        ->label('Canviar un camp en bloc')
+                        ->icon('heroicon-o-pencil-square')
+                        ->color('warning')
+                        ->form([
+                            Select::make('field')
+                                ->label('Camp a canviar')
+                                ->options([
+                                    'status'          => __('site.status'),
+                                    'price'           => __('site.course_price'),
+                                    'format'          => __('site.course_format'),
+                                    'category_id'     => __('site.category'),
+                                    'season_id'       => __('site.season'),
+                                    'is_public'       => __('site.public'),
+                                    'open_enrollment' => 'Inscripció sempre oberta',
+                                    'max_students'    => __('site.course_max'),
+                                ])
+                                ->native(false)->live()->required(),
+
+                            Select::make('value')
+                                ->label('Valor nou')
+                                ->options(fn (Get $get) => match ($get('field')) {
+                                    'status'      => CampusCourse::STATUSES,
+                                    'format'      => CampusCourse::FORMATS,
+                                    'category_id' => CampusCategory::where('tenant_id', current_tenant()?->id)->pluck('name', 'id')->toArray(),
+                                    'season_id'   => CampusSeason::where('tenant_id', current_tenant()?->id)->pluck('name', 'id')->toArray(),
+                                    default       => [],
+                                })
+                                ->visible(fn (Get $get) => in_array($get('field'), ['status', 'format', 'category_id', 'season_id']))
+                                ->native(false)->required(),
+
+                            TextInput::make('value_number')
+                                ->label('Valor nou')
+                                ->numeric()
+                                ->prefix(fn (Get $get) => $get('field') === 'price' ? '€' : null)
+                                ->helperText(fn (Get $get) => $get('field') === 'max_students' ? __('site.course_max_hint') : null)
+                                ->visible(fn (Get $get) => in_array($get('field'), ['price', 'max_students']))
+                                ->required(fn (Get $get) => $get('field') === 'price'),
+
+                            Toggle::make('value_bool')
+                                ->label('Valor nou')
+                                ->visible(fn (Get $get) => in_array($get('field'), ['is_public', 'open_enrollment'])),
+                        ])
+                        ->requiresConfirmation()
+                        ->modalDescription('Se sobreescriurà aquest camp a tots els cursos seleccionats.')
+                        ->action(function (array $data, \Illuminate\Support\Collection $records): void {
+                            $value = match (true) {
+                                in_array($data['field'], ['status', 'format', 'category_id', 'season_id']) => $data['value'],
+                                in_array($data['field'], ['is_public', 'open_enrollment']) => (bool) ($data['value_bool'] ?? false),
+                                default => $data['value_number'] ?? null,
+                            };
+
+                            $records->each->update([$data['field'] => $value]);
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
                     DeleteBulkAction::make()->label(__('site.delete_selected')),
                 ]),
             ]);
@@ -499,7 +556,7 @@ class CourseResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) CampusCourse::where('status', 'active')->count();
+        return (string) CampusCourse::where('tenant_id', current_tenant()?->id)->where('status', 'active')->count();
     }
 
     public static function getRelationManagers(): array
