@@ -484,7 +484,7 @@ class CourseResource extends Resource
                         ->label('Previsualitzar')
                         ->icon('heroicon-o-eye')
                         ->color('gray')
-                        ->url(fn(CampusCourse $r) => route('campus.catalog.show', ['slug' => $r->slug, 'preview' => 1]))
+                        ->url(fn(CampusCourse $r) => route('campus.catalog.show', ['tenant' => current_tenant()?->slug, 'slug' => $r->slug, 'preview' => 1]))
                         ->openUrlInNewTab(),
 
                     DeleteAction::make()->label(__('site.delete')),

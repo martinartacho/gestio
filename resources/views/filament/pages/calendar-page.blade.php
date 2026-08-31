@@ -36,8 +36,8 @@
             <x-filament::button
                 tag="a"
                 :href="$currentSeasonId
-                    ? route('campus.catalog.index', ['season' => $currentSeasonId, 'preview' => 1])
-                    : route('campus.catalog.index', ['preview' => 1])"
+                    ? route('campus.catalog.index', ['tenant' => current_tenant()?->slug, 'season' => $currentSeasonId, 'preview' => 1])
+                    : route('campus.catalog.index', ['tenant' => current_tenant()?->slug, 'preview' => 1])"
                 target="_blank"
                 color="info"
                 size="sm"
@@ -250,7 +250,7 @@
                     @if($course?->slug)
                     <x-filament::button
                         tag="a"
-                        :href="route('campus.catalog.show', ['slug' => $course->slug, 'preview' => 1])"
+                        :href="route('campus.catalog.show', ['tenant' => current_tenant()?->slug, 'slug' => $course->slug, 'preview' => 1])"
                         target="_blank"
                         color="info"
                         size="sm"
