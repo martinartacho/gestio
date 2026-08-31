@@ -151,7 +151,8 @@ class StudentAuthController extends Controller
         ]);
 
         // Si l'alumne ja és a la cua (registrat mentre esperava el torn), redirigir a l'estat
-        $queueEntry = \App\Models\CampusQueueEntry::where('email', $student->email)
+        $queueEntry = \App\Models\CampusQueueEntry::where('tenant_id', current_tenant()?->id)
+            ->where('email', $student->email)
             ->whereIn('status', [
                 \App\Models\CampusQueueEntry::STATUS_WAITING,
                 \App\Models\CampusQueueEntry::STATUS_NOTIFIED,
@@ -193,7 +194,8 @@ class StudentAuthController extends Controller
         $request->validate(['email' => ['required', 'email', 'max:150']]);
 
         $email   = strtolower(trim($request->input('email')));
-        $student = CampusStudent::where('email', $email)->first();
+        $student = CampusStudent::where('tenant_id', current_tenant()?->id)
+            ->where('email', $email)->first();
 
         // Resposta sempre igual per evitar enumerar comptes
         if ($student) {
@@ -229,7 +231,8 @@ class StudentAuthController extends Controller
         ]);
 
         $code    = strtoupper(str_replace(' ', '', trim($request->input('code', ''))));
-        $student = CampusStudent::where('email', $email)->first();
+        $student = CampusStudent::where('tenant_id', current_tenant()?->id)
+            ->where('email', $email)->first();
 
         if (! $student) {
             return back()->withErrors(['code' => 'No s\'ha trobat el compte.']);

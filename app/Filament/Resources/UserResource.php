@@ -22,9 +22,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
-    // TODO: activar quan el model tingui tenant_id + relacio tenant()
-    protected static bool $isScopedToTenant = false;
-
     protected static ?string $model = User::class;
 
     protected static ?int $navigationSort = 1;

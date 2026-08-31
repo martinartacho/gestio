@@ -56,7 +56,8 @@ class TeacherAuthController extends Controller
         $request->validate(['email' => ['required', 'email', 'max:150']]);
 
         $email   = strtolower(trim($request->input('email')));
-        $teacher = CampusTeacher::where('email', $email)->first();
+        $teacher = CampusTeacher::where('tenant_id', current_tenant()?->id)
+            ->where('email', $email)->first();
 
         if (! $teacher) {
             return back()->withErrors(['email' => 'No existeix cap compte amb ' . $email . '.'])->onlyInput('email');
@@ -90,7 +91,8 @@ class TeacherAuthController extends Controller
         $request->validate(['code' => ['required', 'string']]);
 
         $code    = strtoupper(str_replace(' ', '', trim($request->input('code', ''))));
-        $teacher = CampusTeacher::where('email', $email)->first();
+        $teacher = CampusTeacher::where('tenant_id', current_tenant()?->id)
+            ->where('email', $email)->first();
 
         if (! $teacher) {
             return back()->withErrors(['code' => 'No s\'ha trobat el compte.']);

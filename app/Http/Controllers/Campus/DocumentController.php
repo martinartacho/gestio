@@ -17,6 +17,10 @@ class DocumentController extends Controller
      */
     public function download(Request $request, CampusDocument $document): StreamedResponse
     {
+        // El binding de ruta no filtra per tenant — sense això, un document
+        // públic seria descarregable des de la URL de qualsevol altre tenant.
+        abort_if($document->tenant_id !== current_tenant()?->id, 404);
+
         abort_if(! $document->isFile() || ! $document->file_path, 404);
         abort_if(! Storage::disk('local')->exists($document->file_path), 404);
 

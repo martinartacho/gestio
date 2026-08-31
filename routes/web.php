@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Route;
 // Quan calgui una pàgina real de selecció, es canvia aquí.
 Route::redirect('/', '/campus');
 
+// Sense això, '/admin' (un sol segment) el capturaria el grup {tenant} de
+// sota com si "admin" fos un slug de tenant, donant 404 en lloc de portar
+// al login. Ha d'anar ABANS del grup perquè Laravel el faci servir primer.
+Route::redirect('/admin', '/admin/login');
+
 // Totes les rutes públiques (catàleg, portals d'alumnes/professorat/socis...)
 // viuen a web-content.php i es munten sota /{tenant}/... — ResolveWebTenant
 // lliga el Tenant corresponent al contenidor perquè current_tenant() el

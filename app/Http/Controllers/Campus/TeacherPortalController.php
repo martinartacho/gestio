@@ -132,10 +132,13 @@ class TeacherPortalController extends Controller
         $myCourses = $teacher->courses()->orderByDesc('start_date')->get();
 
         // Documents propis
-        $ownQuery = CampusDocument::where('teacher_id', $teacher->id);
+        $ownQuery = CampusDocument::where('tenant_id', current_tenant()?->id)
+            ->where('teacher_id', $teacher->id);
 
         // Documents d'altres professors visibles (public o enrolled, no privats)
-        $othersQuery = CampusDocument::whereNotNull('teacher_id')
+        // — sense el filtre de tenant, es veurien documents d'altres entitats.
+        $othersQuery = CampusDocument::where('tenant_id', current_tenant()?->id)
+            ->whereNotNull('teacher_id')
             ->where('teacher_id', '!=', $teacher->id)
             ->whereIn('visibility', ['public', 'enrolled'])
             ->where('status', 'active');

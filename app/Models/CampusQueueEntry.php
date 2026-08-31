@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class CampusQueueEntry extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'campus_queue_entries';
 
     protected $fillable = [
+        'tenant_id',
         'email', 'queue_number', 'access_code',
         'slot_starts_at', 'notified_at', 'accessed_at', 'access_expires_at', 'status',
     ];

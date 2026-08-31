@@ -38,14 +38,15 @@ class QueueController extends Controller
         $email = strtolower(trim($request->input('email')));
 
         // Si ja és a la cua, redirigir a l'estat
-        $existing = CampusQueueEntry::where('email', $email)->first();
+        $existing = CampusQueueEntry::where('tenant_id', current_tenant()?->id)
+            ->where('email', $email)->first();
         if ($existing) {
             return redirect()->route('campus.queue.status', ['email' => $email])
                 ->with('info', 'Ja esteu a la cua. Aquí teniu el vostre estat.');
         }
 
-        // Número seqüencial + càlcul del torn
-        $nextNumber   = (CampusQueueEntry::max('queue_number') ?? 0) + 1;
+        // Número seqüencial (per tenant) + càlcul del torn
+        $nextNumber   = (CampusQueueEntry::where('tenant_id', current_tenant()?->id)->max('queue_number') ?? 0) + 1;
         $batchSize    = max(1, (int) $settings->get('queue_batch_size', 10));
         $slotMinutes  = max(1, (int) $settings->get('queue_slot_minutes', 15));
         $queueStart   = Carbon::parse($settings->get('queue_start_at'));
@@ -53,6 +54,7 @@ class QueueController extends Controller
         $slotStartsAt = $queueStart->copy()->addMinutes($slotIndex * $slotMinutes);
 
         $entry = CampusQueueEntry::create([
+            'tenant_id'      => current_tenant()?->id,
             'email'          => $email,
             'queue_number'   => $nextNumber,
             'slot_starts_at' => $slotStartsAt,
@@ -68,7 +70,8 @@ class QueueController extends Controller
     public function status(Request $request): View|RedirectResponse
     {
         $email = $request->query('email', '');
-        $entry = CampusQueueEntry::where('email', $email)->first();
+        $entry = CampusQueueEntry::where('tenant_id', current_tenant()?->id)
+            ->where('email', $email)->first();
 
         if (! $entry) {
             return redirect()->route('campus.queue.join')
@@ -87,7 +90,8 @@ class QueueController extends Controller
         $request->validate(['code' => ['required', 'string', 'size:6']]);
 
         $code  = $raw;
-        $entry = CampusQueueEntry::where('access_code', $code)
+        $entry = CampusQueueEntry::where('tenant_id', current_tenant()?->id)
+            ->where('access_code', $code)
             ->where('status', CampusQueueEntry::STATUS_NOTIFIED)
             ->first();
 
@@ -109,7 +113,8 @@ class QueueController extends Controller
         $email  = $request->query('email', '');
         $queueN = (int) $request->query('n', 0);
 
-        $entry = CampusQueueEntry::where('email', $email)
+        $entry = CampusQueueEntry::where('tenant_id', current_tenant()?->id)
+            ->where('email', $email)
             ->where('queue_number', $queueN)
             ->where('status', CampusQueueEntry::STATUS_WAITING)
             ->first();
@@ -151,7 +156,8 @@ class QueueController extends Controller
         $email  = strtolower(trim($request->input('email')));
         $queueN = (int) $request->input('queue_number');
 
-        $entry = CampusQueueEntry::where('email', $email)
+        $entry = CampusQueueEntry::where('tenant_id', current_tenant()?->id)
+            ->where('email', $email)
             ->where('queue_number', $queueN)
             ->where('status', CampusQueueEntry::STATUS_WAITING)
             ->first();

@@ -26,9 +26,10 @@ class MemberPasswordController extends Controller
 
         $identifier = trim($request->input('identifier'));
 
-        // Buscar per email o per número de soci
-        $member = AssociatMember::where('email', $identifier)
-            ->orWhere('member_number', $identifier)
+        // Buscar per email o per número de soci — number_number no és únic
+        // entre tenants (cada entitat pot començar la seva numeració des d'1).
+        $member = AssociatMember::where('tenant_id', current_tenant()?->id)
+            ->where(fn ($q) => $q->where('email', $identifier)->orWhere('member_number', $identifier))
             ->first();
 
         if (! $member) {
