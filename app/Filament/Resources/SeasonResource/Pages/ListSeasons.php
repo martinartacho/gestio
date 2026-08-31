@@ -80,8 +80,11 @@ class ListSeasons extends ListRecords
                     $skipped = 0;
 
                     foreach ($periods as [$q, $name, $start, $end]) {
+                        // Sense tenant_id a la cerca, trobava (o topava amb)
+                        // la temporada d'un altre tenant amb el mateix
+                        // any+quadrimestre en lloc de crear la pròpia.
                         $season = CampusSeason::firstOrCreate(
-                            ['year' => $year, 'quadrimester' => $q],
+                            ['tenant_id' => current_tenant()?->id, 'year' => $year, 'quadrimester' => $q],
                             ['name' => $name, 'start_date' => $start, 'end_date' => $end, 'status' => 'draft']
                         );
                         $season->wasRecentlyCreated ? $created++ : $skipped++;

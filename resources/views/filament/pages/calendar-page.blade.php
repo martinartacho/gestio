@@ -46,15 +46,15 @@
                 Vista prèvia
             </x-filament::button>
 
-            {{-- Exportació WooCommerce --}}
+            {{-- Exportació CSV --}}
             <x-filament::button
                 tag="a"
-                :href="route('calendar.export.woocommerce', ['season' => $currentSeasonId, 'tenant' => current_tenant()?->slug])"
+                :href="route('calendar.export.courses', ['season' => $currentSeasonId, 'tenant' => current_tenant()?->slug])"
                 color="gray"
                 size="sm"
                 icon="heroicon-o-arrow-down-tray"
             >
-                {{ __('site.export_wp') }}
+                {{ __('site.export_csv') }}
             </x-filament::button>
 
             {{-- Llegenda de colors (popover ⓘ) --}}

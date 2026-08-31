@@ -25,6 +25,6 @@ Route::get('/admin/calendar/events', [\App\Http\Controllers\CalendarEventsContro
     ->middleware(['web', 'auth'])
     ->name('calendar.events');
 
-Route::get('/admin/calendar/export-woocommerce', \App\Http\Controllers\WooCommerceExportController::class)
+Route::get('/admin/calendar/export-courses', \App\Http\Controllers\CourseExportController::class)
     ->middleware(['web', 'auth'])
-    ->name('calendar.export.woocommerce');
+    ->name('calendar.export.courses');

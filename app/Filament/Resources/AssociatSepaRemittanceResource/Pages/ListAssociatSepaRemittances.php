@@ -60,7 +60,8 @@ class ListAssociatSepaRemittances extends ListRecords
                     $period       = $data['period'];
                     $periodNumber = (int) $data['period_number'];
 
-                    $quotes = AssociatQuote::with('member')
+                    $quotes = AssociatQuote::where('tenant_id', current_tenant()?->id)
+                        ->with('member')
                         ->where('year', $year)
                         ->where('period', $period)
                         ->where('period_number', $periodNumber)
@@ -89,7 +90,8 @@ class ListAssociatSepaRemittances extends ListRecords
                     $periodLabel = static::periodNumberOptions($period)[(string) $periodNumber] ?? $periodNumber;
 
                     $remittance = AssociatSepaRemittance::create([
-                        'reference'          => AssociatSepaRemittance::nextReference($year),
+                        'tenant_id'          => current_tenant()?->id,
+                        'reference'          => AssociatSepaRemittance::nextReference($year, current_tenant()?->id),
                         'year'               => $year,
                         'execution_date'     => now()->addDays(5)->toDateString(),
                         'total_transactions' => $quotes->count(),

@@ -40,9 +40,9 @@ class AssociatSepaRemittance extends Model
         return in_array($this->status, ['generated', 'submitted', 'processed']);
     }
 
-    public static function nextReference(int $year): string
+    public static function nextReference(int $year, ?int $tenantId = null): string
     {
-        $count = static::where('year', $year)->count() + 1;
+        $count = static::where('tenant_id', $tenantId)->where('year', $year)->count() + 1;
         return sprintf('REMESA-%d-%03d', $year, $count);
     }
 }
