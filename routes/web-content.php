@@ -205,6 +205,8 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
 Route::prefix('socis')->name('member.')->middleware('associats.enabled')->group(function () {
     Route::get('/login',  [MemberAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [MemberAuthController::class, 'login'])->middleware('throttle:login')->name('login.post');
+    Route::get('/login/select-institution', [MemberAuthController::class, 'selectInstitution'])->name('login.select-institution');
+    Route::get('/login/complete', [MemberAuthController::class, 'completeLogin'])->name('login.complete');
     Route::post('/logout',[MemberAuthController::class, 'logout'])->name('logout');
 
     Route::get('/recuperar-contrasenya',          [MemberPasswordController::class, 'showForgotPassword'])->name('password.request');

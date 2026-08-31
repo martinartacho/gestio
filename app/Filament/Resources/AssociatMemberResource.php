@@ -10,6 +10,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -18,6 +19,11 @@ use Filament\Tables\Table;
 
 class AssociatMemberResource extends Resource
 {
+    // Un soci pot pertànyer a més d'una institució (N:M) — l'escopat
+    // automàtic de Filament exigeix una relació BelongsTo singular, així
+    // que es desactiva i es filtra a mà via getEloquentQuery().
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = AssociatMember::class;
     protected static ?int    $navigationSort = 5;
 
@@ -48,7 +54,7 @@ class AssociatMemberResource extends Resource
                 TextInput::make('member_number')
                     ->label('Número de soci')
                     ->required()
-                    ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
+                    ->unique(ignoreRecord: true)
                     ->maxLength(20),
 
                 Select::make('status')
@@ -77,7 +83,7 @@ class AssociatMemberResource extends Resource
                     ->label('Correu electrònic')
                     ->email()
                     ->required()
-                    ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id)),
+                    ->unique(ignoreRecord: true),
 
                 TextInput::make('phone')
                     ->label('Telèfon')
@@ -124,7 +130,7 @@ class AssociatMemberResource extends Resource
                     TextInput::make('mandate_reference')
                         ->label('Referència del mandat')
                         ->placeholder('SOCI-000123')
-                        ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
+                        ->unique(ignoreRecord: true)
                         ->maxLength(35),
 
                     DatePicker::make('mandate_signed_at')
@@ -270,6 +276,12 @@ class AssociatMemberResource extends Resource
             ])
             ->defaultSort('member_number')
             ->recordUrl(fn ($record) => static::getUrl('edit', ['record' => $record]));
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('tenants', fn (Builder $q) => $q->where('tenants.id', current_tenant()?->id));
     }
 
     public static function getPages(): array

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -12,13 +12,12 @@ use Laravel\Sanctum\HasApiTokens;
 
 class AssociatMember extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, BelongsToTenant;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'associat_members';
     protected $guard = 'member';
 
     protected $fillable = [
-        'tenant_id',
         'member_number', 'first_name', 'last_name', 'email', 'password',
         'phone', 'dni', 'address', 'postal_code', 'city',
         'status', 'joined_at', 'cancelled_at', 'data_consent',
@@ -54,6 +53,17 @@ class AssociatMember extends Authenticatable
     public function campusStudent(): BelongsTo
     {
         return $this->belongsTo(CampusStudent::class);
+    }
+
+    /** Un soci pot pertànyer a més d'una institució (com User amb HasTenants). */
+    public function tenants(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'associat_member_tenant', 'member_id', 'tenant_id');
+    }
+
+    public function belongsToTenant(?int $tenantId): bool
+    {
+        return $tenantId !== null && $this->tenants()->where('tenants.id', $tenantId)->exists();
     }
 
     public function getFullNameAttribute(): string

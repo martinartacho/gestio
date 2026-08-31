@@ -95,7 +95,7 @@ class ListAssociatQuotes extends ListRecords
                         ->pluck('member_id')
                         ->all();
 
-                    $members = AssociatMember::where('tenant_id', current_tenant()?->id)
+                    $members = AssociatMember::whereHas('tenants', fn ($q) => $q->where('tenants.id', current_tenant()?->id))
                         ->where('status', 'active')
                         ->whereNotIn('id', $existingMemberIds)
                         ->get();

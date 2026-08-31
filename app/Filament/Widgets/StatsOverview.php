@@ -72,8 +72,8 @@ class StatsOverview extends BaseWidget
 
         // ── Mòdul Associats ──────────────────────────────────────────────────
         if (setting('associats_enabled')) {
-            $totalMembers  = AssociatMember::where('tenant_id', $tenantId)->count();
-            $activeMembers = AssociatMember::where('tenant_id', $tenantId)->where('status', 'active')->count();
+            $totalMembers  = AssociatMember::whereHas('tenants', fn ($q) => $q->where('tenants.id', $tenantId))->count();
+            $activeMembers = AssociatMember::whereHas('tenants', fn ($q) => $q->where('tenants.id', $tenantId))->where('status', 'active')->count();
             $orgName       = setting('associats_org_name', 'Associats');
 
             $stats[] = Stat::make($orgName, $totalMembers)
