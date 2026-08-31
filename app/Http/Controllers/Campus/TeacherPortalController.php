@@ -76,6 +76,7 @@ class TeacherPortalController extends Controller
         ]);
 
         $doc = new CampusDocument([
+            'tenant_id'   => current_tenant()?->id,
             'title'       => $data['title'],
             'type'        => $data['type'],
             'visibility'  => $data['visibility'],
