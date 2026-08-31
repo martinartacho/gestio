@@ -11,10 +11,12 @@ class PortalController extends Controller
     {
         $student = auth('student')->user();
 
+        // Un alumne pot pertànyer a més d'una institució — aquesta llista
+        // ajunta els cursos de totes, cal indicar de quina és cada un.
         $enrollments = $student->enrollments()
             ->with([
                 'course' => fn ($q) => $q
-                    ->with('category', 'season')
+                    ->with('category', 'season', 'tenant')
                     ->withCount(['lessons as published_lessons_count' => fn ($q) => $q->where('status', 'published')]),
             ])
             ->whereIn('status', ['paid', 'pending'])
@@ -52,6 +54,10 @@ class PortalController extends Controller
             })
             ->groupBy('course_id');
 
-        return view('campus.portal.courses', compact('enrollments', 'documentsByCourse'));
+        // Nomes cal mostrar la insígnia d'institució si en té més d'una —
+        // per a la immensa majoria (una sola) seria soroll visual.
+        $showInstitution = $student->tenants()->count() > 1;
+
+        return view('campus.portal.courses', compact('enrollments', 'documentsByCourse', 'showInstitution'));
     }
 }

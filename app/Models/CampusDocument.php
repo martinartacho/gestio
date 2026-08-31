@@ -194,10 +194,12 @@ class CampusDocument extends Model
     {
         if ($this->type === 'url') return $this->url;
         if ($this->file_path && Storage::disk('local')->exists($this->file_path)) {
-            // Aquest accessor també es fa servir des de l'admin (DocumentResource),
-            // on URL::defaults(tenant) no s'ha establert — cal passar-lo explícit.
+            // El tenant del document primer: un alumne pot veure a la mateixa
+            // pàgina (Els meus cursos) documents de més d'una institució —
+            // current_tenant() només serveix de reserva (p. ex. des de
+            // l'admin, on URL::defaults(tenant) no s'ha establert).
             return route('campus.documents.download', [
-                'tenant'   => current_tenant()?->slug ?? $this->tenant?->slug,
+                'tenant'   => $this->tenant?->slug ?? current_tenant()?->slug,
                 'document' => $this->id,
             ]);
         }
