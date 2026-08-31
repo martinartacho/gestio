@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction};
 use Filament\Forms\Components\{TextInput, Toggle};
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
@@ -56,6 +57,19 @@ class TenantResource extends Resource
                     ->label('Activa')
                     ->default(true)->inline(false),
             ]),
+
+            Section::make('Dades d\'exemple')
+                ->description('Opcional, només en crear. Genera contingut fictici perquè l\'entitat no comenci buida.')
+                ->visibleOn('create')
+                ->schema([
+                    Grid::make(5)->schema([
+                        TextInput::make('sample_news')->label('Notícies')->numeric()->default(0)->minValue(0)->maxValue(50),
+                        TextInput::make('sample_teachers')->label('Professorat')->numeric()->default(0)->minValue(0)->maxValue(50),
+                        TextInput::make('sample_courses')->label('Cursos')->numeric()->default(0)->minValue(0)->maxValue(50),
+                        TextInput::make('sample_students')->label('Alumnes')->numeric()->default(0)->minValue(0)->maxValue(200),
+                        TextInput::make('sample_members')->label('Socis')->numeric()->default(0)->minValue(0)->maxValue(200),
+                    ]),
+                ]),
         ]);
     }
 
