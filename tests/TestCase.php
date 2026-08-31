@@ -20,14 +20,19 @@ abstract class TestCase extends BaseTestCase
         // factories hi enganxen tenant_id — cal que ja existeixi quan
         // RefreshDatabase deixa la BD buida a cada test.
         if (Schema::hasTable('tenants')) {
-            if (! Tenant::where('slug', 'campus')->exists()) {
-                Tenant::factory()->create(['slug' => 'campus', 'name' => 'Campus']);
-            }
+            $campus = Tenant::where('slug', 'campus')->first()
+                ?? Tenant::factory()->create(['slug' => 'campus', 'name' => 'Campus']);
 
             // Perquè route('campus.lms.course', ...) etc. dins dels tests
             // (que no passen per ResolveWebTenant, ja que es criden abans de
             // fer la petició) omplin soles el paràmetre {tenant}.
             \Illuminate\Support\Facades\URL::defaults(['tenant' => 'campus']);
+
+            // Perquè current_tenant() (i per tant SettingStore) funcioni als
+            // tests que criden app(SettingStore::class)->set(...) directament,
+            // sense passar per una petició HTTP real (ResolveWebTenant no
+            // s'executa mai en aquest cas).
+            $this->app->instance(Tenant::class, $campus);
         }
     }
 }

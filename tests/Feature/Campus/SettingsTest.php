@@ -55,7 +55,7 @@ class SettingsTest extends TestCase
 
     public function test_setting_store_update_existing_key(): void
     {
-        SiteSetting::create(['key' => 'campus_name', 'value' => 'Old Name']);
+        SiteSetting::create(['tenant_id' => current_tenant()->id, 'key' => 'campus_name', 'value' => 'Old Name']);
 
         // Reinicialitzar store per llegir de la DB
         $this->app->forgetInstance(SettingStore::class);
@@ -87,20 +87,22 @@ class SettingsTest extends TestCase
 
     public function test_setting_store_cache_is_invalidated_on_set(): void
     {
+        $cacheKey = 'site_settings.all.' . current_tenant()->id;
+
         // 1. Crear store → construeix la caché
         $store = app(SettingStore::class);
         $store->get('campus_name'); // primer accés genera la caché
-        $this->assertTrue(Cache::has('site_settings.all'), 'La caché s\'hauria de construir en fer el primer accés');
+        $this->assertTrue(Cache::has($cacheKey), 'La caché s\'hauria de construir en fer el primer accés');
 
         // 2. Desar un valor → la caché s'invalida
         $store->set('campus_name', 'Updated');
-        $this->assertFalse(Cache::has('site_settings.all'), 'La caché s\'hauria d\'invalidar en desar');
+        $this->assertFalse(Cache::has($cacheKey), 'La caché s\'hauria d\'invalidar en desar');
 
         // 3. Crear una nova instància → la caché es reconstrueix
         $this->app->forgetInstance(SettingStore::class);
         $store2 = app(SettingStore::class);
         $store2->get('campus_name');
-        $this->assertTrue(Cache::has('site_settings.all'), 'La nova instància hauria de reconstruir la caché');
+        $this->assertTrue(Cache::has($cacheKey), 'La nova instància hauria de reconstruir la caché');
         $this->assertSame('Updated', $store2->get('campus_name'));
     }
 
@@ -146,20 +148,30 @@ class SettingsTest extends TestCase
 
     // ─── SiteSetting model ────────────────────────────────────────────────────
 
-    public function test_site_setting_uses_string_primary_key(): void
+    public function test_site_setting_stores_key_value_pair(): void
     {
-        $setting = SiteSetting::create(['key' => 'test_key', 'value' => 42]);
+        $setting = SiteSetting::create(['tenant_id' => current_tenant()->id, 'key' => 'test_key', 'value' => 42]);
         $this->assertSame('test_key', $setting->key);
         $this->assertSame(42, $setting->value);
     }
 
+    public function test_site_setting_is_unique_per_tenant_and_key(): void
+    {
+        $otherTenant = \App\Models\Tenant::factory()->create();
+
+        SiteSetting::create(['tenant_id' => current_tenant()->id, 'key' => 'shared_key', 'value' => 'campus value']);
+        SiteSetting::create(['tenant_id' => $otherTenant->id, 'key' => 'shared_key', 'value' => 'other value']);
+
+        $this->assertDatabaseCount('site_settings', 2);
+    }
+
     public function test_site_setting_casts_json_correctly(): void
     {
-        SiteSetting::create(['key' => 'bool_flag', 'value' => true]);
-        SiteSetting::create(['key' => 'array_val', 'value' => ['a', 'b']]);
+        SiteSetting::create(['tenant_id' => current_tenant()->id, 'key' => 'bool_flag', 'value' => true]);
+        SiteSetting::create(['tenant_id' => current_tenant()->id, 'key' => 'array_val', 'value' => ['a', 'b']]);
 
-        $boolSetting  = SiteSetting::find('bool_flag');
-        $arraySetting = SiteSetting::find('array_val');
+        $boolSetting  = SiteSetting::where('key', 'bool_flag')->first();
+        $arraySetting = SiteSetting::where('key', 'array_val')->first();
 
         $this->assertTrue($boolSetting->value);
         $this->assertSame(['a', 'b'], $arraySetting->value);
