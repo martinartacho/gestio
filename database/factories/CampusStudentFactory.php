@@ -9,10 +9,21 @@ class CampusStudentFactory extends Factory
 {
     protected $model = CampusStudent::class;
 
+    public function configure(): static
+    {
+        // Un alumne pot pertànyer a més d'una institució (relació N:M) — per
+        // defecte als tests, se l'afegeix a "campus" com abans amb tenant_id.
+        return $this->afterCreating(function (CampusStudent $student) {
+            $campusId = \App\Models\Tenant::where('slug', 'campus')->value('id');
+            if ($campusId && ! $student->tenants()->where('tenants.id', $campusId)->exists()) {
+                $student->tenants()->attach($campusId);
+            }
+        });
+    }
+
     public function definition(): array
     {
         return [
-            'tenant_id'         => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'first_name'        => $this->faker->firstName(),
             'last_name'         => $this->faker->lastName(),
             'email'             => $this->faker->unique()->safeEmail(),

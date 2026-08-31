@@ -6,12 +6,18 @@ use App\Filament\Resources\CampusStudents\Pages\CreateCampusStudent;
 use App\Filament\Resources\CampusStudents\Pages\EditCampusStudent;
 use App\Filament\Resources\CampusStudents\Pages\ListCampusStudents;
 use App\Models\CampusStudent;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
 class CampusStudentResource extends Resource
 {
+    // Un alumne pot pertànyer a més d'una institució (N:M) — l'escopat
+    // automàtic de Filament exigeix una relació BelongsTo singular, així
+    // que es desactiva i es filtra a mà via getEloquentQuery().
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = CampusStudent::class;
 
     protected static ?string $recordTitleAttribute = 'full_name';
@@ -43,6 +49,12 @@ class CampusStudentResource extends Resource
     public static function table(Table $table): Table
     {
         return \App\Filament\Resources\CampusStudents\Tables\CampusStudentsTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('tenants', fn (Builder $q) => $q->where('tenants.id', current_tenant()?->id));
     }
 
     public static function getPages(): array

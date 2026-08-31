@@ -75,6 +75,8 @@ Route::prefix('cursos')->name('campus.catalog.')->middleware('campus.enabled')->
 Route::prefix('portal')->name('campus.')->middleware('campus.enabled')->group(function () {
     Route::get('/login', [StudentAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [StudentAuthController::class, 'login'])->middleware('throttle:login')->name('login.post');
+    Route::get('/login/select-institution', [StudentAuthController::class, 'selectInstitution'])->name('login.select-institution');
+    Route::get('/login/complete', [StudentAuthController::class, 'completeLogin'])->name('login.complete');
     Route::get('/registre', [StudentAuthController::class, 'showRegister'])->name('register');
     Route::post('/registre', [StudentAuthController::class, 'register'])->middleware('throttle:register')->name('register.post');
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
