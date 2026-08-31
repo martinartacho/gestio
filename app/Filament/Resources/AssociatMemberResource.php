@@ -48,7 +48,7 @@ class AssociatMemberResource extends Resource
                 TextInput::make('member_number')
                     ->label('Número de soci')
                     ->required()
-                    ->unique(ignoreRecord: true)
+                    ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
                     ->maxLength(20),
 
                 Select::make('status')
@@ -77,7 +77,7 @@ class AssociatMemberResource extends Resource
                     ->label('Correu electrònic')
                     ->email()
                     ->required()
-                    ->unique(ignoreRecord: true),
+                    ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id)),
 
                 TextInput::make('phone')
                     ->label('Telèfon')
@@ -124,7 +124,7 @@ class AssociatMemberResource extends Resource
                     TextInput::make('mandate_reference')
                         ->label('Referència del mandat')
                         ->placeholder('SOCI-000123')
-                        ->unique(ignoreRecord: true)
+                        ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
                         ->maxLength(35),
 
                     DatePicker::make('mandate_signed_at')

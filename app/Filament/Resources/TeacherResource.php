@@ -45,7 +45,7 @@ class TeacherResource extends Resource
             Section::make(__('site.teacher_personal'))->columns(3)->schema([
                 TextInput::make('code')
                     ->label(__('site.teacher_code'))
-                    ->maxLength(20)->unique(ignoreRecord: true)
+                    ->maxLength(20)->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
                     ->placeholder('ex: JM, ABC'),
 
                 TextInput::make('degree')
