@@ -1,3 +1,7 @@
+@php
+    $complete ??= 'campus.login.complete';
+    $backRoute ??= 'campus.login';
+@endphp
 @extends('campus.layouts.app')
 
 @section('title', 'Tria la institució')
@@ -20,7 +24,7 @@
 
         <div class="space-y-2">
             @foreach ($tenants as $tenant)
-                <a href="{{ route('campus.login.complete', ['tenant' => $tenant->slug]) }}"
+                <a href="{{ route($complete, ['tenant' => $tenant->slug]) }}"
                    class="block w-full text-center border border-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium
                           text-gray-700 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 transition">
                     {{ $tenant->name }}
@@ -29,7 +33,7 @@
         </div>
 
         <div class="mt-4 text-center">
-            <a href="{{ route('campus.login') }}" class="text-sm text-indigo-600 hover:underline">
+            <a href="{{ route($backRoute) }}" class="text-sm text-indigo-600 hover:underline">
                 ← Tornar a l'inici de sessió
             </a>
         </div>

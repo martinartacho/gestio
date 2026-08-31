@@ -29,7 +29,7 @@ class StatsOverview extends BaseWidget
         $activeSeason  = CampusSeason::where('tenant_id', $tenantId)->where('status', 'active')->first();
         $totalCourses  = CampusCourse::where('tenant_id', $tenantId)->count();
         $activeCourses = CampusCourse::where('tenant_id', $tenantId)->where('status', 'active')->count();
-        $totalTeachers = CampusTeacher::where('tenant_id', $tenantId)->where('status', 'active')->count();
+        $totalTeachers = CampusTeacher::whereHas('tenants', fn ($q) => $q->where('tenants.id', $tenantId))->where('status', 'active')->count();
         $totalUsers    = User::where('tenant_id', $tenantId)->count();
         $activeUsers   = User::where('tenant_id', $tenantId)->where('active', true)->count();
 

@@ -7,13 +7,24 @@ use Illuminate\Support\Str;
 
 class CampusTeacherFactory extends Factory
 {
+    public function configure(): static
+    {
+        // Un professor pot pertànyer a més d'una institució (relació N:M) —
+        // per defecte als tests, se l'afegeix a "campus" com abans amb tenant_id.
+        return $this->afterCreating(function (\App\Models\CampusTeacher $teacher) {
+            $campusId = \App\Models\Tenant::where('slug', 'campus')->value('id');
+            if ($campusId && ! $teacher->tenants()->where('tenants.id', $campusId)->exists()) {
+                $teacher->tenants()->attach($campusId);
+            }
+        });
+    }
+
     public function definition(): array
     {
         $firstName = $this->faker->firstName();
         $lastName  = $this->faker->lastName();
 
         return [
-            'tenant_id'            => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'user_id'              => null,
             'code'                 => strtoupper(
                 substr(Str::ascii($firstName), 0, 3) .

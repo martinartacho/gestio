@@ -7,6 +7,7 @@ use App\Models\CampusTeacher;
 use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction};
 use Filament\Forms\Components\{DatePicker, DateTimePicker, Select, TagsInput, Textarea, TextInput, Toggle};
 use Filament\Schemas\Components\Section;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
@@ -14,6 +15,11 @@ use Filament\Tables\Table;
 
 class TeacherResource extends Resource
 {
+    // Un professor pot pertànyer a més d'una institució (N:M) — l'escopat
+    // automàtic de Filament exigeix una relació BelongsTo singular, així
+    // que es desactiva i es filtra a mà via getEloquentQuery().
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = CampusTeacher::class;
     protected static ?int    $navigationSort = 2;
 
@@ -45,7 +51,7 @@ class TeacherResource extends Resource
             Section::make(__('site.teacher_personal'))->columns(3)->schema([
                 TextInput::make('code')
                     ->label(__('site.teacher_code'))
-                    ->maxLength(20)->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
+                    ->maxLength(20)->unique(ignoreRecord: true)
                     ->placeholder('ex: JM, ABC'),
 
                 TextInput::make('degree')
@@ -81,7 +87,7 @@ class TeacherResource extends Resource
             Section::make(__('site.teacher_contact'))->columns(2)->schema([
                 TextInput::make('email')
                     ->label(__('site.email'))
-                    ->email()->maxLength(150),
+                    ->email()->maxLength(150)->unique(ignoreRecord: true),
 
                 TextInput::make('phone')
                     ->label(__('site.phone'))
@@ -300,9 +306,15 @@ class TeacherResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('tenants', fn (Builder $q) => $q->where('tenants.id', current_tenant()?->id));
+    }
+
     public static function getNavigationBadge(): ?string
     {
-        return (string) CampusTeacher::where('tenant_id', current_tenant()?->id)->where('status', 'active')->count();
+        return (string) static::getEloquentQuery()->where('status', 'active')->count();
     }
 
     public static function getPages(): array

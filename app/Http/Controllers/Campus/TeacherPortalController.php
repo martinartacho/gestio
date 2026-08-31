@@ -16,14 +16,18 @@ class TeacherPortalController extends Controller
     {
         $teacher = auth('teacher')->user();
 
+        // Un professor pot pertànyer a més d'una institució — aquesta llista
+        // ajunta els cursos de totes, cal indicar de quina és cada un.
         $courses = $teacher->courses()
-            ->with('season', 'category', 'space', 'timeSlot')
+            ->with('season', 'category', 'space', 'timeSlot', 'tenant')
             ->withCount(['enrollments as students_count' => fn($q) => $q->whereIn('status', ['paid', 'pending'])])
             ->orderByDesc('start_date')
             ->get()
             ->each(fn($c) => $c->sessions_past = $c->sessionsPast());
 
-        return view('campus.teacher.portal.courses', compact('courses'));
+        $showInstitution = $teacher->tenants()->count() > 1;
+
+        return view('campus.teacher.portal.courses', compact('courses', 'showInstitution'));
     }
 
     public function course(string $slug)

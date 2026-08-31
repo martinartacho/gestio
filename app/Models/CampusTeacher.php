@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,11 +12,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class CampusTeacher extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, BelongsToTenant;
+    use HasApiTokens, HasFactory, Notifiable;
     protected $table = 'campus_teachers';
 
     protected $fillable = [
-        'tenant_id',
         'user_id', 'code', 'first_name', 'last_name', 'email', 'password', 'phone', 'specialization', 'bio', 'status',
         'dni', 'address', 'postal_code', 'city', 'observacions',
         'degree', 'title', 'areas', 'hiring_date',
@@ -89,6 +87,17 @@ class CampusTeacher extends Authenticatable
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /** Un professor pot pertànyer a més d'una institució (com User amb HasTenants). */
+    public function tenants(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'campus_teacher_tenant', 'teacher_id', 'tenant_id');
+    }
+
+    public function belongsToTenant(?int $tenantId): bool
+    {
+        return $tenantId !== null && $this->tenants()->where('tenants.id', $tenantId)->exists();
     }
 
     public function courses(): BelongsToMany

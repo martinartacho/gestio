@@ -125,6 +125,8 @@ Route::prefix('portal')->name('campus.')->middleware('campus.enabled')->group(fu
 Route::prefix('professorat')->name('teacher.')->middleware('campus.enabled')->group(function () {
     Route::get('/login', [TeacherAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [TeacherAuthController::class, 'login'])->name('login.post');
+    Route::get('/login/select-institution', [TeacherAuthController::class, 'selectInstitution'])->name('login.select-institution');
+    Route::get('/login/complete', [TeacherAuthController::class, 'completeLogin'])->name('login.complete');
     Route::post('/logout', [TeacherAuthController::class, 'logout'])->name('logout');
 
     Route::get('/recuperar-contrasenya', [TeacherAuthController::class, 'showForgotPassword'])->name('password.request');
