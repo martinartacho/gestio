@@ -58,6 +58,29 @@ class TenantResource extends Resource
                     ->default(true)->inline(false),
             ]),
 
+            Section::make('Administrador de l\'entitat')
+                ->description('Opcional, només en crear. Crea un usuari amb rol \'admin\' per a aquesta institució.')
+                ->visibleOn('create')
+                ->columns(3)
+                ->schema([
+                    TextInput::make('admin_name')
+                        ->label('Nom')
+                        ->maxLength(255),
+
+                    TextInput::make('admin_email')
+                        ->label('Email')
+                        ->email()
+                        ->unique(table: 'users', column: 'email')
+                        ->requiredWith('admin_name')
+                        ->maxLength(255),
+
+                    TextInput::make('admin_password')
+                        ->label('Contrasenya')
+                        ->password()->revealable()
+                        ->requiredWith('admin_email')
+                        ->minLength(8),
+                ]),
+
             Section::make('Dades d\'exemple')
                 ->description('Opcional, només en crear. Genera contingut fictici perquè l\'entitat no comenci buida.')
                 ->visibleOn('create')
