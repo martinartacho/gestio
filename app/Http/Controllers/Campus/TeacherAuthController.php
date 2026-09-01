@@ -8,6 +8,7 @@ use App\Models\CampusTeacher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
@@ -25,12 +26,60 @@ class TeacherAuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::guard('teacher')->attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('teacher.portal.courses'));
+        $teacher = CampusTeacher::where('email', $credentials['email'])->first();
+
+        if (! $teacher || ! Hash::check($credentials['password'], $teacher->password)) {
+            return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');
         }
 
-        return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');
+        if (! $teacher->belongsToTenant(current_tenant()?->id)) {
+            $memberships = $teacher->tenants;
+
+            if ($memberships->isEmpty()) {
+                return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');
+            }
+
+            $request->session()->put('pending_teacher_id', $teacher->id);
+            return redirect()->route('teacher.login.select-institution');
+        }
+
+        Auth::guard('teacher')->login($teacher, $request->boolean('remember'));
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('teacher.portal.courses'));
+    }
+
+    /** El professor ha entrat bé però no pertany al tenant de la URL — tria entre les seves institucions. */
+    public function selectInstitution(Request $request): View|RedirectResponse
+    {
+        $teacher = CampusTeacher::find($request->session()->get('pending_teacher_id'));
+
+        if (! $teacher) {
+            return redirect()->route('teacher.login');
+        }
+
+        return view('campus.auth.select-institution', [
+            'tenants'   => $teacher->tenants,
+            'complete'  => 'teacher.login.complete',
+            'backRoute' => 'teacher.login',
+        ]);
+    }
+
+    /** Arribada des del selector, ja a la URL del tenant triat — completa el login. */
+    public function completeLogin(Request $request): RedirectResponse
+    {
+        $teacher = CampusTeacher::find($request->session()->get('pending_teacher_id'));
+
+        if (! $teacher || ! $teacher->belongsToTenant(current_tenant()?->id)) {
+            return redirect()->route('teacher.login')
+                ->withErrors(['email' => 'No tens accés a aquesta institució.']);
+        }
+
+        $request->session()->forget('pending_teacher_id');
+        Auth::guard('teacher')->login($teacher);
+        $request->session()->regenerate();
+
+        return redirect()->route('teacher.portal.courses');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -118,6 +167,11 @@ class TeacherAuthController extends Controller
         ]);
 
         $request->session()->forget('teacher_password_reset_email');
+
+        if (! $teacher->belongsToTenant(current_tenant()?->id)) {
+            $request->session()->put('pending_teacher_id', $teacher->id);
+            return redirect()->route('teacher.login.select-institution');
+        }
 
         Auth::guard('teacher')->login($teacher);
         $request->session()->regenerate();

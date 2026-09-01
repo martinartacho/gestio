@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,10 +10,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CampusEnrollment extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
     protected $table = 'campus_enrollments';
 
     protected $fillable = [
+        'tenant_id',
         'student_id', 'course_id', 'status', 'payment_method', 'amount',
         'payment_reference', 'payment_expires_at', 'reminder_sent_at',
         'stripe_session_id', 'stripe_payment_intent', 'stripe_refund_id',

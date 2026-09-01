@@ -46,7 +46,7 @@ class AssociatSepaRemittanceResource extends Resource
                 TextInput::make('reference')
                     ->label('Referència')
                     ->placeholder('Es genera automàticament si es deixa buit')
-                    ->unique(ignoreRecord: true)
+                    ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
                     ->maxLength(35),
 
                 TextInput::make('year')

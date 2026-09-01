@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TresoreriaRemittance extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'associat_sepa_remittances';
 
     protected $fillable = [
+        'tenant_id',
         'reference', 'year', 'execution_date',
         'total_amount', 'total_transactions',
         'status', 'xml_path', 'generated_at', 'notes',

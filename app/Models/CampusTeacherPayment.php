@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CampusTeacherPayment extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'campus_teacher_payments';
 
     protected $fillable = [
+        'tenant_id',
         'season_id', 'teacher_id', 'course_id',
         'sessions_description', 'sessions_count', 'price_per_session',
         'gross_amount', 'retention_pct', 'retention_amount', 'net_amount',

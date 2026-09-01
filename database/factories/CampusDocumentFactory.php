@@ -14,6 +14,7 @@ class CampusDocumentFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id'          => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'title'              => $this->faker->sentence(3),
             'description'        => $this->faker->optional()->sentence(),
             'type'               => 'url',

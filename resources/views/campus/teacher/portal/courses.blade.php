@@ -20,7 +20,7 @@
 @else
     <div class="space-y-4">
         @foreach ($courses as $course)
-        <a href="{{ route('teacher.portal.course', $course->slug) }}"
+        <a href="{{ route('teacher.portal.course', ['tenant' => $course->tenant?->slug, 'slug' => $course->slug]) }}"
            class="block bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition p-5">
             <div class="flex items-start justify-between gap-4">
 
@@ -28,6 +28,11 @@
                 <div class="flex-1 min-w-0">
                     {{-- Badges de capçalera --}}
                     <div class="flex flex-wrap items-center gap-2 mb-1">
+                        @if ($showInstitution && $course->tenant)
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-800 text-white">
+                                {{ $course->tenant->name }}
+                            </span>
+                        @endif
                         <span class="text-xs font-mono text-gray-400">{{ $course->code }}</span>
 
                         {{-- Estat del curs --}}

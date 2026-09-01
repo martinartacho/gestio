@@ -11,6 +11,7 @@ class CampusCourseFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id'   => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'code'        => 'CRS-' . strtoupper(substr(str_replace('-', '', \Illuminate\Support\Str::uuid()), 0, 6)),
             'title'       => $this->faker->sentence(4),
             'slug'        => null,

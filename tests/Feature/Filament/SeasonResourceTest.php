@@ -26,14 +26,14 @@ class SeasonResourceTest extends TestCase
         CampusSeason::factory()->q2(2026)->create();
 
         $this->actingAs($this->admin)
-             ->get('/admin/seasons')
+             ->get('/admin/campus/seasons')
              ->assertSuccessful();
     }
 
     public function test_can_access_create_season_form(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/seasons/create')
+             ->get('/admin/campus/seasons/create')
              ->assertSuccessful();
     }
 
@@ -42,7 +42,7 @@ class SeasonResourceTest extends TestCase
         $season = CampusSeason::factory()->q1(2026)->create();
 
         $this->actingAs($this->admin)
-             ->get("/admin/seasons/{$season->id}/edit")
+             ->get("/admin/campus/seasons/{$season->id}/edit")
              ->assertSuccessful();
     }
 

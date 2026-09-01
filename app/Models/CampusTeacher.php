@@ -89,6 +89,17 @@ class CampusTeacher extends Authenticatable
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /** Un professor pot pertànyer a més d'una institució (com User amb HasTenants). */
+    public function tenants(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'campus_teacher_tenant', 'teacher_id', 'tenant_id');
+    }
+
+    public function belongsToTenant(?int $tenantId): bool
+    {
+        return $tenantId !== null && $this->tenants()->where('tenants.id', $tenantId)->exists();
+    }
+
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(

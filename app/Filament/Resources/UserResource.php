@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\Tenant;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -132,6 +133,17 @@ class UserResource extends Resource
                         ->helperText(__('site.active_user_hint'))
                         ->default(true)
                         ->inline(false),
+
+                    // Nomes super-admin: un admin normal ja crea l'usuari dins
+                    // de la seva pròpia institució (Filament ho fa sol); això
+                    // és per poder assignar-lo/corregir-lo a una altra.
+                    Select::make('tenant_id')
+                        ->label('Institució')
+                        ->options(fn () => Tenant::pluck('name', 'id'))
+                        ->searchable()
+                        ->helperText('Deixa-ho buit per a un super-admin (veu totes les institucions).')
+                        ->visible(fn () => auth()->user()?->hasRole('super-admin') ?? false)
+                        ->columnSpanFull(),
                 ]),
         ]);
     }
@@ -230,6 +242,6 @@ class UserResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) static::getModel()::count();
+        return (string) User::where('tenant_id', current_tenant()?->id)->count();
     }
 }

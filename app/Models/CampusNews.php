@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class CampusNews extends Model
 {
+    use BelongsToTenant;
+
     const LABELS = [
         'campus'     => 'Campus',
         'associats'  => 'Associats',
@@ -24,6 +27,7 @@ class CampusNews extends Model
     ];
 
     protected $fillable = [
+        'tenant_id',
         'title',
         'summary',
         'body',

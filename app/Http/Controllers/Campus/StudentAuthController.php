@@ -29,23 +29,65 @@ class StudentAuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (! Auth::guard('student')->attempt($credentials, $request->boolean('remember'))) {
+        // Login per email/contrasenya, com abans — el compte és de la
+        // persona, no d'un tenant concret (pot pertànyer a més d'un).
+        $student = CampusStudent::where('email', $credentials['email'])->first();
+
+        if (! $student || ! Hash::check($credentials['password'], $student->password)) {
             return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');
         }
 
-        $student = Auth::guard('student')->user();
-
-        // Bloquejar accés si l'alumne està suspès
         if ($student->isSuspended()) {
-            Auth::guard('student')->logout();
             return back()->withErrors([
                 'email' => 'El compte ha estat suspès. Contacteu amb l\'administració per a més informació.',
             ])->onlyInput('email');
         }
 
+        // No pertany al tenant de la URL actual: si en té d'altres, que triï.
+        if (! $student->belongsToTenant(current_tenant()?->id)) {
+            $memberships = $student->tenants;
+
+            if ($memberships->isEmpty()) {
+                return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');
+            }
+
+            $request->session()->put('pending_student_id', $student->id);
+            return redirect()->route('campus.login.select-institution');
+        }
+
+        Auth::guard('student')->login($student, $request->boolean('remember'));
         $request->session()->regenerate();
 
         return redirect()->intended(route('campus.portal.courses'));
+    }
+
+    /** L'alumne ha entrat bé però no pertany al tenant de la URL — tria entre les seves institucions. */
+    public function selectInstitution(Request $request): View|RedirectResponse
+    {
+        $student = CampusStudent::find($request->session()->get('pending_student_id'));
+
+        if (! $student) {
+            return redirect()->route('campus.login');
+        }
+
+        return view('campus.auth.select-institution', ['tenants' => $student->tenants]);
+    }
+
+    /** Arribada des del selector, ja a la URL del tenant triat — completa el login. */
+    public function completeLogin(Request $request): RedirectResponse
+    {
+        $student = CampusStudent::find($request->session()->get('pending_student_id'));
+
+        if (! $student || ! $student->belongsToTenant(current_tenant()?->id)) {
+            return redirect()->route('campus.login')
+                ->withErrors(['email' => 'No tens accés a aquesta institució.']);
+        }
+
+        $request->session()->forget('pending_student_id');
+        Auth::guard('student')->login($student);
+        $request->session()->regenerate();
+
+        return redirect()->route('campus.portal.courses');
     }
 
     public function showRegister(): View
@@ -64,6 +106,8 @@ class StudentAuthController extends Controller
         $data = $request->validate([
             'first_name'   => ['required', 'string', 'max:100'],
             'last_name'    => ['required', 'string', 'max:100'],
+            // Únic globalment: la persona (no el compte) és d'una institució
+            // o altra; si l'email ja existeix, cal iniciar sessió, no registrar-se de nou.
             'email'        => ['required', 'email', 'unique:campus_students,email'],
             'password'     => ['required', 'confirmed', Password::min(8)],
             'phone'        => ['nullable', 'string', 'max:20'],
@@ -73,6 +117,7 @@ class StudentAuthController extends Controller
         $data['data_consent'] = true;
 
         $student = CampusStudent::create($data);
+        $student->tenants()->attach(current_tenant()?->id);
 
         Auth::guard('student')->login($student);
         $request->session()->regenerate();
@@ -146,7 +191,8 @@ class StudentAuthController extends Controller
         ]);
 
         // Si l'alumne ja és a la cua (registrat mentre esperava el torn), redirigir a l'estat
-        $queueEntry = \App\Models\CampusQueueEntry::where('email', $student->email)
+        $queueEntry = \App\Models\CampusQueueEntry::where('tenant_id', current_tenant()?->id)
+            ->where('email', $student->email)
             ->whereIn('status', [
                 \App\Models\CampusQueueEntry::STATUS_WAITING,
                 \App\Models\CampusQueueEntry::STATUS_NOTIFIED,

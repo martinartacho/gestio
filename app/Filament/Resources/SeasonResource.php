@@ -61,6 +61,7 @@ class SeasonResource extends Resource
                     ->rules([
                         fn(\Filament\Schemas\Components\Utilities\Get $get, $record) => \Illuminate\Validation\Rule::unique('campus_seasons', 'quadrimester')
                             ->where('year', $get('year'))
+                            ->where('tenant_id', current_tenant()?->id)
                             ->ignore($record?->id),
                     ]),
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,10 +14,11 @@ use Illuminate\Support\Str;
 
 class CampusCourse extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
     protected $table = 'campus_courses';
 
     protected $fillable = [
+        'tenant_id',
         'code', 'title', 'slug', 'parent_id',
         'season_id', 'category_id', 'space_id', 'time_slot_id',
         'start_date', 'end_date', 'calendar_notes',

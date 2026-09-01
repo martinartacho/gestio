@@ -25,7 +25,7 @@ class TresoreriaDashboardTest extends TestCase
     public function test_admin_can_access_tresoreria_dashboard(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/tresoreria-dashboard')
+             ->get('/admin/campus/tresoreria-dashboard')
              ->assertSuccessful();
     }
 
@@ -34,7 +34,7 @@ class TresoreriaDashboardTest extends TestCase
         $user = $this->createTresoreria();
 
         $this->actingAs($user)
-             ->get('/admin/tresoreria-dashboard')
+             ->get('/admin/campus/tresoreria-dashboard')
              ->assertSuccessful();
     }
 
@@ -43,7 +43,7 @@ class TresoreriaDashboardTest extends TestCase
         $user = $this->createManager();
 
         $this->actingAs($user)
-             ->get('/admin/tresoreria-dashboard')
+             ->get('/admin/campus/tresoreria-dashboard')
              ->assertStatus(403);
     }
 
@@ -60,7 +60,7 @@ class TresoreriaDashboardTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->admin)
-             ->get('/admin/tresoreria-dashboard')
+             ->get('/admin/campus/tresoreria-dashboard')
              ->assertSuccessful();
 
         $response->assertSee('100,00');

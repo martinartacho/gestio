@@ -401,7 +401,7 @@ class DocumentAccessTest extends TestCase
         ]);
 
         $response = $this->actingAs($student, 'student')
-                         ->get('/portal/meus-cursos')
+                         ->get('/campus/portal/meus-cursos')
                          ->assertSuccessful();
 
         $response->assertSee('Document ja disponible');
@@ -490,7 +490,7 @@ class DocumentAccessTest extends TestCase
         ]);
 
         $response = $this->actingAs($student, 'student')
-                         ->get('/portal/meus-cursos')
+                         ->get('/campus/portal/meus-cursos')
                          ->assertSuccessful();
 
         $response->assertSee('Document visible');

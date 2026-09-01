@@ -32,6 +32,11 @@
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-start justify-between gap-4">
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        @if ($showInstitution && $enrollment->course->tenant)
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-800 text-white">
+                                {{ $enrollment->course->tenant->name }}
+                            </span>
+                        @endif
                         <span class="text-xs font-mono text-gray-400">{{ $enrollment->course->code }}</span>
                         @if ($enrollment->course->category)
                             <span class="text-xs font-medium px-2 py-0.5 rounded-full"
@@ -62,7 +67,7 @@
                     {{-- Accés LMS --}}
                     @if (setting('lms_enabled') && ($enrollment->course->published_lessons_count ?? 0) > 0)
                     <div style="margin-top:0.875rem;">
-                        <a href="{{ route('campus.lms.course', $enrollment->course->slug) }}"
+                        <a href="{{ route('campus.lms.course', ['tenant' => $enrollment->course->tenant?->slug, 'slug' => $enrollment->course->slug]) }}"
                            style="display:inline-flex;align-items:center;gap:0.4rem;background:#4f46e5;color:#fff;font-size:0.8125rem;font-weight:600;padding:0.45rem 1rem;border-radius:0.5rem;text-decoration:none;"
                            onmouseover="this.style.background='#4338ca'" onmouseout="this.style.background='#4f46e5'">
                             <svg style="width:0.9rem;height:0.9rem;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

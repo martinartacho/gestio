@@ -47,7 +47,7 @@ class SpaceResource extends Resource
                 TextInput::make('code')
                     ->label(__('site.space_code'))
                     ->required()->maxLength(20)
-                    ->unique(ignoreRecord: true)
+                    ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
                     ->helperText('Ex: SA, AM1, ONLINE'),
 
                 Select::make('type')

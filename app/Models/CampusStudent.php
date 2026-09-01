@@ -34,6 +34,17 @@ class CampusStudent extends Authenticatable
         'suspended_at'                 => 'datetime',
     ];
 
+    /** Un alumne pot pertànyer a més d'una institució (com User amb HasTenants). */
+    public function tenants(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'campus_student_tenant', 'student_id', 'tenant_id');
+    }
+
+    public function belongsToTenant(?int $tenantId): bool
+    {
+        return $tenantId !== null && $this->tenants()->where('tenants.id', $tenantId)->exists();
+    }
+
     public function hasVerifiedEmail(): bool
     {
         return $this->email_verified_at !== null;

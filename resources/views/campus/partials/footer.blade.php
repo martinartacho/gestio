@@ -25,13 +25,16 @@
 
         {{-- Columna 2: Menús de navegació --}}
         @php
+            // Aquest footer també es mostra a /admin/login, anterior a saber
+            // quin tenant és — cap enllaç de sota es pot construir sense.
+            $tenantKnown      = (bool) current_tenant();
             $isAdmin          = auth('web')->check();
             $campusOn         = (bool) setting('campus_enabled', true);
-            $catalogActiu     = ($campusOn && (bool) setting('hero_btn_catalog_enabled', true)) || $isAdmin;
-            $alumnatActiu     = ($campusOn && (bool) setting('home_alumnat_enabled', true))     || $isAdmin;
-            $professoratActiu = ($campusOn && (bool) setting('home_professorat_enabled', true)) || $isAdmin;
-            $associatsActiu   = (bool) setting('associats_enabled', false)                      || $isAdmin;
-            $noticiesActiu    = (bool) setting('noticies_enabled', true);
+            $catalogActiu     = $tenantKnown && (($campusOn && (bool) setting('hero_btn_catalog_enabled', true)) || $isAdmin);
+            $alumnatActiu     = $tenantKnown && (($campusOn && (bool) setting('home_alumnat_enabled', true))     || $isAdmin);
+            $professoratActiu = $tenantKnown && (($campusOn && (bool) setting('home_professorat_enabled', true)) || $isAdmin);
+            $associatsActiu   = $tenantKnown && ((bool) setting('associats_enabled', false)                      || $isAdmin);
+            $noticiesActiu    = $tenantKnown && (bool) setting('noticies_enabled', true);
         @endphp
         <nav style="display:flex;align-items:center;gap:0;font-size:0.75rem;flex-wrap:wrap;">
             @if($catalogActiu)

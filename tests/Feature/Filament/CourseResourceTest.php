@@ -23,14 +23,14 @@ class CourseResourceTest extends TestCase
     public function test_can_list_courses(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/courses')
+             ->get('/admin/campus/courses')
              ->assertSuccessful();
     }
 
     public function test_can_access_create_course_form(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/courses/create')
+             ->get('/admin/campus/courses/create')
              ->assertSuccessful();
     }
 
@@ -39,7 +39,7 @@ class CourseResourceTest extends TestCase
         $course = CampusCourse::factory()->create();
 
         $this->actingAs($this->admin)
-             ->get("/admin/courses/{$course->id}/edit")
+             ->get("/admin/campus/courses/{$course->id}/edit")
              ->assertSuccessful();
     }
 
@@ -71,7 +71,7 @@ class CourseResourceTest extends TestCase
         $course = CampusCourse::factory()->create();
 
         $this->actingAs($this->admin)
-             ->get("/admin/courses/{$course->id}/students")
+             ->get("/admin/campus/courses/{$course->id}/students")
              ->assertSuccessful();
     }
 }

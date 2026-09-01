@@ -27,7 +27,8 @@ class CheckoutController extends Controller
 
     public function create(Request $request, string $slug): RedirectResponse|View
     {
-        $course  = CampusCourse::where('slug', $slug)->where('is_public', true)->firstOrFail();
+        $course  = CampusCourse::where('tenant_id', current_tenant()?->id)
+            ->where('slug', $slug)->where('is_public', true)->firstOrFail();
         $student = auth('student')->user();
 
         // ── Compte suspès ────────────────────────────────────────────────────────
@@ -211,7 +212,8 @@ class CheckoutController extends Controller
      */
     public function cancelEnrollment(Request $request, string $slug): RedirectResponse
     {
-        $course  = CampusCourse::where('slug', $slug)->where('is_public', true)->firstOrFail();
+        $course  = CampusCourse::where('tenant_id', current_tenant()?->id)
+            ->where('slug', $slug)->where('is_public', true)->firstOrFail();
         $student = auth('student')->user();
 
         $enrollment = $student->enrollments()

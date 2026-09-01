@@ -14,7 +14,7 @@ class TeacherAuthTest extends TestCase
 
     public function test_login_page_is_accessible(): void
     {
-        $this->get('/professorat/login')->assertSuccessful();
+        $this->get('/campus/professorat/login')->assertSuccessful();
     }
 
     public function test_teacher_can_login(): void
@@ -24,10 +24,10 @@ class TeacherAuthTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $this->post('/professorat/login', [
+        $this->post('/campus/professorat/login', [
             'email'    => 'prof@test.cat',
             'password' => 'password123',
-        ])->assertRedirect('/professorat/portal');
+        ])->assertRedirect('/campus/professorat/portal');
     }
 
     public function test_wrong_password_is_rejected(): void
@@ -37,7 +37,7 @@ class TeacherAuthTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $this->post('/professorat/login', [
+        $this->post('/campus/professorat/login', [
             'email'    => 'prof@test.cat',
             'password' => 'wrong',
         ])->assertSessionHasErrors('email');
@@ -45,7 +45,7 @@ class TeacherAuthTest extends TestCase
 
     public function test_portal_redirects_unauthenticated_teacher(): void
     {
-        $this->get('/professorat/portal')->assertRedirect('/professorat/login');
+        $this->get('/campus/professorat/portal')->assertRedirect('/campus/professorat/login');
     }
 
     public function test_authenticated_teacher_can_access_portal(): void
@@ -53,7 +53,7 @@ class TeacherAuthTest extends TestCase
         $teacher = CampusTeacher::factory()->create();
 
         $this->actingAs($teacher, 'teacher')
-             ->get('/professorat/portal')
+             ->get('/campus/professorat/portal')
              ->assertSuccessful();
     }
 
@@ -66,7 +66,7 @@ class TeacherAuthTest extends TestCase
         $course->teachers()->attach($teacher->id, ['role' => 'main', 'sessions_assigned' => null]);
 
         $this->actingAs($teacher, 'teacher')
-             ->get('/professorat/portal/curs/' . $course->slug)
+             ->get('/campus/professorat/portal/curs/' . $course->slug)
              ->assertSuccessful()
              ->assertSee($course->title);
     }
@@ -78,7 +78,7 @@ class TeacherAuthTest extends TestCase
         $course  = CampusCourse::factory()->create(['season_id' => $season->id]);
 
         $this->actingAs($teacher, 'teacher')
-             ->get('/professorat/portal/curs/' . $course->slug)
+             ->get('/campus/professorat/portal/curs/' . $course->slug)
              ->assertNotFound();
     }
 
@@ -87,7 +87,7 @@ class TeacherAuthTest extends TestCase
         $teacher = CampusTeacher::factory()->create();
 
         $this->actingAs($teacher, 'teacher')
-             ->get('/professorat/portal/liquidacions')
+             ->get('/campus/professorat/portal/liquidacions')
              ->assertSuccessful();
     }
 
@@ -96,7 +96,7 @@ class TeacherAuthTest extends TestCase
         $teacher = CampusTeacher::factory()->create();
 
         $this->actingAs($teacher, 'teacher')
-             ->get('/professorat/portal/perfil')
+             ->get('/campus/professorat/portal/perfil')
              ->assertSuccessful();
     }
 
@@ -105,7 +105,7 @@ class TeacherAuthTest extends TestCase
         $teacher = CampusTeacher::factory()->create();
 
         $this->actingAs($teacher, 'teacher')
-             ->post('/professorat/portal/perfil', [
+             ->post('/campus/professorat/portal/perfil', [
                  'phone' => '699 111 222',
                  'bio'   => 'Sóc professor de proves.',
              ])->assertRedirect();

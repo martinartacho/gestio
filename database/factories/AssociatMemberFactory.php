@@ -9,6 +9,18 @@ class AssociatMemberFactory extends Factory
 {
     protected $model = AssociatMember::class;
 
+    public function configure(): static
+    {
+        // Un soci pot pertànyer a més d'una institució (relació N:M) — per
+        // defecte als tests, se l'afegeix a "campus" com abans amb tenant_id.
+        return $this->afterCreating(function (AssociatMember $member) {
+            $campusId = \App\Models\Tenant::where('slug', 'campus')->value('id');
+            if ($campusId && ! $member->tenants()->where('tenants.id', $campusId)->exists()) {
+                $member->tenants()->attach($campusId);
+            }
+        });
+    }
+
     public function definition(): array
     {
         return [

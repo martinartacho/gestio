@@ -68,6 +68,7 @@ class EditAssociatSepaRemittance extends EditRecord
                             table: 'associat_sepa_remittances',
                             column: 'reference',
                             ignorable: fn () => $this->record,
+                            modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id),
                         ),
                 ])
                 ->action(function (array $data): void {

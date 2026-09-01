@@ -13,7 +13,7 @@ class CreateAssociatSepaRemittance extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         if (empty($data['reference'])) {
-            $data['reference'] = AssociatSepaRemittance::nextReference((int) ($data['year'] ?? now()->year));
+            $data['reference'] = AssociatSepaRemittance::nextReference((int) ($data['year'] ?? now()->year), current_tenant()?->id);
         }
         return $data;
     }

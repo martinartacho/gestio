@@ -43,7 +43,8 @@ class CartController extends Controller
         }
 
         $student = auth('student')->user();
-        $course  = CampusCourse::where('slug', $request->input('slug'))
+        $course  = CampusCourse::where('tenant_id', current_tenant()?->id)
+            ->where('slug', $request->input('slug'))
             ->where('is_public', true)
             ->firstOrFail();
 

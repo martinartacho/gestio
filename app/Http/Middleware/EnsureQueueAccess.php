@@ -28,7 +28,8 @@ class EnsureQueueAccess
         $token = $request->session()->get('queue_access_token');
 
         if ($token) {
-            $entry = CampusQueueEntry::where('access_code', $token)
+            $entry = CampusQueueEntry::where('tenant_id', current_tenant()?->id)
+                ->where('access_code', $token)
                 ->where('status', CampusQueueEntry::STATUS_ACCESSED)
                 ->where('access_expires_at', '>', now())
                 ->first();

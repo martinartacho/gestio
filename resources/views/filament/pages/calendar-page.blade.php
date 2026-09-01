@@ -36,8 +36,8 @@
             <x-filament::button
                 tag="a"
                 :href="$currentSeasonId
-                    ? route('campus.catalog.index', ['season' => $currentSeasonId, 'preview' => 1])
-                    : route('campus.catalog.index', ['preview' => 1])"
+                    ? route('campus.catalog.index', ['tenant' => current_tenant()?->slug, 'season' => $currentSeasonId, 'preview' => 1])
+                    : route('campus.catalog.index', ['tenant' => current_tenant()?->slug, 'preview' => 1])"
                 target="_blank"
                 color="info"
                 size="sm"
@@ -46,15 +46,15 @@
                 Vista prèvia
             </x-filament::button>
 
-            {{-- Exportació WooCommerce --}}
+            {{-- Exportació CSV --}}
             <x-filament::button
                 tag="a"
-                :href="route('calendar.export.woocommerce', ['season' => $currentSeasonId])"
+                :href="route('calendar.export.courses', ['season' => $currentSeasonId, 'tenant' => current_tenant()?->slug])"
                 color="gray"
                 size="sm"
                 icon="heroicon-o-arrow-down-tray"
             >
-                {{ __('site.export_wp') }}
+                {{ __('site.export_csv') }}
             </x-filament::button>
 
             {{-- Llegenda de colors (popover ⓘ) --}}
@@ -250,7 +250,7 @@
                     @if($course?->slug)
                     <x-filament::button
                         tag="a"
-                        :href="route('campus.catalog.show', ['slug' => $course->slug, 'preview' => 1])"
+                        :href="route('campus.catalog.show', ['tenant' => current_tenant()?->slug, 'slug' => $course->slug, 'preview' => 1])"
                         target="_blank"
                         color="info"
                         size="sm"
@@ -283,7 +283,7 @@
     <script>
         (function () {
             const config = {
-                eventsUrl: '{{ route('calendar.events') }}',
+                eventsUrl: '{{ route('calendar.events', ['tenant' => current_tenant()?->slug]) }}',
                 seasonId:  {{ $currentSeasonId ?? 'null' }},
                 editable:  @js(auth()->user()?->hasAnyRole(['super-admin', 'admin'])),
             };

@@ -14,6 +14,7 @@ class CampusEnrollmentFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id'       => fn () => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'course_id'       => CampusCourse::factory(),
             'first_name'      => $this->faker->firstName(),
             'last_name'       => $this->faker->lastName(),

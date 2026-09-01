@@ -18,6 +18,9 @@ use Filament\Tables\Table;
 
 class BlockedIpResource extends Resource
 {
+    // TODO: activar quan el model tingui tenant_id + relacio tenant()
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = BlockedIp::class;
 
     public static function getNavigationIcon(): string   { return 'heroicon-o-shield-exclamation'; }

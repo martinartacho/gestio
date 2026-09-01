@@ -28,6 +28,7 @@ class TeacherPaymentResourceTest extends TestCase
         $teacher = CampusTeacher::factory()->create();
 
         return CampusTeacherPayment::create([
+            'tenant_id'         => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'season_id'         => $season->id,
             'teacher_id'        => $teacher->id,
             'sessions_count'    => 6,
@@ -43,14 +44,14 @@ class TeacherPaymentResourceTest extends TestCase
     public function test_admin_can_list_teacher_payments(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/teacher-payments')
+             ->get('/admin/campus/teacher-payments')
              ->assertSuccessful();
     }
 
     public function test_admin_can_access_create_teacher_payment_form(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/teacher-payments/create')
+             ->get('/admin/campus/teacher-payments/create')
              ->assertSuccessful();
     }
 
@@ -59,7 +60,7 @@ class TeacherPaymentResourceTest extends TestCase
         $payment = $this->makeTeacherPayment();
 
         $this->actingAs($this->admin)
-             ->get("/admin/teacher-payments/{$payment->id}/edit")
+             ->get("/admin/campus/teacher-payments/{$payment->id}/edit")
              ->assertSuccessful();
     }
 
@@ -68,7 +69,7 @@ class TeacherPaymentResourceTest extends TestCase
         $user = $this->createTresoreria();
 
         $this->actingAs($user)
-             ->get('/admin/teacher-payments')
+             ->get('/admin/campus/teacher-payments')
              ->assertSuccessful();
     }
 
@@ -77,7 +78,7 @@ class TeacherPaymentResourceTest extends TestCase
         $user = $this->createTresoreria();
 
         $this->actingAs($user)
-             ->get('/admin/teacher-payments/create')
+             ->get('/admin/campus/teacher-payments/create')
              ->assertSuccessful();
     }
 
@@ -86,7 +87,7 @@ class TeacherPaymentResourceTest extends TestCase
         $user = $this->createManager();
 
         $this->actingAs($user)
-             ->get('/admin/teacher-payments')
+             ->get('/admin/campus/teacher-payments')
              ->assertStatus(403);
     }
 

@@ -25,6 +25,7 @@ class TresoreriaRemittanceResourceTest extends TestCase
     private function makeRemittance(): AssociatSepaRemittance
     {
         return AssociatSepaRemittance::create([
+            'tenant_id'      => \App\Models\Tenant::where('slug', 'campus')->value('id'),
             'reference'      => 'REMESA-2026-001',
             'year'           => 2026,
             'execution_date' => '2026-02-01',
@@ -37,14 +38,14 @@ class TresoreriaRemittanceResourceTest extends TestCase
     public function test_admin_can_list_tresoreria_remittances(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/tresoreria-remittances')
+             ->get('/admin/campus/tresoreria-remittances')
              ->assertSuccessful();
     }
 
     public function test_admin_can_access_create_tresoreria_remittance_form(): void
     {
         $this->actingAs($this->admin)
-             ->get('/admin/tresoreria-remittances/create')
+             ->get('/admin/campus/tresoreria-remittances/create')
              ->assertSuccessful();
     }
 
@@ -53,7 +54,7 @@ class TresoreriaRemittanceResourceTest extends TestCase
         $remittance = $this->makeRemittance();
 
         $this->actingAs($this->admin)
-             ->get("/admin/tresoreria-remittances/{$remittance->id}/edit")
+             ->get("/admin/campus/tresoreria-remittances/{$remittance->id}/edit")
              ->assertSuccessful();
     }
 
@@ -62,7 +63,7 @@ class TresoreriaRemittanceResourceTest extends TestCase
         $user = $this->createTresoreria();
 
         $this->actingAs($user)
-             ->get('/admin/tresoreria-remittances')
+             ->get('/admin/campus/tresoreria-remittances')
              ->assertSuccessful();
     }
 
@@ -71,7 +72,7 @@ class TresoreriaRemittanceResourceTest extends TestCase
         $user = $this->createTresoreria();
 
         $this->actingAs($user)
-             ->get('/admin/tresoreria-remittances/create')
+             ->get('/admin/campus/tresoreria-remittances/create')
              ->assertSuccessful();
     }
 
@@ -80,7 +81,7 @@ class TresoreriaRemittanceResourceTest extends TestCase
         $user = $this->createManager();
 
         $this->actingAs($user)
-             ->get('/admin/tresoreria-remittances')
+             ->get('/admin/campus/tresoreria-remittances')
              ->assertStatus(403);
     }
 

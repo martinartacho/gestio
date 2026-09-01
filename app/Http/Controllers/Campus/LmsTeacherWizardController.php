@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class LmsTeacherWizardController extends Controller
@@ -18,7 +19,7 @@ class LmsTeacherWizardController extends Controller
 
     public function step1(): View
     {
-        $seasons = CampusSeason::orderBy('year', 'desc')->get();
+        $seasons = CampusSeason::where('tenant_id', current_tenant()?->id)->orderBy('year', 'desc')->get();
         $draft   = session('wizard_course', []);
 
         return view('campus.lms.teacher.wizard.step1', compact('seasons', 'draft'));
@@ -29,7 +30,8 @@ class LmsTeacherWizardController extends Controller
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'format'         => 'required|in:presencial,online,semipresencial,hibrid',
-            'season_id'      => 'required|exists:campus_seasons,id',
+            'season_id'      => ['required', Rule::exists('campus_seasons', 'id')
+                ->where('tenant_id', current_tenant()?->id)],
             'sessions_count' => 'required|integer|min:1|max:30',
             'description'    => 'nullable|string|max:2000',
             'objectives'     => 'nullable|string|max:2000',
@@ -101,6 +103,7 @@ class LmsTeacherWizardController extends Controller
             $code = 'TCH-' . now()->format('Ym') . '-' . strtoupper(Str::random(4));
 
             $course = CampusCourse::create([
+                'tenant_id'   => current_tenant()?->id,
                 'code'        => $code,
                 'title'       => $draft['title'],
                 'season_id'   => $draft['season_id'],

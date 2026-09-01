@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,11 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 class CampusDocument extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $table = 'campus_documents';
 
     protected $fillable = [
+        'tenant_id',
         'title', 'description', 'type',
         'file_path', 'file_name', 'file_size', 'mime_type',
         'url',
@@ -192,7 +194,14 @@ class CampusDocument extends Model
     {
         if ($this->type === 'url') return $this->url;
         if ($this->file_path && Storage::disk('local')->exists($this->file_path)) {
-            return route('campus.documents.download', $this->id);
+            // El tenant del document primer: un alumne pot veure a la mateixa
+            // pàgina (Els meus cursos) documents de més d'una institució —
+            // current_tenant() només serveix de reserva (p. ex. des de
+            // l'admin, on URL::defaults(tenant) no s'ha establert).
+            return route('campus.documents.download', [
+                'tenant'   => $this->tenant?->slug ?? current_tenant()?->slug,
+                'document' => $this->id,
+            ]);
         }
         return null;
     }

@@ -89,12 +89,14 @@ class ListAssociatQuotes extends ListRecords
                         default       => 0,
                     };
 
-                    $existingMemberIds = AssociatQuote::where('year', $year)
+                    $existingMemberIds = AssociatQuote::where('tenant_id', current_tenant()?->id)
+                        ->where('year', $year)
                         ->where('period', $period)
                         ->pluck('member_id')
                         ->all();
 
-                    $members = AssociatMember::where('status', 'active')
+                    $members = AssociatMember::whereHas('tenants', fn ($q) => $q->where('tenants.id', current_tenant()?->id))
+                        ->where('status', 'active')
                         ->whereNotIn('id', $existingMemberIds)
                         ->get();
 
@@ -115,6 +117,7 @@ class ListAssociatQuotes extends ListRecords
                                 : null;
 
                             AssociatQuote::create([
+                                'tenant_id'     => current_tenant()?->id,
                                 'member_id'     => $member->id,
                                 'year'          => $year,
                                 'period'        => $period,

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -52,6 +53,17 @@ class AssociatMember extends Authenticatable
     public function campusStudent(): BelongsTo
     {
         return $this->belongsTo(CampusStudent::class);
+    }
+
+    /** Un soci pot pertànyer a més d'una institució (com User amb HasTenants). */
+    public function tenants(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'associat_member_tenant', 'member_id', 'tenant_id');
+    }
+
+    public function belongsToTenant(?int $tenantId): bool
+    {
+        return $tenantId !== null && $this->tenants()->where('tenants.id', $tenantId)->exists();
     }
 
     public function getFullNameAttribute(): string
