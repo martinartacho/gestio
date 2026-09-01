@@ -110,8 +110,8 @@ Pàgina d'administració (rol `admin`) per personalitzar el campus sense tocar e
 | ⚙️ Avançat | Zona horària i idioma |
 
 **Implementació tècnica:**
-- Taula `site_settings` (clau primària: `key` VARCHAR(100), valor JSON)
-- `SettingStore` singleton amb caché (`Cache::remember` 1 hora, invalidada en desar)
+- Taula `site_settings` (`id`, `tenant_id`, `key`, valor JSON — únic per `tenant_id`+`key`), una fila per entitat
+- `SettingStore` singleton amb caché per entitat (`Cache::remember` 1 hora per `tenant_id`, invalidada en desar)
 - Facade `Setting` i helper global `setting('clau', 'defecte')`
 - Middleware `FeatureEnabled` (`feature:nom_del_flag`) retorna 404 si el mòdul és inactiu
 - Timezone aplicada dinàmicament a `AppServiceProvider::boot()`
