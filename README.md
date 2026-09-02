@@ -110,8 +110,8 @@ Pàgina d'administració (rol `admin`) per personalitzar el campus sense tocar e
 | ⚙️ Avançat | Zona horària i idioma |
 
 **Implementació tècnica:**
-- Taula `site_settings` (clau primària: `key` VARCHAR(100), valor JSON)
-- `SettingStore` singleton amb caché (`Cache::remember` 1 hora, invalidada en desar)
+- Taula `site_settings` (`id`, `tenant_id`, `key`, valor JSON — únic per `tenant_id`+`key`), una fila per entitat
+- `SettingStore` singleton amb caché per entitat (`Cache::remember` 1 hora per `tenant_id`, invalidada en desar)
 - Facade `Setting` i helper global `setting('clau', 'defecte')`
 - Middleware `FeatureEnabled` (`feature:nom_del_flag`) retorna 404 si el mòdul és inactiu
 - Timezone aplicada dinàmicament a `AppServiceProvider::boot()`
@@ -137,6 +137,35 @@ Hub central de tots els fluxos econòmics (Campus + Associats). Dissenyat per cr
 | `tresoreria` | Inscripcions, pagaments, liquidacions professors, quotes socis i remeses SEPA |
 | `editor` | Gestió d'usuaris i cursos |
 | `viewer` | Només lectura |
+
+## Multi-entitat (multi-tenant)
+
+Una mateixa instal·lació pot allotjar diverses institucions ("entitats"),
+cadascuna amb el seu propi catàleg, alumnat, professorat, socis i
+configuració (marca, colors, mòduls actius) — tot en una sola base de
+dades compartida, escopada per `tenant_id`.
+
+| Concepte | Detall |
+|---|---|
+| URL pública | `/{entitat}/cursos`, `/{entitat}/portal/login`, etc. — el primer segment identifica l'entitat |
+| Admin | `/admin/{entitat}/...` — tenancy nativa de Filament, un sol codi/panell |
+| Gestió d'entitats | `/admin/{entitat}/tenants` — només super-admin |
+| Configuració per entitat | `/admin/{entitat}/settings-page` — marca, colors i mòduls independents per entitat |
+
+**Crear una entitat nova** (`/admin/{entitat}/tenants/create`, només
+super-admin): nom + slug, opcionalment un usuari admin (nom, email,
+contrasenya) i dades d'exemple (notícies, professorat, cursos, alumnes,
+socis) perquè no comenci buida.
+
+**Una persona pot pertànyer a més d'una entitat.** Alumnat, professorat
+i socis fan servir un únic compte (email+contrasenya globals); si
+intenten accedir a una entitat on encara no tenen accés però en tenen
+d'altres, se'ls mostra un selector per triar-ne una. Un super-admin pot
+assignar o corregir a quina entitat pertany un usuari de l'admin des
+del seu propi formulari.
+
+`users.email` es queda únic globalment a propòsit: el login de l'admin
+és previ a saber a quina entitat s'accedeix.
 
 ## Instal·lació
 
