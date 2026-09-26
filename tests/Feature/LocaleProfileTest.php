@@ -76,6 +76,12 @@ class LocaleProfileTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame('es', $member->fresh()->locale);
+
+        $this->actingAs($member->fresh(), 'member')
+            ->get('/campus/socis/perfil')
+            ->assertOk()
+            ->assertSee('Número de socio')
+            ->assertSee('Volver al carné');
     }
 
     public function test_admin_can_set_locale_in_filament_profile(): void

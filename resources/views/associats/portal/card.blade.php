@@ -1,6 +1,6 @@
 @extends('associats.layouts.app')
 
-@section('title', 'Carnet digital · ' . setting('associats_org_name', 'Entitat'))
+@section('title', __('Carnet digital') . ' · ' . setting('associats_org_name', __('Entitat')))
 
 @section('content')
 @php
@@ -21,13 +21,13 @@
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
             <div>
                 <p style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#a5b4fc;margin:0 0 0.25rem;">
-                    {{ setting('associats_org_name', 'Entitat') }}
+                    {{ setting('associats_org_name', __('Entitat')) }}
                 </p>
-                <p style="font-size:0.75rem;color:#c7d2fe;margin:0;">Passaport Cultural Digital</p>
+                <p style="font-size:0.75rem;color:#c7d2fe;margin:0;">{{ __('Passaport Cultural Digital') }}</p>
             </div>
             <div style="text-align:right;">
                 <span style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.2rem 0.6rem;border:1px solid {{ $member->isActive() ? '#86efac' : '#fca5a5' }};border-radius:999px;color:{{ $member->isActive() ? '#86efac' : '#fca5a5' }};">
-                    {{ $member->isActive() ? 'Actiu' : ucfirst($member->status) }}
+                    {{ ['active' => __('Actiu'), 'pending' => __('Pendent'), 'cancelled' => __('Baixa')][$member->status] ?? $member->status }}
                 </span>
             </div>
         </div>
@@ -38,7 +38,7 @@
                 {{ $member->full_name }}
             </p>
             <p style="font-size:0.875rem;color:#a5b4fc;margin:0;">
-                Soci/a nº&nbsp;<strong style="color:#fff;font-size:1.1rem;">
+                {{ __('Soci/a nº') }}&nbsp;<strong style="color:#fff;font-size:1.1rem;">
                     {{ setting('associats_member_prefix', '') }}{{ $member->member_number }}
                 </strong>
             </p>
@@ -47,7 +47,7 @@
         {{-- QR --}}
         <div style="display:flex;justify-content:center;">
             <div style="background:#fff;border-radius:0.5rem;padding:0.5rem;width:148px;height:148px;">
-                <img src="{{ $qrImage }}" alt="QR soci {{ $member->member_number }}"
+                <img src="{{ $qrImage }}" alt="{{ __('QR soci :number', ['number' => $member->member_number]) }}"
                      style="width:100%;height:100%;display:block;">
             </div>
         </div>
@@ -55,7 +55,7 @@
         {{-- Peu --}}
         <p style="text-align:center;font-size:0.65rem;color:#818cf8;margin:1rem 0 0;">
             @if($member->joined_at)
-                Soci des de {{ $member->joined_at->translatedFormat('F Y') }}
+                {{ __('Soci des de :date', ['date' => $member->joined_at->translatedFormat('F Y')]) }}
             @endif
         </p>
 
@@ -64,18 +64,18 @@
     {{-- Info addicional --}}
     <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.25rem;font-size:0.875rem;color:#374151;">
         <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid #f3f4f6;">
-            <span style="color:#6b7280;">Correu</span>
+            <span style="color:#6b7280;">{{ __('Correu') }}</span>
             <span>{{ $member->email }}</span>
         </div>
         @if($member->phone)
         <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid #f3f4f6;">
-            <span style="color:#6b7280;">Telèfon</span>
+            <span style="color:#6b7280;">{{ __('Telèfon') }}</span>
             <span>{{ $member->phone }}</span>
         </div>
         @endif
         @if($member->city)
         <div style="display:flex;justify-content:space-between;padding:0.5rem 0;">
-            <span style="color:#6b7280;">Ciutat</span>
+            <span style="color:#6b7280;">{{ __('Ciutat') }}</span>
             <span>{{ $member->city }}</span>
         </div>
         @endif
@@ -84,7 +84,7 @@
     <div style="text-align:center;margin-top:1rem;">
         <a href="{{ route('member.profile') }}"
            style="font-size:0.875rem;color:#6366f1;text-decoration:none;">
-            Editar perfil →
+            {{ __('Editar perfil') }} →
         </a>
     </div>
 

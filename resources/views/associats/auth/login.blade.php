@@ -1,6 +1,6 @@
 @extends('associats.layouts.app')
 
-@section('title', 'Accés socis · ' . setting('associats_org_name', 'Entitat'))
+@section('title', __('Accés socis') . ' · ' . setting('associats_org_name', __('Entitat')))
 
 @section('content')
 <div class="max-w-md mx-auto">
@@ -8,16 +8,16 @@
 
         <div class="text-center mb-6">
             <p class="text-xs font-semibold tracking-widest uppercase text-indigo-600 mb-1">
-                {{ setting('associats_org_name', 'Entitat') }}
+                {{ setting('associats_org_name', __('Entitat')) }}
             </p>
-            <h1 class="text-2xl font-bold text-gray-900">Accés socis</h1>
-            <p class="text-sm text-gray-500 mt-1">Portal del Passaport Cultural Digital</p>
+            <h1 class="text-2xl font-bold text-gray-900">{{ __('Accés socis') }}</h1>
+            <p class="text-sm text-gray-500 mt-1">{{ __('Portal del Passaport Cultural Digital') }}</p>
         </div>
 
         <form method="POST" action="{{ route('member.login.post') }}" class="space-y-4">
             @csrf
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Correu electrònic</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Correu electrònic') }}</label>
                 <input type="email" name="email" value="{{ old('email') }}" required autofocus
                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('email') border-red-400 @enderror">
                 @error('email')
@@ -26,9 +26,9 @@
             </div>
             <div>
                 <div class="flex items-center justify-between mb-1">
-                    <label class="block text-sm font-medium text-gray-700">Contrasenya</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ __('Contrasenya') }}</label>
                     <a href="{{ route('member.password.request') }}"
-                       class="text-xs text-indigo-600 hover:underline">Heu oblidat la contrasenya?</a>
+                       class="text-xs text-indigo-600 hover:underline">{{ __('Heu oblidat la contrasenya?') }}</a>
                 </div>
                 <div style="position:relative;">
                     <input type="password" name="password" id="pwd" required
@@ -47,18 +47,18 @@
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="remember" id="remember" class="rounded">
-                <label for="remember" class="text-sm text-gray-600">Recorda'm</label>
+                <label for="remember" class="text-sm text-gray-600">{{ __('Recorda\'m') }}</label>
             </div>
             <button type="submit"
                     class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                Accedir
+                {{ __('Accedir') }}
             </button>
         </form>
 
         @if(setting('campus_contact_email'))
         <p class="text-center text-sm text-gray-500 mt-4">
-            Sou soci/a nou/va?
-            <a href="mailto:{{ setting('campus_contact_email') }}" class="text-indigo-600 hover:underline">Sol·licitar alta</a>
+            {{ __('Sou soci/a nou/va?') }}
+            <a href="mailto:{{ setting('campus_contact_email') }}" class="text-indigo-600 hover:underline">{{ __('Sol·licitar alta') }}</a>
         </p>
         @endif
     </div>

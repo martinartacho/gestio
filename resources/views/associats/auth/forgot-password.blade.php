@@ -1,6 +1,6 @@
 @extends('associats.layouts.app')
 
-@section('title', 'Recuperar contrasenya · ' . setting('associats_org_name', 'Entitat'))
+@section('title', __('Recuperar contrasenya') . ' · ' . setting('associats_org_name', __('Entitat')))
 
 @section('content')
 <div class="max-w-md mx-auto">
@@ -8,11 +8,11 @@
 
         <div class="text-center mb-6">
             <p class="text-xs font-semibold tracking-widest uppercase text-indigo-600 mb-1">
-                {{ setting('associats_org_name', 'Entitat') }}
+                {{ setting('associats_org_name', __('Entitat')) }}
             </p>
-            <h1 class="text-2xl font-bold text-gray-900">Recuperar contrasenya</h1>
+            <h1 class="text-2xl font-bold text-gray-900">{{ __('Recuperar contrasenya') }}</h1>
             <p class="text-sm text-gray-500 mt-1">
-                Introduïu el vostre correu electrònic o el número de soci.
+                {{ __('Introduïu el vostre correu electrònic o el número de soci.') }}
             </p>
         </div>
 
@@ -33,7 +33,7 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Correu electrònic o número de soci
+                    {{ __('Correu electrònic o número de soci') }}
                 </label>
                 <input type="text" name="identifier" value="{{ old('identifier') }}"
                        required autofocus placeholder="Ex: maria@correu.cat  o  1947"
@@ -45,13 +45,13 @@
 
             <button type="submit"
                     class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                Enviar instruccions
+                {{ __('Enviar instruccions') }}
             </button>
         </form>
         @endif
 
         <p class="text-center text-sm text-gray-500 mt-4">
-            <a href="{{ route('member.login') }}" class="text-indigo-600 hover:underline">← Tornar a l'accés</a>
+            <a href="{{ route('member.login') }}" class="text-indigo-600 hover:underline">← {{ __('Tornar a l\'accés') }}</a>
         </p>
 
     </div>
