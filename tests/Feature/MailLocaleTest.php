@@ -30,6 +30,7 @@ class MailLocaleTest extends TestCase
 
     public function test_mail_falls_back_to_recipient_tenant_locale(): void
     {
+        $this->app->forgetInstance(Tenant::class); // com des del cron: sense tenant actiu
         $tenant = Tenant::factory()->create();
         SiteSetting::create(['tenant_id' => $tenant->id, 'key' => 'locale', 'value' => 'es']);
         $teacher = CampusTeacher::factory()->create(['locale' => null]);

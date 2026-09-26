@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\StudentCourseController;
 use App\Http\Controllers\Api\TeacherCourseController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:login', \App\Http\Middleware\SetLocale::class]);
 
 Route::middleware(['auth:sanctum', \App\Http\Middleware\SetLocale::class])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);

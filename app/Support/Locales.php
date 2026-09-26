@@ -47,6 +47,23 @@ final class Locales
             }
         }
 
-        return config('app.locale');
+        return self::fromAcceptLanguage() ?? config('app.locale');
+    }
+
+    /** Idioma del navegador o de l'app (capçalera Accept-Language), si és suportat. */
+    private static function fromAcceptLanguage(): ?string
+    {
+        if (! request()->headers->has('Accept-Language')) {
+            return null;
+        }
+
+        foreach (request()->getLanguages() as $language) {
+            $code = strtolower(substr($language, 0, 2));
+            if (self::isSupported($code)) {
+                return $code;
+            }
+        }
+
+        return null;
     }
 }

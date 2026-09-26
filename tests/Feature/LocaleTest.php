@@ -65,6 +65,24 @@ class LocaleTest extends TestCase
         $this->assertSame('ca', $student->fresh()->preferredLocale());
     }
 
+    public function test_api_login_errors_follow_accept_language(): void
+    {
+        $this->app->forgetInstance(Tenant::class); // l'API no té tenant a la URL
+        $this->postJson('/api/login', ['email' => 'nobody@example.test', 'password' => 'x', 'tenant' => 'no-existeix'], ['Accept-Language' => 'es'])
+            ->assertStatus(422);
+
+        $this->assertSame('es', app()->getLocale());
+    }
+
+    public function test_tenant_locale_wins_over_accept_language(): void
+    {
+        $tenant = Tenant::factory()->create();
+
+        $this->get("/{$tenant->slug}/privacy", ['Accept-Language' => 'es'])->assertOk();
+
+        $this->assertSame('ca', app()->getLocale());
+    }
+
     public function test_api_uses_user_locale(): void
     {
         $student = CampusStudent::factory()->create(['locale' => 'es']);
