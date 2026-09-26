@@ -37,7 +37,7 @@
         <select name="type"
                 style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;color:#111827;background:#fff;">
             <option value="">{{ __('Tots') }}</option>
-            @foreach (\App\Models\CampusDocument::TYPES as $k => $v)
+            @foreach (translated_labels(\App\Models\CampusDocument::TYPES) as $k => $v)
                 <option value="{{ $k }}" {{ request('type') === $k ? 'selected' : '' }}>{{ $v }}</option>
             @endforeach
         </select>
@@ -48,7 +48,7 @@
         <select name="visibility"
                 style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;color:#111827;background:#fff;">
             <option value="">{{ __('Totes') }}</option>
-            @foreach (\App\Models\CampusDocument::VISIBILITIES as $k => $v)
+            @foreach (translated_labels(\App\Models\CampusDocument::VISIBILITIES) as $k => $v)
                 <option value="{{ $k }}" {{ request('visibility') === $k ? 'selected' : '' }}>{{ $v }}</option>
             @endforeach
         </select>
@@ -113,7 +113,7 @@
                         @endif
                         <span style="font-size:0.75rem;
                             {{ $doc->visibility === 'public' ? 'color:#15803d;' : ($doc->visibility === 'private' ? 'color:#6b7280;' : 'color:#1d4ed8;') }}">
-                            {{ \App\Models\CampusDocument::VISIBILITIES[$doc->visibility] ?? $doc->visibility }}
+                            {{ __(\App\Models\CampusDocument::VISIBILITIES[$doc->visibility] ?? $doc->visibility) }}
                         </span>
                         @if ($doc->status === 'draft')
                             <span style="color:#d1d5db;">·</span>
@@ -217,7 +217,7 @@
                         @endif
                         <span style="font-size:0.75rem;
                             {{ $doc->visibility === 'public' ? 'color:#15803d;' : 'color:#1d4ed8;' }}">
-                            {{ \App\Models\CampusDocument::VISIBILITIES[$doc->visibility] ?? $doc->visibility }}
+                            {{ __(\App\Models\CampusDocument::VISIBILITIES[$doc->visibility] ?? $doc->visibility) }}
                         </span>
                         @if ($doc->description)
                             <span style="color:#d1d5db;">·</span>

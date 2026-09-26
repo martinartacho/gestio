@@ -60,7 +60,7 @@
                         @php $color = \App\Models\CampusTeacherPayment::STATUS_COLORS[$payment->status] ?? 'gray'; @endphp
                         <span class="px-2 py-0.5 rounded-full text-xs font-medium
                             {{ $color === 'success' ? 'bg-green-100 text-green-700' : ($color === 'info' ? 'bg-blue-100 text-blue-700' : ($color === 'danger' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500')) }}">
-                            {{ \App\Models\CampusTeacherPayment::STATUSES[$payment->status] ?? $payment->status }}
+                            {{ __(\App\Models\CampusTeacherPayment::STATUSES[$payment->status] ?? $payment->status) }}
                         </span>
                     </td>
                     <td class="px-4 py-3 text-gray-500">

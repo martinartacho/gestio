@@ -17,7 +17,7 @@
                 — <span class="text-amber-700">{{ __('Aquest curs no és públic') }}</span>
             @endif
             @if ($course->status !== 'active')
-                — Estat: <span class="font-semibold">{{ \App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status }}</span>
+                — {{ __('Estat') }}: <span class="font-semibold">{{ __(\App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status) }}</span>
             @endif
         </div>
         <a href="{{ route('campus.catalog.show', $course->slug) }}"
@@ -73,7 +73,7 @@
                 <div><span class="font-medium text-gray-800">{{ __('Lloc') }}:</span> {{ $course->space->name }}</div>
             @endif
             @if ($course->format && setting('catalog_show_format', true))
-                <div><span class="font-medium text-gray-800">{{ __('Format') }}:</span> {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}</div>
+                <div><span class="font-medium text-gray-800">{{ __('Format') }}:</span> {{ __(\App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format) }}</div>
             @endif
             @if (! $course->hasUnlimitedPlaces() && setting('catalog_show_places', true))
                 @php $slots = $course->availableSlots(); @endphp
@@ -127,7 +127,7 @@
             @elseif ($alreadyEnrolled)
                 @php
                     $eStatus = $myEnrollment->status;
-                    $eLabel  = \App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus;
+                    $eLabel  = __(\App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus);
                     $eCss = match(\App\Models\CampusEnrollment::STATUS_COLORS[$eStatus] ?? 'gray') {
                         'warning' => 'bg-yellow-50 text-yellow-800 border border-yellow-200',
                         'success' => 'bg-green-100 text-green-800 border border-green-200',

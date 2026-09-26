@@ -2,6 +2,7 @@
 
 namespace App\Mail\Campus;
 
+use App\Support\Locales;
 use App\Models\CampusTeacher;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -17,12 +18,13 @@ class TeacherPasswordResetMail extends Mailable
     public function __construct(public readonly CampusTeacher $teacher)
     {
         $this->otp = $teacher->generateOtp();
+        $this->locale(Locales::resolve($teacher));
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Recuperar contrasenya — ' . config('app.name'),
+            subject: __('Recuperar contrasenya') . ' — ' . config('app.name'),
         );
     }
 

@@ -24,7 +24,7 @@
                 {{ $selectedSeason->name }}
                 @php
                     $color = \App\Models\CampusSeason::STATUS_COLORS[$selectedSeason->status] ?? 'gray';
-                    $label = \App\Models\CampusSeason::STATUSES[$selectedSeason->status] ?? $selectedSeason->status;
+                    $label = __(\App\Models\CampusSeason::STATUSES[$selectedSeason->status] ?? $selectedSeason->status);
                     $bgMap = ['success' => 'bg-green-100 text-green-700', 'danger' => 'bg-red-100 text-red-600', 'gray' => 'bg-gray-100 text-gray-500'];
                 @endphp
                 @if ($isPreview)
@@ -59,7 +59,7 @@
                 {{ $s->name }}
                 @if ($s->isActive()) <span class="ml-0.5 text-xs">★</span> @endif
                 @if ($isPreview && ! $s->isActive())
-                    <span class="ml-1 text-xs opacity-60">({{ \App\Models\CampusSeason::STATUSES[$s->status] ?? '' }})</span>
+                    <span class="ml-1 text-xs opacity-60">({{ __(\App\Models\CampusSeason::STATUSES[$s->status] ?? '') }})</span>
                 @endif
             </a>
         @endforeach
@@ -84,7 +84,7 @@
                 @if ($isPreview && (! $course->is_public || $course->status !== 'active'))
                     <div class="text-xs text-amber-600 font-semibold mb-2 flex gap-2">
                         @if (! $course->is_public) <span>{{ __('No públic') }}</span> @endif
-                        @if ($course->status !== 'active') <span>{{ \App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status }}</span> @endif
+                        @if ($course->status !== 'active') <span>{{ __(\App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status) }}</span> @endif
                     </div>
                 @endif
 
@@ -119,7 +119,7 @@
                             @if ($course->format && setting('catalog_show_format', true)) · @endif
                         @endif
                         @if ($course->format && setting('catalog_show_format', true))
-                            {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}
+                            {{ __(\App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format) }}
                         @endif
                     </div>
                     @php
@@ -153,7 +153,7 @@
                                         'refunded'          => '↩',
                                         default             => '•',
                                     };
-                                    $eLabel = \App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus;
+                                    $eLabel = __(\App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus);
                                 @endphp
                                 <span class="text-xs font-semibold px-2 py-0.5 rounded border {{ $ePill }}">
                                     {{ $eIcon }} {{ $eLabel }}

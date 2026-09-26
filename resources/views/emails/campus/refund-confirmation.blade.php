@@ -1,35 +1,35 @@
 <x-mail::message>
-# ↩ Devolució processada
+# ↩ {{ __('Devolució processada') }}
 
-Hola, **{{ $enrollment->student->first_name ?? $enrollment->first_name }}**!
+{{ __('Hola, **:name**!', ['name' => $enrollment->student->first_name ?? $enrollment->first_name]) }}
 
-Us confirmem que hem processat la devolució de la vostra inscripció al curs **{{ $enrollment->course->title }}**.
+{{ __('Us confirmem que hem processat la devolució de la vostra inscripció al curs **:course**.', ['course' => $enrollment->course->title]) }}
 
 ---
 
-## Detalls de la devolució
+## {{ __('Detalls de la devolució') }}
 
-**Import retornat:** {{ number_format($enrollment->refunded_amount, 2, ',', '.') }} €
+**{{ __('Import retornat') }}:** {{ number_format($enrollment->refunded_amount, 2, ',', '.') }} €
 
 @if ($enrollment->refunded_amount < $enrollment->amount)
-*(Devolució parcial — import original: {{ number_format($enrollment->amount, 2, ',', '.') }} €)*
+*({{ __('Devolució parcial — import original: :amount €', ['amount' => number_format($enrollment->amount, 2, ',', '.')]) }})*
 @endif
 
 @if ($isStripe)
-**Mètode:** Targeta bancària (Stripe) — el reemborsament apareixerà al vostre extracte en 5-10 dies hàbils.
+**{{ __('Mètode') }}:** {{ __('Targeta bancària (Stripe) — el reemborsament apareixerà al vostre extracte en 5-10 dies hàbils.') }}
 @else
-**Mètode:** {{ \App\Models\CampusEnrollment::PAYMENT_METHODS[$enrollment->payment_method] ?? $enrollment->payment_method }}
-— El reemborsament es farà pel mateix canal de pagament. Si no el rebeu en 5 dies hàbils, contacteu amb nosaltres.
+**{{ __('Mètode') }}:** {{ __(\App\Models\CampusEnrollment::PAYMENT_METHODS[$enrollment->payment_method] ?? $enrollment->payment_method) }}
+— {{ __('El reemborsament es farà pel mateix canal de pagament. Si no el rebeu en 5 dies hàbils, contacteu amb nosaltres.') }}
 @endif
 
 @if ($enrollment->refund_notes)
-**Observació:** {{ $enrollment->refund_notes }}
+**{{ __('Observació') }}:** {{ $enrollment->refund_notes }}
 @endif
 
 ---
 
-Si teniu qualsevol dubte, no dubteu a contactar amb l'equip.
+{{ __('Si teniu qualsevol dubte, no dubteu a contactar amb l\'equip.') }}
 
-Gràcies,<br>
+{{ __('Gràcies') }},<br>
 {{ config('app.name') }}
 </x-mail::message>

@@ -42,3 +42,14 @@ if (! function_exists('current_tenant')) {
         return app()->bound(Tenant::class) ? app(Tenant::class) : null;
     }
 }
+
+if (! function_exists('translated_labels')) {
+    /**
+     * Tradueix els valors d'un array d'etiquetes (constants dels models, que no
+     * poden cridar __() perquè són const). Les claus es mantenen.
+     */
+    function translated_labels(array $labels): array
+    {
+        return array_map(fn ($label) => is_string($label) ? __($label) : $label, $labels);
+    }
+}

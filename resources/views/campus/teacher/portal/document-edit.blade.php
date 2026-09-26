@@ -12,7 +12,7 @@
 <div style="max-width:42rem;">
     <h1 style="font-size:1.25rem;font-weight:700;color:#111827;margin-bottom:0.25rem;">{{ __('Editar document') }}</h1>
     <p style="font-size:0.875rem;color:#6b7280;margin-bottom:1.5rem;">
-        Tipus: <strong>{{ \App\Models\CampusDocument::TYPES[$document->type] ?? $document->type }}</strong>
+        {{ __('Tipus') }}: <strong>{{ __(\App\Models\CampusDocument::TYPES[$document->type] ?? $document->type) }}</strong>
         @if ($document->file_name)
             · {{ $document->file_name }}
             @if ($document->file_size_formatted) ({{ $document->file_size_formatted }}) @endif
@@ -165,7 +165,7 @@
                     </label>
                     <select name="visibility"
                             style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;background:#fff;">
-                        @foreach (\App\Models\CampusDocument::VISIBILITIES as $k => $v)
+                        @foreach (translated_labels(\App\Models\CampusDocument::VISIBILITIES) as $k => $v)
                             <option value="{{ $k }}"
                                 {{ old('visibility', $document->visibility) === $k ? 'selected' : '' }}>
                                 {{ $v }}
@@ -180,7 +180,7 @@
                     </label>
                     <select name="status"
                             style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;background:#fff;">
-                        @foreach (\App\Models\CampusDocument::STATUSES as $k => $v)
+                        @foreach (translated_labels(\App\Models\CampusDocument::STATUSES) as $k => $v)
                             <option value="{{ $k }}"
                                 {{ old('status', $document->status) === $k ? 'selected' : '' }}>
                                 {{ $v }}

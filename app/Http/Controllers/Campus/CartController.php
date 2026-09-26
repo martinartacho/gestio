@@ -39,7 +39,7 @@ class CartController extends Controller
     {
         if (! auth('student')->check()) {
             return redirect()->route('campus.login', ['redirect' => url()->previous()])
-                ->with('info', 'Identifica\'t per afegir cursos al carret.');
+                ->with('info', __('Identifica\'t per afegir cursos al carret.'));
         }
 
         $student = auth('student')->user();
@@ -49,31 +49,31 @@ class CartController extends Controller
             ->firstOrFail();
 
         if ($student->isSuspended()) {
-            return back()->with('error', 'El compte ha estat suspès. Contacteu amb l\'administració.');
+            return back()->with('error', __('El compte ha estat suspès. Contacteu amb l\'administració.'));
         }
 
         if ($student->enrollments()
                 ->where('course_id', $course->id)
                 ->whereNotIn('status', ['cancelled', 'refunded'])
                 ->exists()) {
-            return back()->with('info', 'Ja estàs inscrit/a a aquest curs.');
+            return back()->with('info', __('Ja estàs inscrit/a a aquest curs.'));
         }
 
         if ($course->isFull()) {
-            return back()->with('error', 'El curs ja no té places disponibles.');
+            return back()->with('error', __('El curs ja no té places disponibles.'));
         }
 
         $cart = CampusCart::forStudent($student);
 
         if ($cart->items()->where('course_id', $course->id)->exists()) {
             return redirect()->route('campus.cart.show')
-                ->with('info', '"' . $course->title . '" ja és al carret.');
+                ->with('info', __('":title" ja és al carret.', ['title' => $course->title]));
         }
 
         $maxCartItems = (int) setting('payment_max_cart_items', 5);
         if ($cart->items()->count() >= $maxCartItems) {
             return redirect()->route('campus.cart.show')
-                ->with('error', 'El carret ja conté el màxim de ' . $maxCartItems . ' cursos.');
+                ->with('error', __('El carret ja conté el màxim de :max cursos.', ['max' => $maxCartItems]));
         }
 
         $cart->items()->create([
@@ -84,12 +84,12 @@ class CartController extends Controller
         // Si el carret ja és ple, anar directament al carret per fer el pagament
         if ($cart->items()->count() >= $maxCartItems) {
             return redirect()->route('campus.cart.show')
-                ->with('success', '"' . $course->title . '" afegit. Carret complet — podeu procedir al pagament.');
+                ->with('success', __('":title" afegit. Carret complet — podeu procedir al pagament.', ['title' => $course->title]));
         }
 
         // Tornar al catàleg per continuar afegint cursos
         return redirect()->route('campus.catalog.index')
-            ->with('success', '"' . $course->title . '" afegit al carret.');
+            ->with('success', __('":title" afegit al carret.', ['title' => $course->title]));
     }
 
     public function remove(int $itemId): RedirectResponse
@@ -99,7 +99,7 @@ class CartController extends Controller
         $item    = $cart->items()->findOrFail($itemId);
         $item->delete();
 
-        return back()->with('success', 'Curs eliminat del carret.');
+        return back()->with('success', __('Curs eliminat del carret.'));
     }
 
     public function checkout(Request $request): RedirectResponse|View
@@ -108,7 +108,7 @@ class CartController extends Controller
 
         if ($student->isSuspended()) {
             return redirect()->route('campus.cart.show')
-                ->with('error', 'El compte ha estat suspès. Contacteu amb l\'administració.');
+                ->with('error', __('El compte ha estat suspès. Contacteu amb l\'administració.'));
         }
 
         $cart = CampusCart::forStudent($student);
@@ -116,7 +116,7 @@ class CartController extends Controller
 
         if ($cart->items->isEmpty()) {
             return redirect()->route('campus.cart.show')
-                ->with('error', 'El carret és buit.');
+                ->with('error', __('El carret és buit.'));
         }
 
         // Verificar que tots els cursos estan oberts per inscripció (tret de preview)
@@ -127,7 +127,7 @@ class CartController extends Controller
                     $season = $course->season;
                     if (! $season || ! $season->isActive() || ! $season->enrollmentIsOpen()) {
                         return redirect()->route('campus.cart.show')
-                            ->with('error', 'Les inscripcions per a "' . $course->title . '" no estan obertes.');
+                            ->with('error', __('Les inscripcions per a ":title" no estan obertes.', ['title' => $course->title]));
                     }
                 }
             }
@@ -154,7 +154,7 @@ class CartController extends Controller
 
             if (! isset($allowedMethods[$method])) {
                 return redirect()->route('campus.cart.show')
-                    ->with('error', 'El mètode de pagament seleccionat no està disponible.');
+                    ->with('error', __('El mètode de pagament seleccionat no està disponible.'));
             }
 
             $settings    = app(SettingStore::class);
@@ -195,7 +195,7 @@ class CartController extends Controller
 
             if ($fullCourse) {
                 return redirect()->route('campus.cart.show')
-                    ->with('error', 'Ho sentim, "' . $fullCourse . '" ja no té places disponibles.');
+                    ->with('error', __('Ho sentim, ":title" ja no té places disponibles.', ['title' => $fullCourse]));
             }
 
             Mail::to($student->email)->send(
@@ -235,7 +235,7 @@ class CartController extends Controller
 
         if ($isFull) {
             return redirect()->route('campus.cart.show')
-                ->with('error', 'Ho sentim, "' . $fullCourse . '" ja no té places disponibles.');
+                ->with('error', __('Ho sentim, ":title" ja no té places disponibles.', ['title' => $fullCourse]));
         }
 
         Stripe::setApiKey(config('services.stripe.secret'));

@@ -104,7 +104,7 @@ class TeacherPortalController extends Controller
 
         $doc->save();
 
-        return back()->with('success', 'Document pujat correctament.');
+        return back()->with('success', __('Document pujat correctament.'));
     }
 
     public function deleteDocument(Request $request, string $slug, CampusDocument $document)
@@ -124,7 +124,7 @@ class TeacherPortalController extends Controller
 
         $document->delete();
 
-        return back()->with('success', 'Document eliminat.');
+        return back()->with('success', __('Document eliminat.'));
     }
 
     // ── Gestor global de documents ─────────────────────────────────────────────
@@ -229,7 +229,7 @@ class TeacherPortalController extends Controller
         $document->save();
 
         return redirect()->route('teacher.portal.documents')
-                         ->with('success', 'Document actualitzat correctament.');
+                         ->with('success', __('Document actualitzat correctament.'));
     }
 
     public function destroyDocument(CampusDocument $document)
@@ -244,7 +244,7 @@ class TeacherPortalController extends Controller
         $document->delete();
 
         return redirect()->route('teacher.portal.documents')
-                         ->with('success', 'Document eliminat.');
+                         ->with('success', __('Document eliminat.'));
     }
 
     public function editProfile()
@@ -270,7 +270,7 @@ class TeacherPortalController extends Controller
 
         $teacher->update($data);
 
-        return back()->with('success', 'Perfil actualitzat correctament.');
+        return back()->with('success', __('Perfil actualitzat correctament.'));
     }
 
     public function liquidations()

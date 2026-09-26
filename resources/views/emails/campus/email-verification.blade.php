@@ -1,9 +1,9 @@
 <x-mail::message>
-# Verifica el teu correu electrònic
+# {{ __('Verifica el teu correu electrònic') }}
 
-Hola, **{{ $student->first_name }}**!
+{{ __('Hola, **:name**!', ['name' => $student->first_name]) }}
 
-Introduïu el codi següent a la pàgina de verificació per activar el compte:
+{{ __('Introduïu el codi següent a la pàgina de verificació per activar el compte:') }}
 
 <x-mail::panel>
 <div style="text-align:center;font-size:2rem;font-weight:bold;letter-spacing:0.3em;font-family:monospace;color:#4f46e5;">
@@ -11,10 +11,10 @@ Introduïu el codi següent a la pàgina de verificació per activar el compte:
 </div>
 </x-mail::panel>
 
-⏱ Aquest codi és vàlid durant **15 minuts**.
+⏱ {{ __('Aquest codi és vàlid durant **15 minuts**.') }}
 
-Si no heu sol·licitat cap verificació, ignoreu aquest missatge.
+{{ __('Si no heu sol·licitat cap verificació, ignoreu aquest missatge.') }}
 
-Gràcies,<br>
+{{ __('Gràcies') }},<br>
 {{ config('app.name') }}
 </x-mail::message>

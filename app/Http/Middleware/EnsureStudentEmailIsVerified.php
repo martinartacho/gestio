@@ -14,7 +14,7 @@ class EnsureStudentEmailIsVerified
 
         if ($student && ! $student->hasVerifiedEmail()) {
             return redirect()->route('campus.verification.notice')
-                ->with('warning', 'Cal verificar el correu electrònic abans de continuar.');
+                ->with('warning', __('Cal verificar el correu electrònic abans de continuar.'));
         }
 
         return $next($request);

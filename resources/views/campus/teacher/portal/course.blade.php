@@ -24,7 +24,7 @@
         </div>
         <span class="text-xs px-2 py-1 rounded-full font-medium shrink-0
             {{ $course->status === 'active' ? 'bg-green-100 text-green-700' : ($course->status === 'closed' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500') }}">
-            {{ \App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status }}
+            {{ __(\App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status) }}
         </span>
     </div>
 

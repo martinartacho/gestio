@@ -2,6 +2,7 @@
 
 namespace App\Mail\Campus;
 
+use App\Support\Locales;
 use App\Models\CampusQueueEntry;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -13,12 +14,15 @@ class QueueConfirmationMail extends Mailable
 {
     use SerializesModels;
 
-    public function __construct(public readonly CampusQueueEntry $entry) {}
+    public function __construct(public readonly CampusQueueEntry $entry)
+    {
+        $this->locale(Locales::resolve(null, $entry->tenant));
+    }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '🎟 Torn #' . $this->entry->queue_number . ' reservat — ' . config('app.name'),
+            subject: '🎟 ' . __('Torn #:number reservat', ['number' => $this->entry->queue_number]) . ' — ' . config('app.name'),
         );
     }
 

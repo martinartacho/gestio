@@ -42,7 +42,7 @@ class QueueController extends Controller
             ->where('email', $email)->first();
         if ($existing) {
             return redirect()->route('campus.queue.status', ['email' => $email])
-                ->with('info', 'Ja esteu a la cua. Aquí teniu el vostre estat.');
+                ->with('info', __('Ja esteu a la cua. Aquí teniu el vostre estat.'));
         }
 
         // Número seqüencial (per tenant) + càlcul del torn
@@ -64,7 +64,7 @@ class QueueController extends Controller
         Mail::to($email)->send(new QueueConfirmationMail($entry));
 
         return redirect()->route('campus.queue.status', ['email' => $email])
-            ->with('success', 'Torn #' . $nextNumber . ' reservat! Confirmació enviada a ' . $email . '.');
+            ->with('success', __('Torn #:number reservat! Confirmació enviada a :email.', ['number' => $nextNumber, 'email' => $email]));
     }
 
     public function status(Request $request): View|RedirectResponse
@@ -75,7 +75,7 @@ class QueueController extends Controller
 
         if (! $entry) {
             return redirect()->route('campus.queue.join')
-                ->with('error', 'No s\'ha trobat cap entrada a la cua per a aquest correu.');
+                ->with('error', __('No s\'ha trobat cap entrada a la cua per a aquest correu.'));
         }
 
         return view('campus.queue.status', compact('entry'));
@@ -96,7 +96,7 @@ class QueueController extends Controller
             ->first();
 
         if (! $entry || ! $entry->canAccess()) {
-            return back()->withErrors(['code' => 'Codi incorrecte, caducat o ja utilitzat.']);
+            return back()->withErrors(['code' => __('Codi incorrecte, caducat o ja utilitzat.')]);
         }
 
         $entry->update(['status' => CampusQueueEntry::STATUS_ACCESSED, 'accessed_at' => now()]);
@@ -105,7 +105,7 @@ class QueueController extends Controller
         $request->session()->put('queue_access_expires', $entry->access_expires_at->toISOString());
 
         return redirect()->route('campus.catalog.index')
-            ->with('success', '✓ Accés concedit fins a les ' . $entry->access_expires_at->format('H:i') . ' h.');
+            ->with('success', __('✓ Accés concedit fins a les :time h.', ['time' => $entry->access_expires_at->format('H:i')]));
     }
 
     public function changeSlot(Request $request): View|RedirectResponse
@@ -121,7 +121,7 @@ class QueueController extends Controller
 
         if (! $entry) {
             return redirect()->route('campus.queue.join')
-                ->with('error', 'No s\'ha trobat cap torn actiu o el torn ja ha estat processat.');
+                ->with('error', __('No s\'ha trobat cap torn actiu o el torn ja ha estat processat.'));
         }
 
         $settings    = app(SettingStore::class);
@@ -164,7 +164,7 @@ class QueueController extends Controller
 
         if (! $entry) {
             return redirect()->route('campus.queue.join')
-                ->with('error', 'No s\'ha pogut actualitzar el torn. Pot ser que ja hagi estat processat.');
+                ->with('error', __('No s\'ha pogut actualitzar el torn. Pot ser que ja hagi estat processat.'));
         }
 
         $settings    = app(SettingStore::class);
@@ -176,12 +176,12 @@ class QueueController extends Controller
 
         // No permetre moure a un slot passat
         if ($newSlotTime->isPast()) {
-            return back()->withErrors(['slot_index' => 'No es pot seleccionar una hora passada.']);
+            return back()->withErrors(['slot_index' => __('No es pot seleccionar una hora passada.')]);
         }
 
         $entry->update(['slot_starts_at' => $newSlotTime]);
 
         return redirect()->route('campus.queue.status', ['email' => $email])
-            ->with('success', 'Torn actualitzat. Nova hora estimada: ' . $entry->fresh()->slotTimeLabel());
+            ->with('success', __('Torn actualitzat. Nova hora estimada: :time', ['time' => $entry->fresh()->slotTimeLabel()]));
     }
 }

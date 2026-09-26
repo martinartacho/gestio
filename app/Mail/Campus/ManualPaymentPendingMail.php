@@ -2,6 +2,7 @@
 
 namespace App\Mail\Campus;
 
+use App\Support\Locales;
 use App\Models\CampusStudent;
 use App\Settings\SettingStore;
 use Illuminate\Mail\Mailable;
@@ -18,13 +19,15 @@ class ManualPaymentPendingMail extends Mailable
         public readonly CampusStudent $student,
         public readonly Collection    $enrollments,
         public readonly string        $method,
-    ) {}
+    ) {
+        $this->locale(Locales::resolve($student, $enrollments->first()?->course?->tenant));
+    }
 
     public function envelope(): Envelope
     {
         $subject = $this->enrollments->count() === 1
-            ? 'Inscripció pendent de pagament — ' . $this->enrollments->first()->course->title
-            : 'Inscripcions pendents de pagament (' . $this->enrollments->count() . ' cursos)';
+            ? __('Inscripció pendent de pagament') . ' — ' . $this->enrollments->first()->course->title
+            : __('Inscripcions pendents de pagament (:count cursos)', ['count' => $this->enrollments->count()]);
 
         return new Envelope(subject: $subject);
     }

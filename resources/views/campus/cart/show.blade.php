@@ -52,7 +52,7 @@
                             <span>{{ $item->course->season->name }}</span>
                         @endif
                         @if ($item->course->format)
-                            <span>· {{ \App\Models\CampusCourse::FORMATS[$item->course->format] ?? $item->course->format }}</span>
+                            <span>· {{ __(\App\Models\CampusCourse::FORMATS[$item->course->format] ?? $item->course->format) }}</span>
                         @endif
                         @if ($item->course->start_date)
                             <span>· {{ $item->course->start_date->format('d/m/Y') }}</span>

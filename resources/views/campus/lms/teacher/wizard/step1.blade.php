@@ -44,7 +44,7 @@
                 <select name="format"
                         style="width:100%;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.9375rem;color:#111827;background:#fff;box-sizing:border-box;"
                         required>
-                    @foreach (\App\Models\CampusCourse::FORMATS as $key => $label)
+                    @foreach (translated_labels(\App\Models\CampusCourse::FORMATS) as $key => $label)
                         <option value="{{ $key }}" {{ old('format', $draft['format'] ?? 'online') === $key ? 'selected' : '' }}>
                             {{ $label }}
                         </option>

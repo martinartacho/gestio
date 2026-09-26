@@ -75,7 +75,7 @@ class LmsTeacherController extends Controller
 
         return redirect()
             ->route('teacher.lms.lesson.edit', [$course->slug, $lesson->id])
-            ->with('success', '✓ Sessió creada correctament.');
+            ->with('success', __('✓ Sessió creada correctament.'));
     }
 
     // ─── Formulari editar sessió ───────────────────────────────────────────────
@@ -106,7 +106,7 @@ class LmsTeacherController extends Controller
 
         $lesson->update($data);
 
-        return back()->with('success', '✓ Sessió desada correctament.');
+        return back()->with('success', __('✓ Sessió desada correctament.'));
     }
 
     // ─── Eliminar sessió ──────────────────────────────────────────────────────
@@ -122,7 +122,7 @@ class LmsTeacherController extends Controller
 
         return redirect()
             ->route('teacher.lms.course', $course->slug)
-            ->with('success', '✓ Sessió eliminada.');
+            ->with('success', __('✓ Sessió eliminada.'));
     }
 
     // ─── Validació compartida ─────────────────────────────────────────────────

@@ -39,7 +39,7 @@ class StudentAuthController extends Controller
 
         if ($student->isSuspended()) {
             return back()->withErrors([
-                'email' => 'El compte ha estat suspès. Contacteu amb l\'administració per a més informació.',
+                'email' => __('El compte ha estat suspès. Contacteu amb l\'administració per a més informació.'),
             ])->onlyInput('email');
         }
 
@@ -80,7 +80,7 @@ class StudentAuthController extends Controller
 
         if (! $student || ! $student->belongsToTenant(current_tenant()?->id)) {
             return redirect()->route('campus.login')
-                ->withErrors(['email' => 'No tens accés a aquesta institució.']);
+                ->withErrors(['email' => __('No tens accés a aquesta institució.')]);
         }
 
         $request->session()->forget('pending_student_id');
@@ -100,7 +100,7 @@ class StudentAuthController extends Controller
         // Honeypot: si el camp ocult ve omplert és un bot → falla silenciosa
         if ($request->filled('website')) {
             return redirect()->route('campus.register')
-                ->with('success', 'Compte creat correctament. Podeu accedir ara.');
+                ->with('success', __('Compte creat correctament. Podeu accedir ara.'));
         }
 
         $data = $request->validate([
@@ -126,7 +126,7 @@ class StudentAuthController extends Controller
         Mail::to($student->email)->send(new EmailVerificationMail($student));
 
         return redirect()->route('campus.verification.notice')
-            ->with('info', 'Hem enviat un correu de verificació a ' . $student->email . '. Comproveu la safata d\'entrada.');
+            ->with('info', __('Hem enviat un correu de verificació a :email. Comproveu la safata d\'entrada.', ['email' => $student->email]));
     }
 
     public function logout(Request $request): RedirectResponse
@@ -172,13 +172,12 @@ class StudentAuthController extends Controller
                 // Codi exhaurit → regenerar automàticament
                 Mail::to($student->email)->send(new EmailVerificationMail($student));
                 return back()->withErrors(['code' =>
-                    'Massa intents incorrectes. Hem enviat un nou codi al vostre correu.'
+                    __('Massa intents incorrectes. Hem enviat un nou codi al vostre correu.')
                 ]);
             }
 
             return back()->withErrors(['code' =>
-                'Codi incorrecte o caducat. Us queden ' . $attemptsLeft . ' ' .
-                ($attemptsLeft === 1 ? 'intent' : 'intents') . '.'
+                trans_choice('Codi incorrecte o caducat. Us queda :count intent.|Codi incorrecte o caducat. Us queden :count intents.', $attemptsLeft)
             ])->withInput();
         }
 
@@ -201,11 +200,11 @@ class StudentAuthController extends Controller
 
         if ($queueEntry) {
             return redirect()->route('campus.queue.status', ['email' => $student->email])
-                ->with('success', '✓ Correu verificat. Aquí teniu l\'estat del vostre torn a la cua.');
+                ->with('success', __('✓ Correu verificat. Aquí teniu l\'estat del vostre torn a la cua.'));
         }
 
         return redirect()->route('campus.portal.courses')
-            ->with('success', '✓ Correu verificat correctament. Ja pots inscriure\'t als cursos!');
+            ->with('success', __('✓ Correu verificat correctament. Ja pots inscriure\'t als cursos!'));
     }
 
     public function resendVerification(Request $request): RedirectResponse
@@ -219,7 +218,7 @@ class StudentAuthController extends Controller
         Mail::to($student->email)->send(new EmailVerificationMail($student));
 
         return redirect()->route('campus.verification.notice')
-            ->with('info', 'Nou codi enviat a ' . $student->email . '. Introduïu-lo aquí.');
+            ->with('info', __('Nou codi enviat a :email. Introduïu-lo aquí.', ['email' => $student->email]));
     }
 
     // ── Recuperació de contrasenya (OTP) ──────────────────────────────────────
@@ -244,7 +243,7 @@ class StudentAuthController extends Controller
         $request->session()->put('password_reset_email', $email);
 
         return redirect()->route('campus.password.code')
-            ->with('info', 'Si existeix un compte amb ' . $email . ', hem enviat un codi de recuperació al correu.');
+            ->with('info', __('Si existeix un compte amb :email, hem enviat un codi de recuperació al correu.', ['email' => $email]));
     }
 
     public function showPasswordResetCode(Request $request): View|RedirectResponse
@@ -273,7 +272,7 @@ class StudentAuthController extends Controller
         $student = CampusStudent::where('email', $email)->first();
 
         if (! $student) {
-            return back()->withErrors(['code' => 'No s\'ha trobat el compte.']);
+            return back()->withErrors(['code' => __('No s\'ha trobat el compte.')]);
         }
 
         $student->increment('verification_attempts');
@@ -283,13 +282,12 @@ class StudentAuthController extends Controller
 
             if ($attemptsLeft === 0) {
                 return back()->withErrors(['code' =>
-                    'Massa intents incorrectes. Sol·liciteu un nou codi.'
+                    __('Massa intents incorrectes. Sol·liciteu un nou codi.')
                 ]);
             }
 
             return back()->withErrors(['code' =>
-                'Codi incorrecte o caducat. Us queden ' . $attemptsLeft . ' ' .
-                ($attemptsLeft === 1 ? 'intent' : 'intents') . '.'
+                trans_choice('Codi incorrecte o caducat. Us queda :count intent.|Codi incorrecte o caducat. Us queden :count intents.', $attemptsLeft)
             ]);
         }
 
@@ -305,6 +303,6 @@ class StudentAuthController extends Controller
         $request->session()->forget('password_reset_email');
 
         return redirect()->route('campus.login')
-            ->with('success', '✓ Contrasenya actualitzada correctament. Ja podeu accedir.');
+            ->with('success', __('✓ Contrasenya actualitzada correctament. Ja podeu accedir.'));
     }
 }

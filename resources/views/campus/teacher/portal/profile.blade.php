@@ -25,7 +25,7 @@
         </div>
         <div>
             <p class="text-gray-400 text-xs mb-0.5">{{ __('Estat') }}</p>
-            <p>{{ \App\Models\CampusTeacher::STATUSES[$teacher->status] ?? $teacher->status }}</p>
+            <p>{{ __(\App\Models\CampusTeacher::STATUSES[$teacher->status] ?? $teacher->status) }}</p>
         </div>
     </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Mail\Campus;
 
+use App\Support\Locales;
 use App\Models\CampusQueueEntry;
 use App\Settings\SettingStore;
 use Illuminate\Mail\Mailable;
@@ -14,12 +15,15 @@ class QueueAccessMail extends Mailable
 {
     use SerializesModels;
 
-    public function __construct(public readonly CampusQueueEntry $entry) {}
+    public function __construct(public readonly CampusQueueEntry $entry)
+    {
+        $this->locale(Locales::resolve(null, $entry->tenant));
+    }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '🚀 Ara és el teu torn! Codi d\'accés — ' . config('app.name'),
+            subject: '🚀 ' . __('Ara és el teu torn! Codi d\'accés') . ' — ' . config('app.name'),
         );
     }
 

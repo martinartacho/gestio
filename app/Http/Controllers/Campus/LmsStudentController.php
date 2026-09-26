@@ -114,7 +114,7 @@ class LmsStudentController extends Controller
             );
         }
 
-        return back()->with('success', '✓ Lliçó marcada com a completada.');
+        return back()->with('success', __('✓ Lliçó marcada com a completada.'));
     }
 
     // ─── Desar resposta a una pregunta ────────────────────────────────────────
@@ -184,7 +184,7 @@ class LmsStudentController extends Controller
             'lesson' => $lesson->id,
         ]) . '#q-' . $questionIndex;
 
-        return redirect($lessonUrl)->with('success', '✓ Resposta desada.');
+        return redirect($lessonUrl)->with('success', __('✓ Resposta desada.'));
     }
 
     // ─── Certificat d'un curs ─────────────────────────────────────────────────

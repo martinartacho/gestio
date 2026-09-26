@@ -20,7 +20,7 @@
         @foreach ($enrollments as $enrollment)
             @php
                 $statusColors = \App\Models\CampusEnrollment::STATUS_COLORS;
-                $statusLabels = \App\Models\CampusEnrollment::STATUSES;
+                $statusLabels = translated_labels(\App\Models\CampusEnrollment::STATUSES);
                 $color = $statusColors[$enrollment->status] ?? 'gray';
                 $colorClasses = [
                     'success' => 'bg-green-100 text-green-800',

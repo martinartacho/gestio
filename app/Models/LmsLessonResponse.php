@@ -71,7 +71,7 @@ class LmsLessonResponse extends Model
     public function getDisplayValue(): string
     {
         return match ($this->question_type) {
-            'yes_no'  => $this->response_bool ? 'Sí' : 'No',
+            'yes_no'  => $this->response_bool ? __('Sí') : __('No'),
             'choice_one' => is_array($this->response_choices)
                 ? implode(', ', $this->response_choices)
                 : ($this->response_text ?? '—'),

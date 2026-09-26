@@ -11,7 +11,7 @@ class AuthenticateStudent
     {
         if (! auth('student')->check()) {
             return redirect()->route('campus.login')
-                ->with('info', 'Cal identificar-se per accedir al portal.');
+                ->with('info', __('Cal identificar-se per accedir al portal.'));
         }
 
         return $next($request);
