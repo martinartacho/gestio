@@ -34,6 +34,16 @@
         </div>
     </div>
 
+    <form method="POST" action="{{ route('member.profile.locale') }}"
+          class="mt-4 bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+        @csrf
+        @include('partials.locale-select', ['user' => $member])
+        <button type="submit"
+                class="bg-indigo-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition text-sm">
+            {{ __('site.save') }}
+        </button>
+    </form>
+
     <div style="margin-top:1rem;text-align:center;">
         <a href="{{ route('member.card') }}"
            style="font-size:0.875rem;color:#6366f1;text-decoration:none;">

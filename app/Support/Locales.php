@@ -20,4 +20,9 @@ final class Locales
     {
         return array_keys(self::SUPPORTED);
     }
+
+    public static function rule(): array
+    {
+        return ['nullable', 'string', 'in:'.implode(',', self::codes())];
+    }
 }

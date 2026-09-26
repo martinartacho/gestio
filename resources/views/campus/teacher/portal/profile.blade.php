@@ -54,6 +54,8 @@
                 @enderror
             </div>
 
+            @include('partials.locale-select', ['user' => $teacher])
+
             <hr class="border-gray-100">
 
             <p class="text-sm font-medium text-gray-700">Canviar contrasenya <span class="font-normal text-gray-400">(opcional)</span></p>

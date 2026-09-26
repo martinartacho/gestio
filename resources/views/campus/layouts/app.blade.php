@@ -41,7 +41,7 @@
                         @csrf
                         <button type="submit" class="text-gray-600 hover:text-red-600">Sortir</button>
                     </form>
-                    <span class="text-indigo-700 font-medium">{{ auth('student')->user()->first_name }}</span>
+                    <a href="{{ route('campus.portal.profile') }}" class="text-indigo-700 font-medium hover:underline" title="{{ __('site.my_profile') }}">{{ auth('student')->user()->first_name }}</a>
                 @else
                     <a href="{{ route('campus.login') }}" class="text-gray-600 hover:text-indigo-700">Accedir</a>
                     <a href="{{ route('campus.register') }}" class="bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700">Registrar-se</a>

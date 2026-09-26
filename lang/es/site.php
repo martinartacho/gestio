@@ -55,6 +55,13 @@ return [
     'activate'           => 'Activar',
     'deactivate'         => 'Desactivar',
     'user_activated'     => 'Usuario activado',
+    'my_profile'              => 'Mi perfil',
+    'change_password'         => 'Cambiar contraseña',
+    'optional'                => '(opcional)',
+    'profile_updated'         => 'Perfil actualizado correctamente.',
+    'language'                => 'Idioma',
+    'language_tenant_default' => 'Por defecto de la entidad',
+    'language_saved'          => 'Idioma guardado.',
     'user_deactivated'   => 'Usuario desactivado',
 
     // ── Roles ─────────────────────────────────────────────────────────────

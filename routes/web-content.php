@@ -103,6 +103,8 @@ Route::prefix('portal')->name('campus.')->middleware('campus.enabled')->group(fu
     // ── Portal alumne (requereix auth) ────────────────────────────────────────
     Route::middleware(\App\Http\Middleware\AuthenticateStudent::class)->group(function () {
         Route::get('/meus-cursos', [PortalController::class, 'courses'])->name('portal.courses');
+        Route::get('/perfil', [PortalController::class, 'editProfile'])->name('portal.profile');
+        Route::post('/perfil', [PortalController::class, 'updateProfile'])->name('portal.profile.update');
 
         // ── Carret de compra ──────────────────────────────────────────────────────
         Route::get('/carret', [CartController::class, 'show'])->name('cart.show');
@@ -217,5 +219,6 @@ Route::prefix('socis')->name('member.')->middleware('associats.enabled')->group(
     Route::middleware(\App\Http\Middleware\AuthenticateMember::class)->group(function () {
         Route::get('/carnet', [MemberPortalController::class, 'card'])->name('card');
         Route::get('/perfil', [MemberPortalController::class, 'profile'])->name('profile');
+        Route::post('/perfil/idioma', [MemberPortalController::class, 'updateLocale'])->name('profile.locale');
     });
 });

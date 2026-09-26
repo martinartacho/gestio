@@ -260,6 +260,7 @@ class TeacherPortalController extends Controller
         $data = $request->validate([
             'phone'    => ['nullable', 'string', 'max:20'],
             'bio'      => ['nullable', 'string', 'max:1000'],
+            'locale'   => \App\Support\Locales::rule(),
             'password' => ['nullable', 'confirmed', Password::min(8)],
         ]);
 
