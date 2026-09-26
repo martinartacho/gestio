@@ -16,7 +16,7 @@ class LessonResponsesRelationManager extends RelationManager
 
     public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
     {
-        return 'Respostes alumnes';
+        return __('Respostes alumnes');
     }
 
     public static function canViewForRecord(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): bool
@@ -50,23 +50,23 @@ class LessonResponsesRelationManager extends RelationManager
             ->paginated([25, 50, 100])
             ->columns([
                 Tables\Columns\TextColumn::make('student.full_name')
-                    ->label('Alumne/a')
+                    ->label(__('Alumne/a'))
                     ->searchable(['campus_students.first_name', 'campus_students.last_name'])
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('lesson.session_number')
-                    ->label('Sessió')
+                    ->label(__('Sessió'))
                     ->badge()
                     ->color('gray')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('question_index')
-                    ->label('Pregunta #')
+                    ->label(__('Pregunta #'))
                     ->badge()
                     ->color('indigo'),
 
                 Tables\Columns\TextColumn::make('question_type')
-                    ->label('Tipus')
+                    ->label(__('Tipus'))
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
                         'yes_no'               => 'success',
@@ -77,28 +77,28 @@ class LessonResponsesRelationManager extends RelationManager
                         default                => 'gray',
                     })
                     ->formatStateUsing(fn (string $state) => match ($state) {
-                        'yes_no'               => 'Sí/No',
-                        'choice_one'           => 'Única',
-                        'choice_many'          => 'Múltiple',
-                        'open_text'            => 'Text obert',
-                        'select_from_examples' => 'Exemples',
+                        'yes_no'               => __('Sí/No'),
+                        'choice_one'           => __('Única'),
+                        'choice_many'          => __('Múltiple'),
+                        'open_text'            => __('Text obert'),
+                        'select_from_examples' => __('Exemples'),
                         default                => $state,
                     }),
 
                 Tables\Columns\TextColumn::make('display_value')
-                    ->label('Resposta')
+                    ->label(__('Resposta'))
                     ->getStateUsing(fn (LmsLessonResponse $r) => $r->getDisplayValue())
                     ->limit(60)
                     ->tooltip(fn (LmsLessonResponse $r) => $r->getDisplayValue()),
 
                 Tables\Columns\TextColumn::make('score')
-                    ->label('Punts')
+                    ->label(__('Punts'))
                     ->badge()
                     ->color(fn ($state) => $state === null ? 'gray' : ($state > 0 ? 'success' : 'danger'))
                     ->formatStateUsing(fn ($state) => $state === null ? '—' : number_format($state, 2)),
 
                 Tables\Columns\IconColumn::make('auto_graded')
-                    ->label('Auto')
+                    ->label(__('Auto'))
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-minus-circle')
@@ -106,24 +106,24 @@ class LessonResponsesRelationManager extends RelationManager
                     ->falseColor('gray'),
 
                 Tables\Columns\TextColumn::make('submitted_at')
-                    ->label('Enviada')
+                    ->label(__('Enviada'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('lesson')
-                    ->label('Sessió')
+                    ->label(__('Sessió'))
                     ->relationship('lesson', 'session_number')
-                    ->getOptionLabelFromRecordUsing(fn ($r) => 'Sessió ' . $r->session_number . ' · ' . $r->title),
+                    ->getOptionLabelFromRecordUsing(fn ($r) => __('Sessió :number', ['number' => $r->session_number]) . ' · ' . $r->title),
 
                 Tables\Filters\SelectFilter::make('question_type')
-                    ->label('Tipus de pregunta')
+                    ->label(__('Tipus de pregunta'))
                     ->options([
-                        'open_text'            => 'Text obert',
-                        'select_from_examples' => 'Exemples',
-                        'choice_one'           => 'Opció única',
-                        'choice_many'          => 'Múltiple opció',
-                        'yes_no'               => 'Sí / No',
+                        'open_text'            => __('Text obert'),
+                        'select_from_examples' => __('Exemples'),
+                        'choice_one'           => __('Opció única'),
+                        'choice_many'          => __('Múltiple opció'),
+                        'yes_no'               => __('Sí / No'),
                     ]),
             ])
             ->headerActions([])

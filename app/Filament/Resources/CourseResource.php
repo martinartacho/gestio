@@ -72,10 +72,10 @@ class CourseResource extends Resource
                 ->description(function (?CampusCourse $record): ?string {
                     if (! $record) return null;
                     return match ($record->status) {
-                        'active' => '⚠️ Curs actiu — títol, codi, temporada, preu i format estan bloquejats. Només admin pot desbloquejar',
+                        'active' => __('⚠️ Curs actiu — títol, codi, temporada, preu i format estan bloquejats. Només admin pot desbloquejar'),
                         'closed' => auth()->user()?->hasRole('admin')
-                            ? '🔓 Curs tancat — edició excepcional (admin).'
-                            : '🔒 Curs tancat — tots els camps estan bloquejats.',
+                            ? __('🔓 Curs tancat — edició excepcional (admin).')
+                            : __('🔒 Curs tancat — tots els camps estan bloquejats.'),
                         default  => null,
                     };
                 })
@@ -101,8 +101,8 @@ class CourseResource extends Resource
                 TextInput::make('code')
                     ->label(__('site.course_code'))
                     ->maxLength(30)
-                    ->helperText('Ex: SAN101, MON-DIGITAL. Auto-generat des del títol si s\'omite.')
-                    ->placeholder('Auto-generat')
+                    ->helperText(__('Ex: SAN101, MON-DIGITAL. Auto-generat des del títol si s\'omite.'))
+                    ->placeholder(__('Auto-generat'))
                     ->disabled($lockIdentity),
 
                 Select::make('category_id')
@@ -135,7 +135,7 @@ class CourseResource extends Resource
                     ->hint(function (Get $get): ?string {
                         $season = CampusSeason::find($get('season_id'));
                         if (! $season || $season->status === 'draft') return null;
-                        return 'Atenció: "' . $season->name . '" és ' . (CampusSeason::STATUSES[$season->status] ?? $season->status);
+                        return __('Atenció: ":season" és :status', ['season' => $season->name, 'status' => __(CampusSeason::STATUSES[$season->status] ?? $season->status)]);
                     })
                     ->hintColor('warning')
                     ->afterStateUpdated(function ($state, Set $set): void {
@@ -194,12 +194,12 @@ class CourseResource extends Resource
                         }
                         return empty($late)
                             ? null
-                            : 'Sessions fora del període: ' . implode(', ', $late) . ' (data final: ' . $endCarbon->format('d/m/Y') . ').';
+                            : __('Sessions fora del període: :dates (data final: :end).', ['dates' => implode(', ', $late), 'end' => $endCarbon->format('d/m/Y')]);
                     })
                     ->hintColor('warning')
                     ->hintAction(
                         Action::make('generateSessionDates')
-                            ->label('Auto-generar')
+                            ->label(__('Auto-generar'))
                             ->icon('heroicon-m-calendar-days')
                             ->action(function (Get $get, Set $set): void {
                                 $startDate = $get('start_date');
@@ -239,7 +239,7 @@ class CourseResource extends Resource
                         $get('status') === 'active'
                         && in_array($get('format'), ['presencial', 'semipresencial', 'hibrid'])
                     )
-                    ->validationMessages(['required' => 'Cal assignar un espai per activar un curs presencial.'])
+                    ->validationMessages(['required' => __('Cal assignar un espai per activar un curs presencial.')])
                     ->disabled($lockAll),
 
                 Select::make('time_slot_id')
@@ -250,7 +250,7 @@ class CourseResource extends Resource
                         $get('status') === 'active'
                         && in_array($get('format'), ['presencial', 'semipresencial', 'hibrid'])
                     )
-                    ->validationMessages(['required' => 'Cal assignar una franja horària per activar un curs presencial.'])
+                    ->validationMessages(['required' => __('Cal assignar una franja horària per activar un curs presencial.')])
                     ->disabled($lockAll),
             ]),
 
@@ -326,8 +326,8 @@ class CourseResource extends Resource
                     ->disabled($lockAll),
 
                 Toggle::make('open_enrollment')
-                    ->label('Inscripció sempre oberta')
-                    ->helperText('Permet inscripcions en qualsevol moment, sense restricció de temporada ni de dates. Ideal per a cursos online o LMS.')
+                    ->label(__('Inscripció sempre oberta'))
+                    ->helperText(__('Permet inscripcions en qualsevol moment, sense restricció de temporada ni de dates. Ideal per a cursos online o LMS.'))
                     ->default(false)->inline(false)->columnSpanFull()
                     ->disabled($lockAll),
             ]),
@@ -404,7 +404,7 @@ class CourseResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\IconColumn::make('open_enrollment')
-                    ->label('∞ Inscr.')
+                    ->label(__('∞ Inscr.'))
                     ->boolean()
                     ->trueColor('info')->falseColor('gray')
                     ->trueIcon('heroicon-o-lock-open')
@@ -446,10 +446,10 @@ class CourseResource extends Resource
                     ->native(false),
 
                 Tables\Filters\TernaryFilter::make('course_type')
-                    ->label('Tipus')
-                    ->placeholder('Tots')
-                    ->trueLabel('Sols plantilles / pare')
-                    ->falseLabel('Sols edicions')
+                    ->label(__('Tipus'))
+                    ->placeholder(__('Tots'))
+                    ->trueLabel(__('Sols plantilles / pare'))
+                    ->falseLabel(__('Sols edicions'))
                     ->queries(
                         true:  fn($query) => $query->whereNull('parent_id'),
                         false: fn($query) => $query->whereNotNull('parent_id'),
@@ -460,13 +460,13 @@ class CourseResource extends Resource
                 EditAction::make()->label(__('site.edit')),
                 ActionGroup::make([
                     Action::make('clone')
-                        ->label('Clonar')
+                        ->label(__('Clonar'))
                         ->icon('heroicon-o-document-duplicate')
                         ->color('info')
                         ->requiresConfirmation()
-                        ->modalHeading(fn(CampusCourse $r) => 'Clonar "' . $r->title . '"')
-                        ->modalDescription('Es crearà una còpia en estat Esborrany. Podràs ajustar temporada, dates i codi a continuació.')
-                        ->modalSubmitActionLabel('Clonar')
+                        ->modalHeading(fn(CampusCourse $r) => __('Clonar ":title"', ['title' => $r->title]))
+                        ->modalDescription(__('Es crearà una còpia en estat Esborrany. Podràs ajustar temporada, dates i codi a continuació.'))
+                        ->modalSubmitActionLabel(__('Clonar'))
                         ->action(function (CampusCourse $record) {
                             $clone = $record->replicate();
                             $clone->status         = 'draft';
@@ -482,24 +482,24 @@ class CourseResource extends Resource
                         }),
 
                     Action::make('preview')
-                        ->label('Previsualitzar')
+                        ->label(__('Previsualitzar'))
                         ->icon('heroicon-o-eye')
                         ->color('gray')
                         ->url(fn(CampusCourse $r) => route('campus.catalog.show', ['tenant' => current_tenant()?->slug, 'slug' => $r->slug, 'preview' => 1]))
                         ->openUrlInNewTab(),
 
                     DeleteAction::make()->label(__('site.delete')),
-                ])->iconButton()->tooltip('Més accions'),
+                ])->iconButton()->tooltip(__('Més accions')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     BulkAction::make('bulkEditField')
-                        ->label('Canviar un camp en bloc')
+                        ->label(__('Canviar un camp en bloc'))
                         ->icon('heroicon-o-pencil-square')
                         ->color('warning')
                         ->form([
                             Select::make('field')
-                                ->label('Camp a canviar')
+                                ->label(__('Camp a canviar'))
                                 ->options([
                                     'status'          => __('site.status'),
                                     'price'           => __('site.course_price'),
@@ -507,13 +507,13 @@ class CourseResource extends Resource
                                     'category_id'     => __('site.category'),
                                     'season_id'       => __('site.season'),
                                     'is_public'       => __('site.public'),
-                                    'open_enrollment' => 'Inscripció sempre oberta',
+                                    'open_enrollment' => __('Inscripció sempre oberta'),
                                     'max_students'    => __('site.course_max'),
                                 ])
                                 ->native(false)->live()->required(),
 
                             Select::make('value')
-                                ->label('Valor nou')
+                                ->label(__('Valor nou'))
                                 ->options(fn (Get $get) => match ($get('field')) {
                                     'status'      => CampusCourse::STATUSES,
                                     'format'      => CampusCourse::FORMATS,
@@ -525,7 +525,7 @@ class CourseResource extends Resource
                                 ->native(false)->required(),
 
                             TextInput::make('value_number')
-                                ->label('Valor nou')
+                                ->label(__('Valor nou'))
                                 ->numeric()
                                 ->prefix(fn (Get $get) => $get('field') === 'price' ? '€' : null)
                                 ->helperText(fn (Get $get) => $get('field') === 'max_students' ? __('site.course_max_hint') : null)
@@ -533,11 +533,11 @@ class CourseResource extends Resource
                                 ->required(fn (Get $get) => $get('field') === 'price'),
 
                             Toggle::make('value_bool')
-                                ->label('Valor nou')
+                                ->label(__('Valor nou'))
                                 ->visible(fn (Get $get) => in_array($get('field'), ['is_public', 'open_enrollment'])),
                         ])
                         ->requiresConfirmation()
-                        ->modalDescription('Se sobreescriurà aquest camp a tots els cursos seleccionats.')
+                        ->modalDescription(__('Se sobreescriurà aquest camp a tots els cursos seleccionats.'))
                         ->action(function (array $data, \Illuminate\Support\Collection $records): void {
                             $value = match (true) {
                                 in_array($data['field'], ['status', 'format', 'category_id', 'season_id']) => $data['value'],

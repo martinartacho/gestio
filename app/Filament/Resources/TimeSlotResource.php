@@ -48,7 +48,7 @@ class TimeSlotResource extends Resource
                 TextInput::make('code')
                     ->label(__('site.timeslot_code'))
                     ->required()->maxLength(10)
-                    ->helperText('Ex: DL10, DC16, DJ18'),
+                    ->helperText(__('Ex: DL10, DC16, DJ18')),
 
                 TimePicker::make('start_time')
                     ->label(__('site.timeslot_start'))
@@ -63,7 +63,7 @@ class TimeSlotResource extends Resource
                     ->label(__('site.description'))
                     ->required()->maxLength(100)
                     ->columnSpanFull()
-                    ->helperText('Ex: Dilluns 10:00–11:30'),
+                    ->helperText(__('Ex: Dilluns 10:00–11:30')),
 
                 Toggle::make('is_active')
                     ->label(__('site.active'))

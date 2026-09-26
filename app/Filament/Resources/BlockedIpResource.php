@@ -24,10 +24,10 @@ class BlockedIpResource extends Resource
     protected static ?string $model = BlockedIp::class;
 
     public static function getNavigationIcon(): string   { return 'heroicon-o-shield-exclamation'; }
-    public static function getNavigationLabel(): string  { return 'IPs bloquejades'; }
+    public static function getNavigationLabel(): string  { return __('IPs bloquejades'); }
     public static function getNavigationGroup(): string  { return __('site.treasury_group'); }
-    public static function getModelLabel(): string       { return 'IP bloquejada'; }
-    public static function getPluralModelLabel(): string { return 'IPs bloquejades'; }
+    public static function getModelLabel(): string       { return __('IP bloquejada'); }
+    public static function getPluralModelLabel(): string { return __('IPs bloquejades'); }
     public static function getNavigationSort(): int      { return 10; }
 
     public static function canAccess(): bool
@@ -46,21 +46,21 @@ class BlockedIpResource extends Resource
     {
         return $schema->components([
             TextInput::make('ip')
-                ->label('Adreça IP')
-                ->placeholder('192.168.1.1 o 2001:db8::1')
+                ->label(__('Adreça IP'))
+                ->placeholder(__('192.168.1.1 o 2001:db8::1'))
                 ->required()
                 ->maxLength(45)
                 ->rules(['ip']),
 
             Textarea::make('reason')
-                ->label('Motiu del bloqueig')
+                ->label(__('Motiu del bloqueig'))
                 ->rows(2)
                 ->maxLength(300),
 
             DateTimePicker::make('expires_at')
-                ->label('Caduca el (buit = permanent)')
+                ->label(__('Caduca el (buit = permanent)'))
                 ->native(false)
-                ->helperText('Deixeu en blanc per a un bloqueig permanent.'),
+                ->helperText(__('Deixeu en blanc per a un bloqueig permanent.')),
         ]);
     }
 
@@ -69,39 +69,39 @@ class BlockedIpResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('ip')
-                    ->label('Adreça IP')
+                    ->label(__('Adreça IP'))
                     ->fontFamily('mono')
                     ->searchable()
                     ->copyable(),
 
                 Tables\Columns\TextColumn::make('reason')
-                    ->label('Motiu')
+                    ->label(__('Motiu'))
                     ->limit(50)
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('expires_at')
-                    ->label('Caduca')
+                    ->label(__('Caduca'))
                     ->dateTime('d/m/Y H:i')
-                    ->placeholder('Permanent')
+                    ->placeholder(__('Permanent'))
                     ->color(fn($state) => $state && now()->gt($state) ? 'danger' : 'gray'),
 
                 Tables\Columns\IconColumn::make('active')
-                    ->label('Actiu')
+                    ->label(__('Actiu'))
                     ->boolean()
                     ->getStateUsing(fn($record) => $record->isActive()),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Bloqueig')
+                    ->label(__('Bloqueig'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->actions([
-                DeleteAction::make()->label('Desbloquejar'),
+                DeleteAction::make()->label(__('Desbloquejar')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Desbloquejar seleccionades'),
+                    DeleteBulkAction::make()->label(__('Desbloquejar seleccionades')),
                 ]),
             ]);
     }

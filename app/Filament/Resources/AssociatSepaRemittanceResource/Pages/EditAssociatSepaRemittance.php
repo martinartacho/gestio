@@ -20,7 +20,7 @@ class EditAssociatSepaRemittance extends EditRecord
     {
         return [
             Action::make('download_xml')
-                ->label('Descarregar pain.008.xml')
+                ->label(__('Descarregar pain.008.xml'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
                 ->visible(fn () => $this->record->xml_path && Storage::disk('local')->exists($this->record->xml_path))
@@ -33,7 +33,7 @@ class EditAssociatSepaRemittance extends EditRecord
                 }),
 
             Action::make('regenerate_xml')
-                ->label('Regenerar XML')
+                ->label(__('Regenerar XML'))
                 ->icon('heroicon-o-arrow-path')
                 ->color('warning')
                 ->requiresConfirmation()
@@ -50,17 +50,17 @@ class EditAssociatSepaRemittance extends EditRecord
                         'generated_at' => now(),
                     ]);
 
-                    Notification::make()->title('XML regenerat')->success()->send();
+                    Notification::make()->title(__('XML regenerat'))->success()->send();
                 }),
 
             Action::make('rename_reference')
-                ->label('Reanomenar')
+                ->label(__('Reanomenar'))
                 ->icon('heroicon-o-pencil-square')
                 ->color('gray')
-                ->modalHeading('Canviar la referència de la remesa')
+                ->modalHeading(__('Canviar la referència de la remesa'))
                 ->form([
                     TextInput::make('reference')
-                        ->label('Nova referència')
+                        ->label(__('Nova referència'))
                         ->default(fn () => $this->record->reference)
                         ->required()
                         ->maxLength(35)
@@ -84,7 +84,7 @@ class EditAssociatSepaRemittance extends EditRecord
                     $this->record->update($updates);
                     $this->refreshFormData(['reference', 'xml_path']);
 
-                    Notification::make()->title('Referència actualitzada')->success()->send();
+                    Notification::make()->title(__('Referència actualitzada'))->success()->send();
                 }),
 
             DeleteAction::make()

@@ -23,25 +23,25 @@ class ListAssociatSepaRemittances extends ListRecords
     {
         return [
             Action::make('generate_remittance')
-                ->label('Nova remesa SEPA')
+                ->label(__('Nova remesa SEPA'))
                 ->icon('heroicon-o-plus-circle')
                 ->color('indigo')
-                ->modalHeading('Generar nova remesa SEPA')
-                ->modalDescription('Es crearà una remesa amb les quotes pendents del període seleccionat que tinguin mandat SEPA configurat.')
+                ->modalHeading(__('Generar nova remesa SEPA'))
+                ->modalDescription(__('Es crearà una remesa amb les quotes pendents del període seleccionat que tinguin mandat SEPA configurat.'))
                 ->form([
                     TextInput::make('year')
-                        ->label('Any')
+                        ->label(__('Any'))
                         ->numeric()
                         ->default(now()->year)
                         ->required(),
 
                     Select::make('period')
-                        ->label('Periodicitat')
+                        ->label(__('Periodicitat'))
                         ->options([
-                            'annual'      => 'Anual',
-                            'semi-annual' => 'Semestral',
-                            'quarterly'   => 'Trimestral',
-                            'monthly'     => 'Mensual',
+                            'annual'      => __('Anual'),
+                            'semi-annual' => __('Semestral'),
+                            'quarterly'   => __('Trimestral'),
+                            'monthly'     => __('Mensual'),
                         ])
                         ->default('annual')
                         ->live()
@@ -49,7 +49,7 @@ class ListAssociatSepaRemittances extends ListRecords
                         ->required(),
 
                     Select::make('period_number')
-                        ->label('Període específic')
+                        ->label(__('Període específic'))
                         ->options(fn (Get $get) => static::periodNumberOptions($get('period') ?? 'annual'))
                         ->default('1')
                         ->live()
@@ -80,8 +80,8 @@ class ListAssociatSepaRemittances extends ListRecords
 
                     if ($quotes->isEmpty()) {
                         Notification::make()
-                            ->title('Sense quotes pendents')
-                            ->body('No hi ha quotes pendents amb mandat SEPA configurat per al període seleccionat.')
+                            ->title(__('Sense quotes pendents'))
+                            ->body(__('No hi ha quotes pendents amb mandat SEPA configurat per al període seleccionat.'))
                             ->warning()
                             ->send();
                         return;
@@ -113,13 +113,13 @@ class ListAssociatSepaRemittances extends ListRecords
                     ]);
 
                     Notification::make()
-                        ->title('Remesa generada')
+                        ->title(__('Remesa generada'))
                         ->body("{$remittance->reference} — {$quotes->count()} socis — {$remittance->total_amount} €")
                         ->success()
                         ->send();
                 }),
 
-            CreateAction::make()->label('Remesa manual'),
+            CreateAction::make()->label(__('Remesa manual')),
         ];
     }
 
@@ -127,22 +127,22 @@ class ListAssociatSepaRemittances extends ListRecords
     {
         return match ($period) {
             'semi-annual' => [
-                '1' => '1r semestre',
-                '2' => '2n semestre',
+                '1' => __('1r semestre'),
+                '2' => __('2n semestre'),
             ],
             'quarterly' => [
-                '1' => '1r trimestre',
-                '2' => '2n trimestre',
-                '3' => '3r trimestre',
-                '4' => '4t trimestre',
+                '1' => __('1r trimestre'),
+                '2' => __('2n trimestre'),
+                '3' => __('3r trimestre'),
+                '4' => __('4t trimestre'),
             ],
             'monthly' => [
-                '1'  => 'Gener',   '2'  => 'Febrer',  '3'  => 'Març',
-                '4'  => 'Abril',   '5'  => 'Maig',     '6'  => 'Juny',
-                '7'  => 'Juliol',  '8'  => 'Agost',    '9'  => 'Setembre',
-                '10' => 'Octubre', '11' => 'Novembre', '12' => 'Desembre',
+                '1'  => __('Gener'),   '2'  => __('Febrer'),  '3'  => __('Març'),
+                '4'  => __('Abril'),   '5'  => __('Maig'),     '6'  => __('Juny'),
+                '7'  => __('Juliol'),  '8'  => __('Agost'),    '9'  => __('Setembre'),
+                '10' => __('Octubre'), '11' => __('Novembre'), '12' => __('Desembre'),
             ],
-            default => ['1' => 'Anual'],
+            default => ['1' => __('Anual')],
         };
     }
 }

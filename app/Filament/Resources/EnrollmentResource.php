@@ -59,7 +59,7 @@ class EnrollmentResource extends Resource
 
                 Select::make('status')
                     ->label(__('site.status'))
-                    ->options(CampusEnrollment::STATUSES)
+                    ->options(translated_labels(CampusEnrollment::STATUSES))
                     ->default('pending')->required()->native(false),
 
                 DatePicker::make('enrollment_date')
@@ -86,7 +86,7 @@ class EnrollmentResource extends Resource
 
                 TextInput::make('dni')
                     ->label(__('site.enrollment_dni'))
-                    ->maxLength(20)->placeholder('NIF / NIE / Passaport'),
+                    ->maxLength(20)->placeholder(__('NIF / NIE / Passaport')),
             ]),
 
             Section::make(__('site.enrollment_bank'))->columns(2)->schema([
@@ -145,33 +145,33 @@ class EnrollmentResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('site.status'))
-                    ->formatStateUsing(fn($state) => CampusEnrollment::STATUSES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusEnrollment::STATUSES[$state] ?? $state))
                     ->badge()
                     ->color(fn($state) => CampusEnrollment::STATUS_COLORS[$state] ?? 'gray'),
 
                 Tables\Columns\TextColumn::make('amount')
-                    ->label('Import')
+                    ->label(__('Import'))
                     ->money('EUR', locale: 'ca')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('refunded_amount')
-                    ->label('Retornat')
+                    ->label(__('Retornat'))
                     ->money('EUR', locale: 'ca')
                     ->placeholder('—')
                     ->color('warning')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('payment_reference')
-                    ->label('Ref.')
+                    ->label(__('Ref.'))
                     ->fontFamily('mono')
                     ->copyable()
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('payment_method')
-                    ->label('Mètode')
-                    ->formatStateUsing(fn($state) => CampusEnrollment::PAYMENT_METHODS[$state] ?? '—')
+                    ->label(__('Mètode'))
+                    ->formatStateUsing(fn($state) => __(CampusEnrollment::PAYMENT_METHODS[$state] ?? '—'))
                     ->badge()
                     ->color(fn($state) => match($state) {
                         'stripe'   => 'blue',
@@ -194,7 +194,7 @@ class EnrollmentResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
-                    ->options(CampusEnrollment::STATUSES)
+                    ->options(translated_labels(CampusEnrollment::STATUSES))
                     ->native(false),
 
                 Tables\Filters\SelectFilter::make('course_id')
@@ -203,47 +203,47 @@ class EnrollmentResource extends Resource
                     ->searchable()->native(false),
 
                 Tables\Filters\SelectFilter::make('payment_method')
-                    ->label('Mètode de pagament')
-                    ->options(CampusEnrollment::PAYMENT_METHODS)
+                    ->label(__('Mètode de pagament'))
+                    ->options(translated_labels(CampusEnrollment::PAYMENT_METHODS))
                     ->native(false),
             ])
             ->actions([
                 Action::make('confirmar_pagament')
-                    ->label('✓ Confirmar pagament')
+                    ->label(__('✓ Confirmar pagament'))
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->visible(fn($record) => $record->status === 'pending' && $record->isManualPayment())
                     ->requiresConfirmation()
-                    ->modalHeading('Confirmar recepció del pagament')
-                    ->modalDescription(fn($record) => "Confirmar que s'ha rebut el pagament de {$record->full_name}?")
+                    ->modalHeading(__('Confirmar recepció del pagament'))
+                    ->modalDescription(fn($record) => __('Confirmar que s\'ha rebut el pagament de :name?', ['name' => $record->full_name]))
                     ->action(fn($record) => $record->update(['status' => 'paid', 'paid_at' => now()]))
-                    ->successNotificationTitle('Pagament confirmat'),
+                    ->successNotificationTitle(__('Pagament confirmat')),
 
                 Action::make('registrar_devolucio')
-                    ->label('↩ Devolució')
+                    ->label(__('↩ Devolució'))
                     ->color('warning')
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->visible(fn($record) => in_array($record->status, ['paid', 'confirmed']))
-                    ->modalHeading(fn($record) => 'Devolució — ' . $record->full_name)
+                    ->modalHeading(fn($record) => __('Devolució') . ' — ' . $record->full_name)
                     ->modalDescription(fn($record) => $record->payment_method === 'stripe'
-                        ? '⚡ Stripe: el reemborsament s\'enviarà automàticament a la targeta.'
-                        : '📋 Manual: el reemborsament s\'ha de fer externament pel mateix canal de pagament.')
+                        ? __('⚡ Stripe: el reemborsament s\'enviarà automàticament a la targeta.')
+                        : __('📋 Manual: el reemborsament s\'ha de fer externament pel mateix canal de pagament.'))
                     ->form(fn($record) => [
                         TextInput::make('refunded_amount')
-                            ->label('Import a retornar (€)')
+                            ->label(__('Import a retornar (€)'))
                             ->numeric()
                             ->default(fn() => $record->amount)
                             ->minValue(0.01)
                             ->maxValue(fn() => $record->amount)
                             ->suffix('€')
                             ->required()
-                            ->helperText("Import original: {$record->amount} € — podeu reduir-lo per devolucions parcials."),
+                            ->helperText(__('Import original: :amount € — podeu reduir-lo per devolucions parcials.', ['amount' => $record->amount])),
 
                         Textarea::make('refund_notes')
-                            ->label('Observació interna (opcional)')
+                            ->label(__('Observació interna (opcional)'))
                             ->rows(2)
                             ->maxLength(500)
-                            ->placeholder('Motiu de la devolució, referència bancària, etc.'),
+                            ->placeholder(__('Motiu de la devolució, referència bancària, etc.')),
                     ])
                     ->action(function ($record, array $data) {
                         $refundedAmount = (float) $data['refunded_amount'];
@@ -261,7 +261,7 @@ class EnrollmentResource extends Resource
                                 $stripeRefundId = $refund->id;
                             } catch (\Stripe\Exception\ApiErrorException $e) {
                                 Notification::make()
-                                    ->title('Error Stripe')
+                                    ->title(__('Error Stripe'))
                                     ->body($e->getMessage())
                                     ->danger()
                                     ->send();
@@ -282,8 +282,8 @@ class EnrollmentResource extends Resource
                         Mail::to($email)->send(new RefundConfirmationMail($record, $isStripe));
 
                         Notification::make()
-                            ->title('Devolució registrada')
-                            ->body("S'ha processat la devolució de {$refundedAmount} € i s'ha notificat l'alumne.")
+                            ->title(__('Devolució registrada'))
+                            ->body(__('S\'ha processat la devolució de :amount € i s\'ha notificat l\'alumne.', ['amount' => $refundedAmount]))
                             ->success()
                             ->send();
                     }),

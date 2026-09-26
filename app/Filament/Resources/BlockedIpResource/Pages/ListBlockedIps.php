@@ -12,6 +12,6 @@ class ListBlockedIps extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()->label('Bloquejar IP')];
+        return [CreateAction::make()->label(__('Bloquejar IP'))];
     }
 }

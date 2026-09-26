@@ -56,7 +56,7 @@ class PaymentResource extends Resource
 
                 Select::make('method')
                     ->label(__('site.payment_method'))
-                    ->options(CampusPayment::METHODS)
+                    ->options(translated_labels(CampusPayment::METHODS))
                     ->default('transfer')->required()->native(false),
 
                 DatePicker::make('payment_date')
@@ -65,7 +65,7 @@ class PaymentResource extends Resource
 
                 Select::make('status')
                     ->label(__('site.status'))
-                    ->options(CampusPayment::STATUSES)
+                    ->options(translated_labels(CampusPayment::STATUSES))
                     ->default('pending')->required()->native(false),
 
                 TextInput::make('reference')
@@ -99,7 +99,7 @@ class PaymentResource extends Resource
 
                 Tables\Columns\TextColumn::make('method')
                     ->label(__('site.payment_method'))
-                    ->formatStateUsing(fn($state) => CampusPayment::METHODS[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusPayment::METHODS[$state] ?? $state))
                     ->badge()->color('gray'),
 
                 Tables\Columns\TextColumn::make('payment_date')
@@ -108,7 +108,7 @@ class PaymentResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('site.status'))
-                    ->formatStateUsing(fn($state) => CampusPayment::STATUSES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusPayment::STATUSES[$state] ?? $state))
                     ->badge()
                     ->color(fn($state) => CampusPayment::STATUS_COLORS[$state] ?? 'gray'),
 
@@ -120,12 +120,12 @@ class PaymentResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
-                    ->options(CampusPayment::STATUSES)
+                    ->options(translated_labels(CampusPayment::STATUSES))
                     ->native(false),
 
                 Tables\Filters\SelectFilter::make('method')
                     ->label(__('site.payment_method'))
-                    ->options(CampusPayment::METHODS)
+                    ->options(translated_labels(CampusPayment::METHODS))
                     ->native(false),
             ])
             ->actions([

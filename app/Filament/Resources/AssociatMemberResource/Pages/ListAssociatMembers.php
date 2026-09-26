@@ -18,18 +18,18 @@ class ListAssociatMembers extends ListRecords
     {
         return [
             Action::make('attachExistingMember')
-                ->label('Afegir soci existent')
+                ->label(__('Afegir soci existent'))
                 ->icon('heroicon-o-user-plus')
                 ->color('gray')
                 // Només super-admin: la cerca és global (nom/email de totes
                 // les institucions) — un admin d'un sol tenant no hauria de
                 // poder veure ni buscar socis d'altres entitats.
                 ->visible(fn () => auth()->user()?->hasRole('super-admin') ?? false)
-                ->modalHeading('Afegir un soci d\'una altra institució')
-                ->modalDescription('Cerca per nom o email un soci que ja té compte (a qualsevol institució) i afegeix-lo a aquesta.')
+                ->modalHeading(__('Afegir un soci d\'una altra institució'))
+                ->modalDescription(__('Cerca per nom o email un soci que ja té compte (a qualsevol institució) i afegeix-lo a aquesta.'))
                 ->form([
                     Select::make('member_id')
-                        ->label('Soci')
+                        ->label(__('Soci'))
                         ->searchable()
                         ->getSearchResultsUsing(function (string $search) {
                             abort_unless(auth()->user()?->hasRole('super-admin'), 403);
@@ -57,7 +57,7 @@ class ListAssociatMembers extends ListRecords
 
                     if ($member->belongsToTenant($tenant?->id)) {
                         Notification::make()
-                            ->title('Aquest soci ja pertany a aquesta institució')
+                            ->title(__('Aquest soci ja pertany a aquesta institució'))
                             ->warning()
                             ->send();
                         return;

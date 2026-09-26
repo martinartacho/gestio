@@ -138,10 +138,10 @@ class UserResource extends Resource
                     // de la seva pròpia institució (Filament ho fa sol); això
                     // és per poder assignar-lo/corregir-lo a una altra.
                     Select::make('tenant_id')
-                        ->label('Institució')
+                        ->label(__('Institució'))
                         ->options(fn () => Tenant::pluck('name', 'id'))
                         ->searchable()
-                        ->helperText('Deixa-ho buit per a un super-admin (veu totes les institucions).')
+                        ->helperText(__('Deixa-ho buit per a un super-admin (veu totes les institucions).'))
                         ->visible(fn () => auth()->user()?->hasRole('super-admin') ?? false)
                         ->columnSpanFull(),
                 ]),

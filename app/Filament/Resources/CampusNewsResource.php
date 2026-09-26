@@ -19,10 +19,10 @@ class CampusNewsResource extends Resource
     protected static ?int    $navigationSort = 50;
 
     public static function getNavigationIcon(): string   { return 'heroicon-o-newspaper'; }
-    public static function getNavigationLabel(): string  { return 'Notícies'; }
-    public static function getNavigationGroup(): string  { return 'Notícies'; }
-    public static function getModelLabel(): string       { return 'Notícia'; }
-    public static function getPluralModelLabel(): string { return 'Notícies'; }
+    public static function getNavigationLabel(): string  { return __('Notícies'); }
+    public static function getNavigationGroup(): string  { return __('Notícies'); }
+    public static function getModelLabel(): string       { return __('Notícia'); }
+    public static function getPluralModelLabel(): string { return __('Notícies'); }
 
     public static function canAccess(): bool
     {
@@ -38,48 +38,48 @@ class CampusNewsResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Contingut')->columns(2)->schema([
+            Section::make(__('Contingut'))->columns(2)->schema([
                 TextInput::make('title')
-                    ->label('Títol')
+                    ->label(__('Títol'))
                     ->required()->maxLength(255)
                     ->columnSpanFull(),
 
                 Textarea::make('summary')
-                    ->label('Resum')
-                    ->helperText('Text curt que apareix als llistats i a la home.')
+                    ->label(__('Resum'))
+                    ->helperText(__('Text curt que apareix als llistats i a la home.'))
                     ->rows(2)->maxLength(500)
                     ->columnSpanFull(),
 
                 RichEditor::make('body')
-                    ->label('Cos de la notícia')
+                    ->label(__('Cos de la notícia'))
                     ->required()
                     ->toolbarButtons(['bold', 'italic', 'link', 'bulletList', 'orderedList', 'h3', 'undo', 'redo'])
                     ->columnSpanFull(),
             ]),
 
-            Section::make('Etiquetes i publicació')->columns(2)->schema([
+            Section::make(__('Etiquetes i publicació'))->columns(2)->schema([
                 CheckboxList::make('labels')
-                    ->label('Etiquetes')
-                    ->helperText('Una notícia pot tenir múltiples etiquetes.')
-                    ->options(CampusNews::LABELS)
+                    ->label(__('Etiquetes'))
+                    ->helperText(__('Una notícia pot tenir múltiples etiquetes.'))
+                    ->options(translated_labels(CampusNews::LABELS))
                     ->columns(3)
                     ->columnSpanFull(),
 
                 Select::make('recipients')
-                    ->label('Destinataris')
-                    ->options(CampusNews::RECIPIENTS)
+                    ->label(__('Destinataris'))
+                    ->options(translated_labels(CampusNews::RECIPIENTS))
                     ->default('all')
                     ->required()
-                    ->helperText('Qui pot veure aquesta notícia al portal públic.'),
+                    ->helperText(__('Qui pot veure aquesta notícia al portal públic.')),
 
                 TextInput::make('version')
-                    ->label('Versió')
-                    ->placeholder('ex: v1.8.0')
+                    ->label(__('Versió'))
+                    ->placeholder(__('ex: v1.8.0'))
                     ->maxLength(20),
 
                 DateTimePicker::make('published_at')
-                    ->label('Data de publicació')
-                    ->helperText('Deixa en blanc per guardar com a esborrany.')
+                    ->label(__('Data de publicació'))
+                    ->helperText(__('Deixa en blanc per guardar com a esborrany.'))
                     ->nullable()
                     ->seconds(false)
                     ->columnSpanFull(),
@@ -92,12 +92,12 @@ class CampusNewsResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Títol')
+                    ->label(__('Títol'))
                     ->searchable()->sortable()
                     ->wrap(),
 
                 Tables\Columns\TextColumn::make('labels')
-                    ->label('Etiquetes')
+                    ->label(__('Etiquetes'))
                     ->badge()
                     ->color(fn(string $state) => match($state) {
                         'campus'     => 'primary',
@@ -107,11 +107,11 @@ class CampusNewsResource extends Resource
                         'admin'      => 'danger',
                         default      => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state) => CampusNews::LABELS[$state] ?? $state)
+                    ->formatStateUsing(fn(string $state) => __(CampusNews::LABELS[$state] ?? $state))
                     ->separator(','),
 
                 Tables\Columns\TextColumn::make('recipients')
-                    ->label('Destinataris')
+                    ->label(__('Destinataris'))
                     ->badge()
                     ->color(fn(string $state) => match($state) {
                         'all'      => 'gray',
@@ -121,17 +121,17 @@ class CampusNewsResource extends Resource
                         'members'  => 'info',
                         default    => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state) => CampusNews::RECIPIENTS[$state] ?? $state),
+                    ->formatStateUsing(fn(string $state) => __(CampusNews::RECIPIENTS[$state] ?? $state)),
 
                 Tables\Columns\TextColumn::make('version')
-                    ->label('Versió')
+                    ->label(__('Versió'))
                     ->badge()->color('gray'),
 
                 Tables\Columns\TextColumn::make('published_at')
-                    ->label('Publicada')
+                    ->label(__('Publicada'))
                     ->dateTime('d/m/Y')
                     ->sortable()
-                    ->placeholder('Esborrany'),
+                    ->placeholder(__('Esborrany')),
 
                 Tables\Columns\IconColumn::make('published_at')
                     ->label('')
@@ -145,12 +145,12 @@ class CampusNewsResource extends Resource
             ->defaultSort('published_at', 'desc')
             ->recordAction(null)
             ->actions([
-                EditAction::make()->label('Editar'),
-                DeleteAction::make()->label('Eliminar'),
+                EditAction::make()->label(__('Editar')),
+                DeleteAction::make()->label(__('Eliminar')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Eliminar seleccionades'),
+                    DeleteBulkAction::make()->label(__('Eliminar seleccionades')),
                 ]),
             ]);
     }

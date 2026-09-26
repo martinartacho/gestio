@@ -21,11 +21,11 @@
         <div style="display:inline-flex; align-items:center; border:1px solid #d1d5db; border-radius:0.5rem; overflow:hidden;">
             <button type="button" wire:click="$set('viewMode','month')"
                     style="padding:0.375rem 0.75rem; font-size:0.875rem; font-weight:500; border:none; cursor:pointer; background:{{ $viewMode === 'month' ? '#4f46e5' : '#fff' }}; color:{{ $viewMode === 'month' ? '#fff' : '#4b5563' }};">
-                Mensual
+                {{ __('Mensual') }}
             </button>
             <button type="button" wire:click="$set('viewMode','week')"
                     style="padding:0.375rem 0.75rem; font-size:0.875rem; font-weight:500; border:none; border-left:1px solid #d1d5db; cursor:pointer; background:{{ $viewMode === 'week' ? '#4f46e5' : '#fff' }}; color:{{ $viewMode === 'week' ? '#fff' : '#4b5563' }};">
-                Setmanal
+                {{ __('Setmanal') }}
             </button>
         </div>
 
@@ -43,7 +43,7 @@
                 size="sm"
                 icon="heroicon-o-eye"
             >
-                Vista prèvia
+                {{ __('Vista prèvia') }}
             </x-filament::button>
 
             {{-- Exportació CSV --}}
@@ -63,7 +63,7 @@
             <div x-data="{ open: false }" style="position:relative; display:inline-flex; align-items:center;" @keydown.escape.window="open = false">
                 <button
                     @click="open = !open"
-                    title="Llegenda de colors"
+                    title="{{ __('Llegenda de colors') }}"
                     style="display:inline-flex; align-items:center; justify-content:center; width:1.5rem; height:1.5rem; border-radius:9999px; border:none; background:transparent; cursor:pointer; color:#9ca3af; flex-shrink:0;"
                     onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'"
                 >
@@ -78,7 +78,7 @@
                     @click.outside="open = false"
                     style="display:none; position:absolute; right:0; top:1.8rem; z-index:30; width:15rem; background:#fff; border:1px solid #e5e7eb; border-radius:0.75rem; box-shadow:0 10px 15px -3px rgb(0 0 0/.1); padding:0.75rem;"
                 >
-                    <p style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af; margin-bottom:0.5rem;">Colors per categoria</p>
+                    <p style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af; margin-bottom:0.5rem;">{{ __('Colors per categoria') }}</p>
                     @foreach ($legend as $item)
                         <div style="display:flex; align-items:center; gap:0.6rem; padding:0.25rem 0;">
                             <span style="width:0.7rem; height:0.7rem; border-radius:9999px; flex-shrink:0; background-color:{{ $item['color'] }}"></span>
@@ -105,12 +105,12 @@
     @php $grid = $this->getWeeklyGrid(); $days = $this->getDayNames(); @endphp
     <div style="background:#fff; border-radius:0.75rem; box-shadow:0 1px 3px 0 rgb(0 0 0/.1); padding:1rem; overflow-x:auto;">
         @if (empty($grid))
-            <p style="font-size:0.875rem; color:#9ca3af; text-align:center; padding:2.5rem 0;">Cap curs amb franja horària assignada per a aquesta temporada.</p>
+            <p style="font-size:0.875rem; color:#9ca3af; text-align:center; padding:2.5rem 0;">{{ __('Cap curs amb franja horària assignada per a aquesta temporada.') }}</p>
         @else
         <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
             <thead>
                 <tr>
-                    <th style="text-align:left; font-size:0.7rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:.05em; padding:0.5rem; width:6rem;">Hora</th>
+                    <th style="text-align:left; font-size:0.7rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:.05em; padding:0.5rem; width:6rem;">{{ __('Hora') }}</th>
                     @foreach ($days as $day)
                         <th style="text-align:left; font-size:0.7rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:.05em; padding:0.5rem; border-left:1px solid #f3f4f6;">
                             {{ $day }}
@@ -256,7 +256,7 @@
                         size="sm"
                         icon="heroicon-o-eye"
                     >
-                        Vista prèvia
+                        {{ __('Vista prèvia') }}
                     </x-filament::button>
                     @endif
                     @can('courses.edit')
@@ -286,6 +286,8 @@
                 eventsUrl: '{{ route('calendar.events', ['tenant' => current_tenant()?->slug]) }}',
                 seasonId:  {{ $currentSeasonId ?? 'null' }},
                 editable:  @js(auth()->user()?->hasAnyRole(['super-admin', 'admin'])),
+                locale:    @js(app()->getLocale()),
+                texts:     @js(['moveConfirm' => __('Voleu moure el curs ":title"?')]),
             };
 
             window._calendarConfig = config;

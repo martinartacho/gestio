@@ -21,8 +21,8 @@ class AssociatSepaRemittanceResource extends Resource
     protected static ?int    $navigationSort = 15;
 
     public static function getNavigationIcon(): string   { return 'heroicon-o-document-arrow-down'; }
-    public static function getNavigationGroup(): string  { return 'Associats'; }
-    public static function getNavigationLabel(): string  { return 'Remeses SEPA'; }
+    public static function getNavigationGroup(): string  { return __('Associats'); }
+    public static function getNavigationLabel(): string  { return __('Remeses SEPA'); }
     public static function getModelLabel(): string       { return 'remesa'; }
     public static function getPluralModelLabel(): string { return 'remeses SEPA'; }
 
@@ -42,37 +42,37 @@ class AssociatSepaRemittanceResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Remesa SEPA')->schema([
+            Section::make(__('Remesa SEPA'))->schema([
                 TextInput::make('reference')
-                    ->label('Referència')
-                    ->placeholder('Es genera automàticament si es deixa buit')
+                    ->label(__('Referència'))
+                    ->placeholder(__('Es genera automàticament si es deixa buit'))
                     ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
                     ->maxLength(35),
 
                 TextInput::make('year')
-                    ->label('Any de la quota')
+                    ->label(__('Any de la quota'))
                     ->numeric()
                     ->default(now()->year)
                     ->required(),
 
                 DatePicker::make('execution_date')
-                    ->label('Data d\'execució del càrrec')
+                    ->label(__('Data d\'execució del càrrec'))
                     ->displayFormat('d/m/Y')
                     ->required(),
 
                 Select::make('status')
-                    ->label('Estat')
+                    ->label(__('Estat'))
                     ->options([
-                        'draft'     => 'Esborrany',
-                        'generated' => 'XML generat',
-                        'submitted' => 'Enviat al banc',
-                        'processed' => 'Processat',
+                        'draft'     => __('Esborrany'),
+                        'generated' => __('XML generat'),
+                        'submitted' => __('Enviat al banc'),
+                        'processed' => __('Processat'),
                     ])
                     ->default('draft')
                     ->required(),
 
                 Textarea::make('notes')
-                    ->label('Notes')
+                    ->label(__('Notes'))
                     ->rows(2)
                     ->columnSpanFull(),
             ])->columns(2),
@@ -84,29 +84,29 @@ class AssociatSepaRemittanceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('reference')
-                    ->label('Referència')
+                    ->label(__('Referència'))
                     ->searchable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('year')
-                    ->label('Any')
+                    ->label(__('Any'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('execution_date')
-                    ->label('Data execució')
+                    ->label(__('Data execució'))
                     ->date('d/m/Y')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_transactions')
-                    ->label('Socis')
+                    ->label(__('Socis'))
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->label('Import total')
+                    ->label(__('Import total'))
                     ->money('EUR'),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Estat')
+                    ->label(__('Estat'))
                     ->badge()
                     ->color(fn ($state) => match($state) {
                         'draft'     => 'gray',
@@ -116,15 +116,15 @@ class AssociatSepaRemittanceResource extends Resource
                         default     => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => match($state) {
-                        'draft'     => 'Esborrany',
-                        'generated' => 'XML generat',
-                        'submitted' => 'Enviat al banc',
-                        'processed' => 'Processat',
+                        'draft'     => __('Esborrany'),
+                        'generated' => __('XML generat'),
+                        'submitted' => __('Enviat al banc'),
+                        'processed' => __('Processat'),
                         default     => $state,
                     }),
 
                 Tables\Columns\TextColumn::make('generated_at')
-                    ->label('Generat')
+                    ->label(__('Generat'))
                     ->dateTime('d/m/Y H:i')
                     ->toggleable(),
             ])

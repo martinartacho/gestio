@@ -27,6 +27,6 @@ class CreateUser extends CreateRecord
 
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Usuario creado correctamente';
+        return __('Usuari creat correctament');
     }
 }

@@ -24,9 +24,9 @@ class TresoreriaQuoteResource extends Resource
 
     public static function getNavigationIcon(): string   { return 'heroicon-o-currency-euro'; }
     public static function getNavigationGroup(): string  { return __('site.treasury_group'); }
-    public static function getNavigationLabel(): string  { return 'Quotes socis'; }
-    public static function getModelLabel(): string       { return 'quota soci'; }
-    public static function getPluralModelLabel(): string { return 'quotes socis'; }
+    public static function getNavigationLabel(): string  { return __('Quotes socis'); }
+    public static function getModelLabel(): string       { return __('quota soci'); }
+    public static function getPluralModelLabel(): string { return __('quotes socis'); }
 
     public static function canAccess(): bool
     {
@@ -45,9 +45,9 @@ class TresoreriaQuoteResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Quota')->schema([
+            Section::make(__('Quota'))->schema([
                 Select::make('member_id')
-                    ->label('Soci')
+                    ->label(__('Soci'))
                     ->options(
                         AssociatMember::orderBy('member_number')
                             ->get()
@@ -57,24 +57,24 @@ class TresoreriaQuoteResource extends Resource
                     ->required(),
 
                 TextInput::make('year')
-                    ->label('Any')
+                    ->label(__('Any'))
                     ->numeric()
                     ->default(now()->year)
                     ->required(),
 
                 Select::make('period')
-                    ->label('Periodicitat')
+                    ->label(__('Periodicitat'))
                     ->options([
-                        'annual'      => 'Anual',
-                        'semi-annual' => 'Semestral',
-                        'quarterly'   => 'Trimestral',
-                        'monthly'     => 'Mensual',
+                        'annual'      => __('Anual'),
+                        'semi-annual' => __('Semestral'),
+                        'quarterly'   => __('Trimestral'),
+                        'monthly'     => __('Mensual'),
                     ])
                     ->default('annual')
                     ->required(),
 
                 TextInput::make('period_number')
-                    ->label('Nº de període')
+                    ->label(__('Nº de període'))
                     ->numeric()
                     ->default(1)
                     ->minValue(1)
@@ -82,32 +82,32 @@ class TresoreriaQuoteResource extends Resource
                     ->required(),
 
                 TextInput::make('amount')
-                    ->label('Import (€)')
+                    ->label(__('Import (€)'))
                     ->numeric()
                     ->default(fn () => setting('associat_quota_amount', 0))
                     ->required(),
 
                 Select::make('status')
-                    ->label('Estat')
+                    ->label(__('Estat'))
                     ->options([
-                        'pending'   => 'Pendent',
-                        'paid'      => 'Pagada',
-                        'failed'    => 'Fallida',
-                        'cancelled' => 'Cancel·lada',
+                        'pending'   => __('Pendent'),
+                        'paid'      => __('Pagada'),
+                        'failed'    => __('Fallida'),
+                        'cancelled' => __('Cancel·lada'),
                     ])
                     ->default('pending')
                     ->required(),
 
                 DatePicker::make('due_date')
-                    ->label('Data de venciment')
+                    ->label(__('Data de venciment'))
                     ->displayFormat('d/m/Y'),
 
                 DatePicker::make('paid_at')
-                    ->label('Data de pagament')
+                    ->label(__('Data de pagament'))
                     ->displayFormat('d/m/Y'),
 
                 TextInput::make('failure_reason')
-                    ->label('Motiu de fallida')
+                    ->label(__('Motiu de fallida'))
                     ->maxLength(255)
                     ->columnSpanFull(),
             ])->columns(2),
@@ -119,12 +119,12 @@ class TresoreriaQuoteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('member.member_number')
-                    ->label('Nº soci')
+                    ->label(__('Nº soci'))
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('member.full_name')
-                    ->label('Soci')
+                    ->label(__('Soci'))
                     ->searchable(query: fn ($query, $search) =>
                         $query->whereHas('member', fn ($q) =>
                             $q->where('first_name', 'like', "%{$search}%")
@@ -133,11 +133,11 @@ class TresoreriaQuoteResource extends Resource
                     ),
 
                 Tables\Columns\TextColumn::make('year')
-                    ->label('Any')
+                    ->label(__('Any'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('period')
-                    ->label('Periodicitat')
+                    ->label(__('Periodicitat'))
                     ->badge()
                     ->color(fn ($state) => match ($state) {
                         'annual'      => 'indigo',
@@ -147,7 +147,7 @@ class TresoreriaQuoteResource extends Resource
                         default       => 'gray',
                     })
                     ->formatStateUsing(fn ($state, $record) => match ($state) {
-                        'annual'      => 'Anual',
+                        'annual'      => __('Anual'),
                         'semi-annual' => "Semestral {$record->period_number}/2",
                         'quarterly'   => "Trimestral {$record->period_number}/4",
                         'monthly'     => "Mensual {$record->period_number}/12",
@@ -156,12 +156,12 @@ class TresoreriaQuoteResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('amount')
-                    ->label('Import')
+                    ->label(__('Import'))
                     ->money('EUR')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Estat')
+                    ->label(__('Estat'))
                     ->badge()
                     ->color(fn ($state) => match($state) {
                         'pending'   => 'warning',
@@ -171,47 +171,47 @@ class TresoreriaQuoteResource extends Resource
                         default     => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => match($state) {
-                        'pending'   => 'Pendent',
-                        'paid'      => 'Pagada',
-                        'failed'    => 'Fallida',
-                        'cancelled' => 'Cancel·lada',
+                        'pending'   => __('Pendent'),
+                        'paid'      => __('Pagada'),
+                        'failed'    => __('Fallida'),
+                        'cancelled' => __('Cancel·lada'),
                         default     => $state,
                     }),
 
                 Tables\Columns\TextColumn::make('due_date')
-                    ->label('Venciment')
+                    ->label(__('Venciment'))
                     ->date('d/m/Y')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('remittance.reference')
-                    ->label('Remesa')
+                    ->label(__('Remesa'))
                     ->searchable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Estat')
+                    ->label(__('Estat'))
                     ->options([
-                        'pending'   => 'Pendent',
-                        'paid'      => 'Pagada',
-                        'failed'    => 'Fallida',
-                        'cancelled' => 'Cancel·lada',
+                        'pending'   => __('Pendent'),
+                        'paid'      => __('Pagada'),
+                        'failed'    => __('Fallida'),
+                        'cancelled' => __('Cancel·lada'),
                     ]),
 
                 Tables\Filters\SelectFilter::make('year')
-                    ->label('Any')
+                    ->label(__('Any'))
                     ->options(fn () =>
                         AssociatQuote::distinct()->pluck('year', 'year')
                             ->sortDesc()->toArray()
                     ),
 
                 Tables\Filters\SelectFilter::make('period')
-                    ->label('Periodicitat')
+                    ->label(__('Periodicitat'))
                     ->options([
-                        'annual'      => 'Anual',
-                        'semi-annual' => 'Semestral',
-                        'quarterly'   => 'Trimestral',
-                        'monthly'     => 'Mensual',
+                        'annual'      => __('Anual'),
+                        'semi-annual' => __('Semestral'),
+                        'quarterly'   => __('Trimestral'),
+                        'monthly'     => __('Mensual'),
                     ]),
             ])
             ->defaultSort('year', 'desc');

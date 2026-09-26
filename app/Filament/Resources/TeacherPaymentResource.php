@@ -123,7 +123,7 @@ class TeacherPaymentResource extends Resource
             Section::make(__('site.status'))->columns(3)->schema([
                 Select::make('status')
                     ->label(__('site.status'))
-                    ->options(CampusTeacherPayment::STATUSES)
+                    ->options(translated_labels(CampusTeacherPayment::STATUSES))
                     ->default('draft')->required()->native(false),
 
                 DateTimePicker::make('sent_at')
@@ -176,7 +176,7 @@ class TeacherPaymentResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('site.status'))
-                    ->formatStateUsing(fn($state) => CampusTeacherPayment::STATUSES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusTeacherPayment::STATUSES[$state] ?? $state))
                     ->badge()
                     ->color(fn($state) => CampusTeacherPayment::STATUS_COLORS[$state] ?? 'gray'),
             ])
@@ -184,7 +184,7 @@ class TeacherPaymentResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
-                    ->options(CampusTeacherPayment::STATUSES)
+                    ->options(translated_labels(CampusTeacherPayment::STATUSES))
                     ->native(false),
 
                 Tables\Filters\SelectFilter::make('season_id')

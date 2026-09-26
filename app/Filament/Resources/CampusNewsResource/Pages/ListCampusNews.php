@@ -13,7 +13,7 @@ class ListCampusNews extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label('Nova notícia'),
+            Actions\CreateAction::make()->label(__('Nova notícia')),
         ];
     }
 }

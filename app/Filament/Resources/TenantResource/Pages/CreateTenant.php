@@ -67,7 +67,7 @@ class CreateTenant extends CreateRecord
             (new SeedTenantSampleData())->run($this->record, $this->sampleCounts);
 
             Notification::make()
-                ->title('Dades d\'exemple generades')
+                ->title(__('Dades d\'exemple generades'))
                 ->body(collect($this->sampleCounts)->filter()->map(fn ($n, $k) => "{$n} {$k}")->implode(', '))
                 ->success()
                 ->send();

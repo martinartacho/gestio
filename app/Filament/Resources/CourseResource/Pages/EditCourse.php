@@ -23,10 +23,10 @@ class EditCourse extends EditRecord
     {
         return [
             $this->getSaveFormAction()
-                ->label('Guardar'),
+                ->label(__('Guardar')),
 
             Actions\Action::make('saveAndReturn')
-                ->label('Guardar i tornar')
+                ->label(__('Guardar i tornar'))
                 ->action(function (): void {
                     $this->save(shouldRedirect: false);
                     $this->redirect($this->previousUrl ?? $this->getResource()::getUrl('index'));

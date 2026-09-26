@@ -17,9 +17,9 @@ class TresoreriaDashboard extends Page
     protected string $view = 'filament.pages.tresoreria-dashboard';
 
     public static function getNavigationIcon(): string  { return 'heroicon-o-banknotes'; }
-    public static function getNavigationLabel(): string { return 'Resum financer'; }
+    public static function getNavigationLabel(): string { return __('Resum financer'); }
     public static function getNavigationGroup(): string { return __('site.treasury_group'); }
-    public function getTitle(): string                  { return 'Resum financer de Tresoreria'; }
+    public function getTitle(): string                  { return __('Resum financer de Tresoreria'); }
 
     public static function canAccess(): bool
     {
