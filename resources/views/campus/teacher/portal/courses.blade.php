@@ -1,21 +1,21 @@
 @extends('campus.teacher.layouts.app')
 
-@section('title', 'Els meus cursos')
+@section('title', __('Els meus cursos'))
 
 @section('content')
 <div class="flex items-center justify-between mb-6 gap-4 flex-wrap">
-    <h1 class="text-2xl font-bold text-gray-900">Els meus cursos</h1>
+    <h1 class="text-2xl font-bold text-gray-900">{{ __('Els meus cursos') }}</h1>
     @if (setting('lms_enabled'))
         <a href="{{ route('teacher.lms.wizard.step1') }}"
            class="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition">
-            + Crear nou curs
+            {{ __('+ Crear nou curs') }}
         </a>
     @endif
 </div>
 
 @if ($courses->isEmpty())
     <div class="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500">
-        No tens cap curs assignat en aquest moment.
+        {{ __('No tens cap curs assignat en aquest moment.') }}
     </div>
 @else
     <div class="space-y-4">
@@ -43,15 +43,14 @@
 
                         {{-- Rol del professor --}}
                         @if ($course->pivot->role === 'main')
-                            <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">Principal</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">{{ __('Principal') }}</span>
                         @else
-                            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Col·laborador/a</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">{{ __('Col·laborador/a') }}</span>
                         @endif
 
                         {{-- Badge alumnes --}}
                         <span class="text-xs px-2 py-0.5 rounded-full font-medium bg-violet-100 text-violet-700">
-                            {{ $course->students_count }}
-                            {{ $course->students_count === 1 ? 'alumne' : 'alumnes' }}
+                            {{ trans_choice(':count alumne|:count alumnes', $course->students_count) }}
                         </span>
                     </div>
 
@@ -82,27 +81,27 @@
                         @endphp
                         <p class="mt-2 text-xs font-mono text-gray-500 whitespace-nowrap">
                             @if ($past === 0)
-                                ● <span class="text-gray-400">{{ $course->sessions }} sessions per fer</span>
+                                ● <span class="text-gray-400">{{ __(':count sessions per fer', ['count' => $course->sessions]) }}</span>
                                 &nbsp; [{{ $bar }} {{ $pct }}%]
                             @elseif ($future === 0)
-                                ● <span class="text-gray-400">{{ $past }} / {{ $course->sessions }} fetes</span>
+                                ● <span class="text-gray-400">{{ __(':done / :total fetes', ['done' => $past, 'total' => $course->sessions]) }}</span>
                                 &nbsp; [{{ $bar }} {{ $pct }}%]
                             @else
-                                ● <span class="text-gray-500">{{ $past }} fetes</span>
+                                ● <span class="text-gray-500">{{ __(':count fetes', ['count' => $past]) }}</span>
                                 &nbsp;·&nbsp;
-                                <span class="text-indigo-600 font-medium">{{ $future }} per fer</span>
+                                <span class="text-indigo-600 font-medium">{{ __(':count per fer', ['count' => $future]) }}</span>
                                 &nbsp; [{{ $bar }} {{ $pct }}%]
                             @endif
                         </p>
                     @elseif ($course->sessions)
-                        <p class="text-xs text-gray-400 mt-1.5 font-mono">● {{ $course->sessions }} sessions</p>
+                        <p class="text-xs text-gray-400 mt-1.5 font-mono">● {{ trans_choice(':count sessió|:count sessions', $course->sessions) }}</p>
                     @endif
                 </div>
 
                 {{-- Dades de la dreta --}}
                 <div class="text-right shrink-0 text-sm text-gray-500 space-y-0.5">
                     @if ($course->pivot->sessions_assigned)
-                        <p class="text-xs text-indigo-600 font-medium">{{ $course->pivot->sessions_assigned }} assignades</p>
+                        <p class="text-xs text-indigo-600 font-medium">{{ __(':count assignades', ['count' => $course->pivot->sessions_assigned]) }}</p>
                     @endif
                     <p>{{ $course->space?->name ?? '—' }}</p>
                     <p class="text-xs text-gray-400">{{ $course->timeSlot?->description ?? '' }}</p>

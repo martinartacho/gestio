@@ -1,16 +1,16 @@
 @extends('campus.teacher.layouts.app')
 
-@section('title', 'Accés professorat')
+@section('title', __('Accés professorat'))
 
 @section('content')
 <div class="max-w-md mx-auto">
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-        <h1 class="text-2xl font-bold text-gray-900 mb-6">Accés professorat</h1>
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">{{ __('Accés professorat') }}</h1>
 
         <form method="POST" action="{{ route('teacher.login.post') }}" class="space-y-4">
             @csrf
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Correu electrònic</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Correu electrònic') }}</label>
                 <input type="email" name="email" value="{{ old('email') }}" required autofocus
                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('email') border-red-400 @enderror">
                 @error('email')
@@ -19,9 +19,9 @@
             </div>
             <div>
                 <div class="flex items-center justify-between mb-1">
-                    <label class="block text-sm font-medium text-gray-700">Contrasenya</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ __('Contrasenya') }}</label>
                     <a href="{{ route('teacher.password.request') }}"
-                       class="text-xs text-indigo-600 hover:underline">Heu oblidat la contrasenya?</a>
+                       class="text-xs text-indigo-600 hover:underline">{{ __('Heu oblidat la contrasenya?') }}</a>
                 </div>
                 <div style="position:relative;">
                     <input type="password" name="password" id="pwd" required
@@ -40,18 +40,18 @@
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="remember" id="remember" class="rounded">
-                <label for="remember" class="text-sm text-gray-600">Recorda'm</label>
+                <label for="remember" class="text-sm text-gray-600">{{ __('Recorda\'m') }}</label>
             </div>
             <button type="submit"
                     class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                Accedir
+                {{ __('Accedir') }}
             </button>
         </form>
 
         @if(setting('campus_contact_email'))
         <p class="text-center text-sm text-gray-500 mt-4">
-            Sou professor/a nou/va?
-            <a href="mailto:{{ setting('campus_contact_email') }}" class="text-indigo-600 hover:underline">Sol·licitar alta</a>
+            {{ __('Sou professor/a nou/va?') }}
+            <a href="mailto:{{ setting('campus_contact_email') }}" class="text-indigo-600 hover:underline">{{ __('Sol·licitar alta') }}</a>
         </p>
         @endif
     </div>

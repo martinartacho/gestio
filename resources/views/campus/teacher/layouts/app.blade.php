@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Portal Professorat') — {{ setting('campus_name', 'Campus') }}</title>
+    <title>@yield('title', __('Portal Professorat')) — {{ setting('campus_name', 'Campus') }}</title>
     @if(setting('campus_favicon_url'))
         <link rel="icon" href="{{ setting('campus_favicon_url') }}">
     @endif
@@ -18,15 +18,15 @@
             </a>
             <div class="flex items-center gap-4 text-sm">
                 @auth('teacher')
-                    <a href="{{ route('teacher.portal.courses') }}" class="text-gray-600 hover:text-indigo-700">Els meus cursos</a>
+                    <a href="{{ route('teacher.portal.courses') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Els meus cursos') }}</a>
                     @if(setting('documents_enabled', true))
-                    <a href="{{ route('teacher.portal.documents') }}" class="text-gray-600 hover:text-indigo-700">Documents</a>
+                    <a href="{{ route('teacher.portal.documents') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Documents') }}</a>
                     @endif
-                    <a href="{{ route('teacher.portal.liquidations') }}" class="text-gray-600 hover:text-indigo-700">Liquidacions</a>
-                    <a href="{{ route('teacher.portal.profile') }}" class="text-gray-600 hover:text-indigo-700">Perfil</a>
+                    <a href="{{ route('teacher.portal.liquidations') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Liquidacions') }}</a>
+                    <a href="{{ route('teacher.portal.profile') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Perfil') }}</a>
                     <form method="POST" action="{{ route('teacher.logout') }}" class="inline">
                         @csrf
-                        <button type="submit" class="text-gray-600 hover:text-red-600">Sortir</button>
+                        <button type="submit" class="text-gray-600 hover:text-red-600">{{ __('Sortir') }}</button>
                     </form>
                     <span class="text-indigo-700 font-medium">{{ auth('teacher')->user()->first_name }}</span>
                 @endauth

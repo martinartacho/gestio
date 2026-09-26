@@ -57,6 +57,17 @@ class TeacherAuthTest extends TestCase
              ->assertSuccessful();
     }
 
+    public function test_teacher_portal_follows_teacher_locale(): void
+    {
+        $teacher = CampusTeacher::factory()->create(['locale' => 'es']);
+
+        $this->actingAs($teacher, 'teacher')
+             ->get('/campus/professorat/portal')
+             ->assertOk()
+             ->assertSee('Liquidaciones')
+             ->assertDontSee('Liquidacions');
+    }
+
     public function test_teacher_can_view_own_course(): void
     {
         $teacher = CampusTeacher::factory()->create();

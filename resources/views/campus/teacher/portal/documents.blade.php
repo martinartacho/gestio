@@ -1,18 +1,18 @@
 @extends('campus.teacher.layouts.app')
 
-@section('title', 'Documents')
+@section('title', __('Documents'))
 
 @section('content')
 
 <div style="margin-bottom:1.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
     <div>
-        <h1 style="font-size:1.5rem;font-weight:700;color:#111827;">Documents</h1>
+        <h1 style="font-size:1.5rem;font-weight:700;color:#111827;">{{ __('Documents') }}</h1>
         <p style="font-size:0.875rem;color:#6b7280;margin-top:0.25rem;">
-            Els meus documents i els documents del professorat.
+            {{ __('Els meus documents i els documents del professorat.') }}
         </p>
     </div>
     <a href="{{ route('teacher.portal.courses') }}"
-       style="font-size:0.875rem;color:#4f46e5;text-decoration:none;">&larr; Cursos</a>
+       style="font-size:0.875rem;color:#4f46e5;text-decoration:none;">&larr; {{ __('Cursos') }}</a>
 </div>
 
 {{-- ── Filtres ──────────────────────────────────────────────────────────────── --}}
@@ -20,10 +20,10 @@
       style="background:#ffffff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:flex-end;">
 
     <div style="flex:1;min-width:10rem;">
-        <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Curs</label>
+        <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">{{ __('Curs') }}</label>
         <select name="course_id"
                 style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;color:#111827;background:#fff;">
-            <option value="">Tots els cursos</option>
+            <option value="">{{ __('Tots els cursos') }}</option>
             @foreach ($myCourses as $c)
                 <option value="{{ $c->id }}" {{ request('course_id') == $c->id ? 'selected' : '' }}>
                     [{{ $c->code }}] {{ $c->title }}
@@ -33,10 +33,10 @@
     </div>
 
     <div style="flex:0 0 9rem;">
-        <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Tipus</label>
+        <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">{{ __('Tipus') }}</label>
         <select name="type"
                 style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;color:#111827;background:#fff;">
-            <option value="">Tots</option>
+            <option value="">{{ __('Tots') }}</option>
             @foreach (\App\Models\CampusDocument::TYPES as $k => $v)
                 <option value="{{ $k }}" {{ request('type') === $k ? 'selected' : '' }}>{{ $v }}</option>
             @endforeach
@@ -44,10 +44,10 @@
     </div>
 
     <div style="flex:0 0 10rem;">
-        <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Visibilitat</label>
+        <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">{{ __('Visibilitat') }}</label>
         <select name="visibility"
                 style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.4rem 0.75rem;font-size:0.875rem;color:#111827;background:#fff;">
-            <option value="">Totes</option>
+            <option value="">{{ __('Totes') }}</option>
             @foreach (\App\Models\CampusDocument::VISIBILITIES as $k => $v)
                 <option value="{{ $k }}" {{ request('visibility') === $k ? 'selected' : '' }}>{{ $v }}</option>
             @endforeach
@@ -57,12 +57,12 @@
     <div style="display:flex;gap:0.5rem;">
         <button type="submit"
                 style="background:#4f46e5;color:#fff;border:none;border-radius:0.375rem;padding:0.45rem 1rem;font-size:0.875rem;cursor:pointer;">
-            Filtrar
+            {{ __('Filtrar') }}
         </button>
         @if(request()->hasAny(['course_id','type','visibility']))
             <a href="{{ route('teacher.portal.documents') }}"
                style="background:#f3f4f6;color:#374151;border:none;border-radius:0.375rem;padding:0.45rem 0.75rem;font-size:0.875rem;text-decoration:none;display:inline-flex;align-items:center;">
-                ✕ Netejar
+                ✕ {{ __('Netejar') }}
             </a>
         @endif
     </div>
@@ -72,15 +72,15 @@
 <div style="margin-bottom:2rem;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
         <h2 style="font-size:1rem;font-weight:600;color:#111827;">
-            Els meus documents
+            {{ __('Els meus documents') }}
             <span style="font-weight:400;color:#9ca3af;font-size:0.875rem;">({{ $ownDocuments->count() }})</span>
         </h2>
     </div>
 
     @if ($ownDocuments->isEmpty())
         <div style="background:#f9fafb;border:1px dashed #d1d5db;border-radius:0.75rem;padding:2rem;text-align:center;color:#9ca3af;font-size:0.875rem;">
-            No tens documents propis.
-            Puja-n'hi des de la pàgina de cada curs.
+            {{ __('No tens documents propis.') }}
+            {{ __('Puja-n\'hi des de la pàgina de cada curs.') }}
         </div>
     @else
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;overflow:hidden;">
@@ -117,7 +117,7 @@
                         </span>
                         @if ($doc->status === 'draft')
                             <span style="color:#d1d5db;">·</span>
-                            <span style="font-size:0.75rem;color:#d97706;">Esborrany</span>
+                            <span style="font-size:0.75rem;color:#d97706;">{{ __('Esborrany') }}</span>
                         @endif
                         @if ($doc->file_size_formatted)
                             <span style="color:#d1d5db;">·</span>
@@ -126,7 +126,7 @@
                         @if ($doc->not_available_reason)
                             <span style="color:#d1d5db;">·</span>
                             <span style="font-size:0.75rem;color:#d97706;font-style:italic;"
-                                  title="Els alumnes no hi tindran accés fins que es compleixi alguna de les condicions">
+                                  title="{{ __('Els alumnes no hi tindran accés fins que es compleixi alguna de les condicions') }}">
                                 {{ $doc->not_available_reason }}
                             </span>
                         @endif
@@ -137,7 +137,7 @@
                 <div style="display:flex;gap:0.375rem;flex-shrink:0;">
                     @if ($doc->download_url)
                         <a href="{{ $doc->download_url }}" target="_blank"
-                           title="Obrir"
+                           title="{{ __('Obrir') }}"
                            style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border:1px solid #e5e7eb;border-radius:0.375rem;background:#f9fafb;color:#374151;text-decoration:none;">
                             <svg style="width:0.875rem;height:0.875rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
@@ -146,7 +146,7 @@
                     @endif
 
                     <a href="{{ route('teacher.portal.documents.edit', $doc->id) }}"
-                       title="Editar"
+                       title="{{ __('Editar') }}"
                        style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border:1px solid #e0e7ff;border-radius:0.375rem;background:#eef2ff;color:#4f46e5;text-decoration:none;">
                         <svg style="width:0.875rem;height:0.875rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -155,9 +155,9 @@
 
                     <form action="{{ route('teacher.portal.documents.destroy', $doc->id) }}"
                           method="POST"
-                          onsubmit="return confirm('Eliminar «{{ addslashes($doc->title) }}»?')">
+                          onsubmit="return confirm({{ Js::from(__('Eliminar «:title»?', ['title' => $doc->title])) }})">
                         @csrf @method('DELETE')
-                        <button type="submit" title="Eliminar"
+                        <button type="submit" title="{{ __('Eliminar') }}"
                                 style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border:1px solid #fee2e2;border-radius:0.375rem;background:#fef2f2;color:#dc2626;cursor:pointer;">
                             <svg style="width:0.875rem;height:0.875rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -174,14 +174,14 @@
 {{-- ── Documents del professorat ────────────────────────────────────────────── --}}
 <div>
     <h2 style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:0.75rem;">
-        Documents del professorat
+        {{ __('Documents del professorat') }}
         <span style="font-weight:400;color:#9ca3af;font-size:0.875rem;">({{ $othersDocuments->count() }})</span>
-        <span style="font-size:0.75rem;font-weight:400;color:#9ca3af;margin-left:0.5rem;">— públics i per a matriculats</span>
+        <span style="font-size:0.75rem;font-weight:400;color:#9ca3af;margin-left:0.5rem;">— {{ __('públics i per a matriculats') }}</span>
     </h2>
 
     @if ($othersDocuments->isEmpty())
         <div style="background:#f9fafb;border:1px dashed #d1d5db;border-radius:0.75rem;padding:2rem;text-align:center;color:#9ca3af;font-size:0.875rem;">
-            No hi ha documents d'altres professors amb la visibilitat seleccionada.
+            {{ __('No hi ha documents d\'altres professors amb la visibilitat seleccionada.') }}
         </div>
     @else
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;overflow:hidden;">
@@ -230,7 +230,7 @@
                 @if ($doc->download_url)
                     <a href="{{ $doc->download_url }}" target="_blank"
                        style="flex-shrink:0;font-size:0.75rem;color:#6b7280;text-decoration:none;padding:0.3rem 0.6rem;border:1px solid #e5e7eb;border-radius:0.375rem;background:#f9fafb;white-space:nowrap;">
-                        Obrir
+                        {{ __('Obrir') }}
                     </a>
                 @endif
             </div>
