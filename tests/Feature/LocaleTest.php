@@ -75,6 +75,33 @@ class LocaleTest extends TestCase
         $this->assertSame('es', app()->getLocale());
     }
 
+    public function test_public_pages_render_in_tenant_locale(): void
+    {
+        $tenant = $this->tenantWithLocale('es');
+        SiteSetting::create(['tenant_id' => $tenant->id, 'key' => 'campus_enabled', 'value' => true]);
+
+        $this->get("/{$tenant->slug}/portal/login")->assertOk()->assertSee('Acceso alumnos')->assertDontSee('Accés alumnes');
+        $this->get("/{$tenant->slug}/portal/registre")->assertOk()->assertSee('Crear cuenta');
+        $this->get("/{$tenant->slug}/cursos")->assertOk()->assertSee('Cursos disponibles');
+        $this->get("/{$tenant->slug}/novetats")->assertOk()->assertSee('Historial de versiones');
+    }
+
+    public function test_public_pages_stay_in_catalan_by_default(): void
+    {
+        $this->get('/campus/portal/login')->assertOk()->assertSee('Accés alumnes');
+        $this->get('/campus/novetats')->assertOk()->assertSee('Historial de versions');
+    }
+
+    public function test_home_link_points_to_current_tenant(): void
+    {
+        $tenant = Tenant::factory()->create();
+        SiteSetting::create(['tenant_id' => $tenant->id, 'key' => 'campus_enabled', 'value' => true]);
+
+        $this->get("/{$tenant->slug}/portal/login")
+            ->assertOk()
+            ->assertSee('href="'.url("/{$tenant->slug}").'"', false);
+    }
+
     private function tenantWithLocale(string $locale): Tenant
     {
         $tenant = Tenant::factory()->create();

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notícies · {{ setting('campus_name', 'Campus') }}</title>
+    <title>{{ __('Notícies') }} · {{ setting('campus_name', 'Campus') }}</title>
     @if(setting('campus_favicon_url'))
         <link rel="icon" href="{{ setting('campus_favicon_url') }}">
     @endif
@@ -24,9 +24,9 @@
 
         {{-- Títol --}}
         <div class="mb-10">
-            <p class="text-xs font-semibold uppercase tracking-widest text-indigo-500 mb-2">Novetats</p>
-            <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Notícies</h1>
-            <p class="text-gray-500 text-sm">Tot el que millora a {{ setting('campus_name', 'la plataforma') }}, explicat sense tecnicismes.</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-indigo-500 mb-2">{{ __('Novetats') }}</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-2">{{ __('Notícies') }}</h1>
+            <p class="text-gray-500 text-sm">{{ __('Tot el que millora a :name, explicat sense tecnicismes.', ['name' => setting('campus_name', __('la plataforma'))]) }}</p>
         </div>
 
         {{-- Filtre per categoria --}}
@@ -72,7 +72,7 @@
         @endphp
 
         @if($noticiesFiltrades->isEmpty())
-            <p class="text-gray-400 text-sm">No hi ha notícies en aquesta categoria.</p>
+            <p class="text-gray-400 text-sm">{{ __('No hi ha notícies en aquesta categoria.') }}</p>
         @else
         <div class="flex flex-col gap-8">
             @foreach($noticiesFiltrades as $noticia)

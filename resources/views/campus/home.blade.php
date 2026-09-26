@@ -18,7 +18,7 @@
     };
 @endphp
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,17 +35,17 @@
     <div style="background-color:{{ setting('hero_color', '#3730a3') }};">
         <div class="max-w-5xl mx-auto px-6 py-16 text-center">
             <h1 class="text-4xl font-extrabold tracking-tight mb-3" style="color:{{ setting('hero_text_color', '#ffffff') }};">
-                {{ setting('hero_title', setting('campus_name', 'Campus de Formació')) }}
+                {{ setting('hero_title', setting('campus_name', __('Campus de Formació'))) }}
             </h1>
             <p class="text-lg mb-8" style="color:{{ setting('hero_text_color', '#ffffff') }};opacity:0.85;">
-                {{ setting('hero_subtitle', 'Descobreix la nostra oferta formativa') }}
+                {{ setting('hero_subtitle', __('Descobreix la nostra oferta formativa')) }}
             </p>
             <div class="flex flex-wrap justify-center gap-4">
                 @if(setting('hero_btn_catalog_enabled', true))
                 <a href="{{ route('campus.catalog.index') }}"
                    class="font-semibold px-6 py-3 rounded-xl transition shadow"
                    style="background-color:#ffffff;color:#3730a3;">
-                    {{ setting('hero_btn_catalog_text', 'Veure el catàleg de cursos') }}
+                    {{ setting('hero_btn_catalog_text', __('Veure el catàleg de cursos')) }}
                 </a>
                 @endif
                 @if(setting('hero_btn_register_enabled', true))
@@ -64,7 +64,7 @@
     <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-14">
 
         <h2 class="text-center text-sm font-semibold uppercase tracking-widest text-gray-400 mb-8">
-            {{ setting('home_access_header', 'Accés per perfil') }}
+            {{ setting('home_access_header', __('Accés per perfil')) }}
         </h2>
 
         <div class="{{ $gridClass }}">
@@ -79,10 +79,10 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-bold text-gray-900 text-base">{{ setting('home_alumnat_title', 'Alumnat') }}</p>
-                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_alumnat_subtitle', 'Inscripcions i pagaments de cursos') }}</p>
+                    <p class="font-bold text-gray-900 text-base">{{ setting('home_alumnat_title', __('Alumnat')) }}</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_alumnat_subtitle', __('Inscripcions i pagaments de cursos')) }}</p>
                     @if($lmsActiu)
-                    <p class="text-xs text-indigo-400 mt-1">+ Continguts en línia · Certificats</p>
+                    <p class="text-xs text-indigo-400 mt-1">{{ __('+ Continguts en línia · Certificats') }}</p>
                     @endif
                 </div>
                 <span class="mt-auto text-xs text-indigo-600 font-medium group-hover:underline">Accedir &rarr;</span>
@@ -99,8 +99,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-bold text-gray-900 text-base">{{ setting('home_professorat_title', 'Professorat') }}</p>
-                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_professorat_subtitle', 'Cursos, sessions i liquidacions') }}</p>
+                    <p class="font-bold text-gray-900 text-base">{{ setting('home_professorat_title', __('Professorat')) }}</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_professorat_subtitle', __('Cursos, sessions i liquidacions')) }}</p>
                 </div>
                 <span class="mt-auto text-xs text-emerald-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
@@ -116,9 +116,9 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-bold text-gray-900 text-base">Socis</p>
-                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('associats_org_name', 'La teva associació') }}</p>
-                    <p class="text-xs text-violet-400 mt-1">Carnet digital QR · Quotes · Historial</p>
+                    <p class="font-bold text-gray-900 text-base">{{ __('Socis') }}</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('associats_org_name', __('La teva associació')) }}</p>
+                    <p class="text-xs text-violet-400 mt-1">{{ __('Carnet digital QR · Quotes · Historial') }}</p>
                 </div>
                 <span class="mt-auto text-xs text-violet-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
@@ -134,8 +134,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-bold text-gray-900 text-base">{{ setting('home_gestio_title', 'Gestió') }}</p>
-                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_gestio_subtitle', 'Cursos, alumnes, pagaments i socis') }}</p>
+                    <p class="font-bold text-gray-900 text-base">{{ setting('home_gestio_title', __('Gestió')) }}</p>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ setting('home_gestio_subtitle', __('Cursos, alumnes, pagaments i socis')) }}</p>
                 </div>
                 <span class="mt-auto text-xs text-amber-600 font-medium group-hover:underline">Accedir &rarr;</span>
             </a>
@@ -150,10 +150,10 @@
         <div class="max-w-5xl mx-auto px-6 py-14">
 
             <div class="flex items-center justify-between mb-8">
-                <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Darreres notícies</h2>
+                <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-400">{{ __('Darreres notícies') }}</h2>
                 <a href="{{ route('campus.noticies') }}"
                    class="text-xs font-medium text-indigo-600 hover:underline">
-                    Veure totes &rarr;
+                    {{ __('Veure totes') }} &rarr;
                 </a>
             </div>
 

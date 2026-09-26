@@ -1,6 +1,6 @@
 @extends('campus.layouts.app')
 
-@section('title', 'Cua d\'inscripcions')
+@section('title', __('Cua d\'inscripcions'))
 
 @section('content')
 <div class="max-w-lg mx-auto">
@@ -9,9 +9,9 @@
     <div class="bg-amber-50 border border-amber-300 rounded-xl px-4 py-3 text-sm text-amber-800 mb-4 flex items-start gap-2">
         <span class="shrink-0 text-base">⚠️</span>
         <div>
-            <strong>Moltes sol·licituds des del vostre dispositiu.</strong>
-            Recarregar repetidament no avança el torn.
-            Si continueu, l'accés podria ser restringit temporalment.
+            <strong>{{ __('Moltes sol·licituds des del vostre dispositiu.') }}</strong>
+            {{ __('Recarregar repetidament no avança el torn.') }}
+            {{ __('Si continueu, l\'accés podria ser restringit temporalment.') }}
         </div>
     </div>
     @endif
@@ -32,29 +32,29 @@
             </svg>
         </div>
 
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">Cua d'inscripcions</h1>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ __('Cua d\'inscripcions') }}</h1>
         <p class="text-gray-500 text-sm mb-4">
-            Per garantir un accés equitatiu, les inscripcions s'obren per torns.
+            {{ __('Per garantir un accés equitatiu, les inscripcions s\'obren per torns.') }}
         </p>
 
         {{-- Banner explicatiu: adaptat per a nous visitants vs. estudiants registrats --}}
         @guest('student')
         <div class="text-left bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-5">
-            <p class="text-xs font-semibold text-indigo-700 uppercase tracking-wide mb-2">Com funciona?</p>
+            <p class="text-xs font-semibold text-indigo-700 uppercase tracking-wide mb-2">{{ __('Com funciona?') }}</p>
             <ol class="space-y-1.5 text-sm text-indigo-900">
-                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">①</span> Introduïu el vostre correu i reserveu el torn.</li>
-                <li class="flex items-start gap-2"><span class="font-bold text-amber-500 shrink-0">②</span> <span><strong class="text-amber-700">Mentre espereu</strong>, creeu el vostre compte o inicieu sessió — el necessitareu per inscriure-us.</span></li>
-                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">③</span> Quan arribi el vostre torn, rebreu un <strong>codi d'accés</strong> al correu.</li>
-                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">④</span> Introduïu el codi al catàleg i completeu la inscripció.</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">①</span> {{ __('Introduïu el vostre correu i reserveu el torn.') }}</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-amber-500 shrink-0">②</span> <span>{!! __('<strong class="text-amber-700">Mentre espereu</strong>, creeu el vostre compte o inicieu sessió — el necessitareu per inscriure-us.') !!}</span></li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">③</span> {!! __('Quan arribi el vostre torn, rebreu un <strong>codi d\'accés</strong> al correu.') !!}</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">④</span> {{ __('Introduïu el codi al catàleg i completeu la inscripció.') }}</li>
             </ol>
         </div>
         @else
         <div class="text-left bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-5">
-            <p class="text-xs font-semibold text-indigo-700 uppercase tracking-wide mb-2">Com funciona?</p>
+            <p class="text-xs font-semibold text-indigo-700 uppercase tracking-wide mb-2">{{ __('Com funciona?') }}</p>
             <ol class="space-y-1.5 text-sm text-indigo-900">
-                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">①</span> Introduïu el vostre correu i reserveu el torn.</li>
-                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">②</span> Quan arribi el vostre torn, rebreu un <strong>codi d'accés</strong> al correu.</li>
-                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">③</span> Introduïu el codi al catàleg i completeu la inscripció.</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">①</span> {{ __('Introduïu el vostre correu i reserveu el torn.') }}</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">②</span> {!! __('Quan arribi el vostre torn, rebreu un <strong>codi d\'accés</strong> al correu.') !!}</li>
+                <li class="flex items-start gap-2"><span class="font-bold text-indigo-500 shrink-0">③</span> {{ __('Introduïu el codi al catàleg i completeu la inscripció.') }}</li>
             </ol>
         </div>
         @endguest
@@ -66,8 +66,8 @@
 
         @if ($queueStart && $queueStart->isFuture())
         <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-700 mb-6">
-            Les inscripcions s'obren el <strong>{{ $queueStart->format('d/m/Y') }} a les {{ $queueStart->format('H:i') }} h</strong>.
-            Apunteu-vos ara per reservar el torn.
+            {!! __('Les inscripcions s\'obren el <strong>:date a les :time h</strong>.', ['date' => $queueStart->format('d/m/Y'), 'time' => $queueStart->format('H:i')]) !!}
+            {{ __('Apunteu-vos ara per reservar el torn.') }}
         </div>
         @endif
 
@@ -78,27 +78,27 @@
         <form method="POST" action="{{ route('campus.queue.store') }}" class="space-y-4 text-left">
             @csrf
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Correu electrònic</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Correu electrònic') }}</label>
                 <input type="email" name="email" value="{{ old('email', auth('student')->user()?->email) }}"
                        required autofocus
-                       placeholder="el.vostre@correu.cat"
+                       placeholder="{{ __('el.vostre@correu.cat') }}"
                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none
                               focus:ring-2 focus:ring-indigo-500 @error('email') border-red-400 @enderror">
                 @error('email') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
             <button type="submit"
                     class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                Reservar torn →
+                {{ __('Reservar torn') }} →
             </button>
         </form>
 
         <p class="text-xs text-gray-400 mt-4">
-            Rebreu un email amb el número de torn i l'hora estimada d'accés.
+            {{ __('Rebreu un email amb el número de torn i l\'hora estimada d\'accés.') }}
         </p>
 
         {{-- Formulari d'introducció de codi si ja el tenen --}}
         <div class="mt-6 pt-5 border-t border-gray-100">
-            <p class="text-sm font-medium text-gray-600 mb-3">Ja teniu el codi d'accés?</p>
+            <p class="text-sm font-medium text-gray-600 mb-3">{{ __('Ja teniu el codi d\'accés?') }}</p>
             <form method="POST" action="{{ route('campus.queue.code') }}" class="flex gap-2">
                 @csrf
                 <input type="text" name="code" maxlength="7" placeholder="000 AAA"
@@ -107,7 +107,7 @@
                               @error('code') border-red-400 @enderror">
                 <button type="submit"
                         class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition text-sm">
-                    Entrar
+                    {{ __('Entrar') }}
                 </button>
             </form>
             @error('code') <p class="text-red-600 text-xs mt-1 text-center">{{ $message }}</p> @enderror

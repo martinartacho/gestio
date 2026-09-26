@@ -3,10 +3,10 @@
 
         {{-- Columna 1: Identificació del campus --}}
         <div style="display:flex;flex-direction:column;gap:0.25rem;font-size:0.75rem;color:#9ca3af;">
-            <a href="{{ url('/') }}"
+            <a href="{{ current_tenant() ? route('home') : url('/') }}"
                style="font-size:0.875rem;font-weight:600;color:#4b5563;text-decoration:none;"
                onmouseover="this.style.color='#4f46e5'" onmouseout="this.style.color='#4b5563'">
-                {{ setting('campus_name', 'Campus de Formació Continuada') }}
+                {{ setting('campus_name', __('Campus de Formació Continuada')) }}
             </a>
             @if(setting('campus_contact_email'))
                 <a href="mailto:{{ setting('campus_contact_email') }}"
@@ -40,31 +40,31 @@
             @if($catalogActiu)
             <a href="{{ route('campus.catalog.index') }}"
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Catàleg</a>
+               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ __('Catàleg') }}</a>
             @endif
             @if($alumnatActiu)
             <a href="{{ route('campus.login') }}"
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ setting('home_alumnat_title', 'Alumnat') }}</a>
+               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ setting('home_alumnat_title', __('Alumnat')) }}</a>
             @endif
             @if($professoratActiu)
             <a href="{{ route('teacher.login') }}"
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ setting('home_professorat_title', 'Professorat') }}</a>
+               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ setting('home_professorat_title', __('Professorat')) }}</a>
             @endif
             @if($associatsActiu)
             <a href="{{ route('member.login') }}"
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Socis</a>
+               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ __('Socis') }}</a>
             @endif
             @if($noticiesActiu)
             <a href="{{ route('campus.noticies') }}"
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;border-right:1px solid #e5e7eb;"
-               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">Notícies</a>
+               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ __('Notícies') }}</a>
             @endif
             <a href="/admin"
                style="color:#9ca3af;text-decoration:none;padding:0 0.75rem;"
-               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ setting('home_gestio_title', 'Administració') }}</a>
+               onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">{{ setting('home_gestio_title', __('Administració')) }}</a>
         </nav>
 
     </div>

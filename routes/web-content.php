@@ -43,7 +43,7 @@ Route::get('/noticies', function () {
     return view('campus.noticies', compact('noticies', 'categories'));
 })->name('campus.noticies');
 
-Route::get('/novetats', fn() => view('campus.releases'))->name('campus.releases');
+Route::get('/novetats', fn () => view()->first(['campus.releases_'.app()->getLocale(), 'campus.releases']))->name('campus.releases');
 
 // ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────
 Route::prefix('cursos/cua')->name('campus.queue.')->middleware('campus.enabled')->group(function () {

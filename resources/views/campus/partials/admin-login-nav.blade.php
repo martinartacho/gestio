@@ -13,7 +13,7 @@
                  les targetes d'accés per rol de l'entitat per defecte. --}}
             <a href="{{ url('/') }}"
                style="color:#6b7280;text-decoration:none;"
-               onmouseover="this.style.color='#4338ca'" onmouseout="this.style.color='#6b7280'">Tornar al lloc</a>
+               onmouseover="this.style.color='#4338ca'" onmouseout="this.style.color='#6b7280'">{{ __('Tornar al lloc') }}</a>
         </div>
     </div>
 </nav>

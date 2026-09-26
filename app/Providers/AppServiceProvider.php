@@ -26,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiters();
 
+        // Textos de la UI: clau = text en català, traducció a lang/app/{locale}.json.
+        // Carpeta pròpia perquè laravel-lang no la sobreescrigui.
+        $this->loadJsonTranslationsFrom(lang_path('app'));
+
         // Aplicar timezone des de la configuració del lloc
         try {
             /** @var SettingStore $settings */

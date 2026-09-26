@@ -1,6 +1,6 @@
 @extends('campus.layouts.app')
 
-@section('title', 'Verifica el teu correu')
+@section('title', __('Verifica el teu correu'))
 
 @section('content')
 <div class="max-w-md mx-auto">
@@ -17,9 +17,9 @@
                              1-1.07-1.916V6.75"/>
                 </svg>
             </div>
-            <h1 class="text-xl font-bold text-gray-900">Introdueix el codi de verificació</h1>
+            <h1 class="text-xl font-bold text-gray-900">{{ __('Introdueix el codi de verificació') }}</h1>
             <p class="text-gray-500 text-sm mt-1">
-                Hem enviat un codi de 6 caràcters a<br>
+                {{ __('Hem enviat un codi de 6 caràcters a') }}<br>
                 <strong>{{ auth('student')->user()->email }}</strong>
             </p>
         </div>
@@ -38,7 +38,7 @@
         <form method="POST" action="{{ route('campus.verification.code') }}" class="space-y-4">
             @csrf
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2 text-center">Codi de verificació</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2 text-center">{{ __('Codi de verificació') }}</label>
                 <input type="text"
                        name="code"
                        maxlength="7"
@@ -49,12 +49,12 @@
                               rounded-lg px-4 py-3 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500
                               @error('code') border-red-400 @enderror"
                        value="{{ old('code') }}">
-                <p class="text-xs text-gray-400 text-center mt-1">3 números + 3 lletres</p>
+                <p class="text-xs text-gray-400 text-center mt-1">{{ __('3 números + 3 lletres') }}</p>
             </div>
 
             <button type="submit"
                     class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                Verificar compte
+                {{ __('Verificar compte') }}
             </button>
         </form>
 
@@ -62,13 +62,13 @@
             <form method="POST" action="{{ route('campus.verification.resend') }}">
                 @csrf
                 <button type="submit" class="text-sm text-indigo-600 hover:underline">
-                    No heu rebut el codi? Reenviar
+                    {{ __('No heu rebut el codi? Reenviar') }}
                 </button>
             </form>
-            <div class="text-xs text-gray-400">El codi caduca als 15 minuts</div>
+            <div class="text-xs text-gray-400">{{ __('El codi caduca als 15 minuts') }}</div>
             <form method="POST" action="{{ route('campus.logout') }}" class="pt-2">
                 @csrf
-                <button type="submit" class="text-xs text-gray-400 hover:text-gray-600">Tancar sessió</button>
+                <button type="submit" class="text-xs text-gray-400 hover:text-gray-600">{{ __('Tancar sessió') }}</button>
             </form>
         </div>
     </div>
