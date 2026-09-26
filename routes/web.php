@@ -16,7 +16,7 @@ Route::redirect('/admin', '/admin/login');
 // lliga el Tenant corresponent al contenidor perquè current_tenant() el
 // trobi a qualsevol controlador (BD compartida, sense canvi de connexió).
 Route::prefix('{tenant}')
-    ->middleware(\App\Http\Middleware\ResolveWebTenant::class)
+    ->middleware([\App\Http\Middleware\ResolveWebTenant::class, \App\Http\Middleware\SetLocale::class])
     ->group(__DIR__.'/web-content.php');
 
 // Endpoints interns de l'admin (JS del calendari Filament), no són pàgines

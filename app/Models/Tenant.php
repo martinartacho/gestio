@@ -20,4 +20,10 @@ class Tenant extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /** Idioma per defecte triat a Ajustes → Avançat (site_settings.locale). */
+    public function getDefaultLocaleAttribute(): ?string
+    {
+        return SiteSetting::where('tenant_id', $this->id)->where('key', 'locale')->first()?->value;
+    }
 }

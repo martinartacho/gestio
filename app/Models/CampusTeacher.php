@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasPreferredLocale;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,12 +12,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class CampusTeacher extends Authenticatable
+class CampusTeacher extends Authenticatable implements HasLocalePreference
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasPreferredLocale;
     protected $table = 'campus_teachers';
 
     protected $fillable = [
+        'locale',
         'user_id', 'code', 'first_name', 'last_name', 'email', 'password', 'phone', 'specialization', 'bio', 'status',
         'dni', 'address', 'postal_code', 'city', 'observacions',
         'degree', 'title', 'areas', 'hiring_date',

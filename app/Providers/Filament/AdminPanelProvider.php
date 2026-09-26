@@ -65,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([Authenticate::class])
+            ->tenantMiddleware([\App\Http\Middleware\SetLocale::class], isPersistent: true)
             ->renderHook(
                 'panels::body.start',
                 fn () => request()->routeIs('filament.admin.auth.login')

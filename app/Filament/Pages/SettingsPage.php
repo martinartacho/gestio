@@ -391,10 +391,6 @@ class SettingsPage extends Page
 
     public function getLocaleOptions(): array
     {
-        return [
-            'ca' => 'Català',
-            'es' => 'Castellà',
-            'en' => 'Anglès',
-        ];
+        return \App\Support\Locales::SUPPORTED;
     }
 }
