@@ -107,7 +107,7 @@ Pàgina d'administració (rol `admin`) per personalitzar el campus sense tocar e
 | 🎨 Aparença | Títol i subtítol del hero, colors de fons i text (amb previsualització en viu) |
 | ✉️ Correu | Remitent dels correus automàtics (nom + adreça + peu) |
 | 🔧 Mòduls | Feature flags: `documents_enabled`, `lms_enabled`, `courses_learning_enabled` |
-| ⚙️ Avançat | Zona horària i idioma |
+| ⚙️ Avançat | Zona horària i idioma per defecte de l'entitat (català / castellà) |
 
 **Implementació tècnica:**
 - Taula `site_settings` (`id`, `tenant_id`, `key`, valor JSON — únic per `tenant_id`+`key`), una fila per entitat
@@ -137,6 +137,24 @@ Hub central de tots els fluxos econòmics (Campus + Associats). Dissenyat per cr
 | `tresoreria` | Inscripcions, pagaments, liquidacions professors, quotes socis i remeses SEPA |
 | `editor` | Gestió d'usuaris i cursos |
 | `viewer` | Només lectura |
+
+### Idiomes (català / castellà)
+
+Tota la plataforma es pot fer servir en català o en castellà: web pública,
+portals d'alumnat, professorat i socis, panell d'administració, correus i app.
+
+| Qui tria | On | Efecte |
+|---|---|---|
+| L'entitat | Configuració → ⚙️ Avançat → Idioma | Idioma per defecte de tothom a l'entitat (per defecte, català) |
+| Cada persona | El seu perfil (web, admin o app) | Idioma personal; "Per defecte de l'entitat" torna a l'idioma de l'entitat |
+
+**Ordre de prioritat** (`App\Support\Locales::resolve()`): idioma de l'usuari →
+idioma de l'entitat → capçalera `Accept-Language` (només sense usuari ni entitat,
+p. ex. el login de l'app) → `APP_LOCALE`. Els correus surten en l'idioma del
+destinatari, també quan els envia l'admin o el cron.
+
+El contingut que escriu cada entitat (notícies, cursos, lliçons, textos
+d'Ajustes) no es tradueix: es mostra tal com s'ha escrit.
 
 ## Multi-entitat (multi-tenant)
 
@@ -258,6 +276,16 @@ Per executar els tests:
 ```bash
 php artisan test
 ```
+
+### Afegir textos nous (traduccions)
+
+- **Web**: escriu el text en català dins de `__()` — `{{ __('Els meus cursos') }}` — i
+  afegeix la traducció a `lang/app/es.json`. En català no cal cap fitxer: si no hi ha
+  traducció, es mostra el mateix text.
+- Amb variables: `__('Hola, :name!', ['name' => $nom])`; plurals: `trans_choice(':count curs|:count cursos', $n)`.
+- Etiquetes de constants dels models (estats, formats…): `translated_labels(Model::CONST)` o `__(Model::CONST[$clau])`.
+- Evita claus d'una sola paraula que coincideixin amb un fitxer de `lang/*/` (p. ex. `Site` ↔ `site.php`).
+- **App (gestio-app)**: afegeix la clau a `lib/l10n/app_ca.arb` i `app_es.arb` i executa `flutter gen-l10n`.
 
 ## Llicència
 
