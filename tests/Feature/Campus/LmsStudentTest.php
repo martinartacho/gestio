@@ -88,6 +88,18 @@ class LmsStudentTest extends TestCase
         $response->assertSee($this->lesson->title);
     }
 
+    public function test_lms_pages_follow_student_locale(): void
+    {
+        $this->student->update(['locale' => 'es']);
+        $this->actingAs($this->student, 'student');
+
+        $this->get(route('campus.lms.course', $this->course->slug))
+            ->assertOk()->assertSee('Lecciones del curso')->assertDontSee('Lliçons del curs');
+        $this->get(route('campus.lms.lesson', [$this->course->slug, $this->lesson->id]))
+            ->assertOk()->assertSee('Sesión 1');
+        $this->get(route('campus.portal.courses'))->assertOk()->assertSee('Mis cursos');
+    }
+
     // ─── Accés a una lliçó ───────────────────────────────────────────────────
 
     public function test_enrolled_student_can_view_published_lesson(): void

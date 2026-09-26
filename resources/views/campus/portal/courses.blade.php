@@ -1,18 +1,18 @@
 @extends('campus.layouts.app')
 
-@section('title', 'Els meus cursos')
+@section('title', __('Els meus cursos'))
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Els meus cursos</h1>
+    <h1 class="text-2xl font-bold text-gray-900">{{ __('Els meus cursos') }}</h1>
     <p class="text-gray-500 mt-1">Hola, {{ auth('student')->user()->full_name }}</p>
 </div>
 
 @if ($enrollments->isEmpty())
     <div class="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-400">
-        <p class="text-lg">Encara no estàs inscrit/a a cap curs.</p>
+        <p class="text-lg">{{ __('Encara no estàs inscrit/a a cap curs.') }}</p>
         <a href="{{ route('campus.catalog.index') }}" class="mt-4 inline-block bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
-            Veure el catàleg de cursos
+            {{ __('Veure el catàleg de cursos') }}
         </a>
     </div>
 @else
@@ -73,8 +73,8 @@
                             <svg style="width:0.9rem;height:0.9rem;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                             </svg>
-                            Accedir al curs en línia
-                            <span style="font-size:0.7rem;opacity:0.8;">({{ $enrollment->course->published_lessons_count }} sessions)</span>
+                            {{ __('Accedir al curs en línia') }}
+                            <span style="font-size:0.7rem;opacity:0.8;">({{ trans_choice(':count sessió|:count sessions', $enrollment->course->published_lessons_count) }})</span>
                         </a>
                     </div>
                     @endif
@@ -83,7 +83,7 @@
                     @php $docs = $documentsByCourse[$enrollment->course_id] ?? collect(); @endphp
                     @if ($docs->isNotEmpty())
                     <div style="margin-top:0.75rem;border-top:1px solid #f3f4f6;padding-top:0.75rem;">
-                        <p style="font-size:0.75rem;font-weight:600;color:#6b7280;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em;">Documents</p>
+                        <p style="font-size:0.75rem;font-weight:600;color:#6b7280;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em;">{{ __('Documents') }}</p>
                         <div style="display:flex;flex-direction:column;gap:0.375rem;">
                             @foreach ($docs as $doc)
                             <a href="{{ $doc->download_url }}" target="_blank"

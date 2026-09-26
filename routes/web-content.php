@@ -32,14 +32,7 @@ Route::get('/delete-account', fn () => view('delete_account'))->name('delete.acc
 Route::get('/noticies', function () {
     $noticies   = CampusNews::where('tenant_id', current_tenant()?->id)
         ->published()->visibleForCurrentUser()->orderByDesc('published_at')->get();
-    $categories = [
-        'campus'     => 'Campus',
-        'associats'  => 'Associats',
-        'tresoreria' => 'Tresoreria',
-        'secretaria' => 'Secretaria',
-        'admin'      => 'Administració',
-        'sistema'    => 'Sistema',
-    ];
+    $categories = array_map('__', CampusNews::LABELS);
     return view('campus.noticies', compact('noticies', 'categories'));
 })->name('campus.noticies');
 

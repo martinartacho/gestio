@@ -95,12 +95,12 @@
                 @php
                     $payMethods = [];
                     if (config('services.stripe.secret') && $cart->total() > 0) {
-                        $payMethods['stripe'] = 'Targeta (Stripe)';
+                        $payMethods['stripe'] = __('Targeta (Stripe)');
                     }
                     if ($cart->total() > 0) {
-                        if (setting('payment_transfer_enabled')) $payMethods['transfer'] = 'Transferència bancària';
+                        if (setting('payment_transfer_enabled')) $payMethods['transfer'] = __('Transferència bancària');
                         if (setting('payment_bizum_enabled'))    $payMethods['bizum']    = 'Bizum';
-                        if (setting('payment_cash_enabled'))     $payMethods['cash']     = 'Efectiu';
+                        if (setting('payment_cash_enabled'))     $payMethods['cash']     = __('Efectiu');
                         if (setting('payment_paypal_enabled'))   $payMethods['paypal']   = 'PayPal';
                     }
                 @endphp

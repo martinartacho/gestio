@@ -1,6 +1,6 @@
 @extends('campus.layouts.app')
 
-@section('title', 'Sessió ' . $lesson->session_number . ' · ' . $lesson->title)
+@section('title', __('Sessió :number', ['number' => $lesson->session_number]) . ' · ' . $lesson->title)
 
 @section('content')
 
@@ -10,7 +10,7 @@
 @if($isPreview ?? false)
 <div style="background:#fef9c3;border:1px solid #fde047;border-radius:0.5rem;padding:0.75rem 1rem;margin-bottom:1.5rem;font-size:0.875rem;color:#713f12;display:flex;align-items:center;gap:0.5rem;">
     <span>👁</span>
-    <strong>Mode previsualització</strong> — Aquesta és la vista de l'alumne. Les accions de progrés estan desactivades.
+    <strong>{{ __('Mode previsualització') }}</strong> — {{ __('Aquesta és la vista de l\'alumne. Les accions de progrés estan desactivades.') }}
 </div>
 @endif
 
@@ -19,15 +19,15 @@
 ═══════════════════════════════════════════════════ --}}
 <div style="border-bottom:1px solid #e5e7eb;padding-bottom:1.5rem;margin-bottom:2rem;">
     <a href="{{ isset($isPreview) && $isPreview ? 'javascript:history.back()' : route('campus.lms.course', $course->slug) }}"
-       style="font-size:0.875rem;color:#4f46e5;text-decoration:none;">&larr; Tornar al curs</a>
+       style="font-size:0.875rem;color:#4f46e5;text-decoration:none;">&larr; {{ __('Tornar al curs') }}</a>
 
     <div style="display:flex;align-items:center;gap:0.75rem;margin-top:1.25rem;margin-bottom:0.5rem;">
         <span style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.1em;background:#e0e7ff;color:#4338ca;padding:0.25rem 0.75rem;border-radius:9999px;font-weight:500;">
-            Sessió {{ $lesson->session_number }}
+            {{ __('Sessió :number', ['number' => $lesson->session_number]) }}
             @if(isset($totalLessons) && $totalLessons > 1) · de {{ $totalLessons }} @endif
         </span>
         @if($isCompleted ?? false)
-            <span style="font-size:0.6875rem;background:#dcfce7;color:#16a34a;padding:0.25rem 0.75rem;border-radius:9999px;font-weight:500;">✓ Completada</span>
+            <span style="font-size:0.6875rem;background:#dcfce7;color:#16a34a;padding:0.25rem 0.75rem;border-radius:9999px;font-weight:500;">✓ {{ __('Completada') }}</span>
         @endif
     </div>
 
@@ -52,7 +52,7 @@
 @include('campus.lms.partials.cover-image', ['position' => 'after_quote'])
 
 @if($lesson->quote_text)
-<p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;margin-bottom:0.75rem;">Introducció</p>
+<p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;margin-bottom:0.75rem;">{{ __('Introducció') }}</p>
 <blockquote style="border-left:3px solid #4f46e5;padding:0.875rem 1.25rem;background:#f5f3ff;border-radius:0 0.5rem 0.5rem 0;margin:0 0 1.5rem;">
     <p style="font-style:italic;font-size:1.0625rem;color:#1e1b4b;line-height:1.7;">
         «{{ $lesson->quote_text }}»
@@ -76,7 +76,7 @@
 ═══════════════════════════════════════════════════ --}}
 @if($lesson->topic_text)
 <div style="margin-bottom:2rem;">
-    <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;margin-bottom:0.75rem;">El tema d'avui</p>
+    <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;margin-bottom:0.75rem;">{{ __('El tema d\'avui') }}</p>
     <p style="font-size:1rem;line-height:1.8;color:#374151;">{{ $lesson->topic_text }}</p>
 </div>
 @endif
@@ -106,7 +106,7 @@
         </div>
         <div>
             <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.1em;color:#6366f1;font-weight:600;margin-bottom:0.25rem;">
-                Concepte clau
+                {{ __('Concepte clau') }}
             </p>
             <p style="font-size:0.9375rem;font-weight:600;color:#111827;margin-bottom:0.25rem;">
                 {{ $c['title'] ?? '' }}
@@ -135,7 +135,7 @@
             </div>
             <span style="flex-shrink:0;font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.25rem 0.75rem;border-radius:9999px;font-weight:500;
                 {{ $isProject ? 'background:#ede9fe;color:#5b21b6;' : 'background:#dcfce7;color:#166534;' }}">
-                {{ $isProject ? 'Projecte' : 'Referència' }}
+                {{ $isProject ? __('Projecte') : __('Referència') }}
             </span>
         </div>
 
@@ -161,7 +161,7 @@
 @if($lesson->comparison && !empty($lesson->comparison['left_label']))
 @php $cmp = $lesson->comparison; @endphp
 <div style="margin:2rem 0;">
-    <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;margin-bottom:0.875rem;">Comparació</p>
+    <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;margin-bottom:0.875rem;">{{ __('Comparació') }}</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
         <div style="background:#f5f3ff;border-radius:0.75rem;padding:1.25rem;">
             <p style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:#6366f1;font-weight:600;margin-bottom:0.75rem;">
@@ -197,7 +197,7 @@
 @if($lesson->reflection_questions)
 <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:0.75rem;padding:1.5rem;margin-bottom:2rem;">
     <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#92400e;font-weight:600;margin-bottom:1rem;">
-        Reflexió · Per parlar en grup
+        {{ __('Reflexió · Per parlar en grup') }}
     </p>
     @foreach($lesson->reflection_questions as $rq)
         <div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid rgba(251,191,36,0.2);">
@@ -233,7 +233,7 @@
         <div style="display:flex;align-items:center;gap:0.75rem;">
             <span style="font-size:1.25rem;">✏️</span>
             <p style="font-size:1rem;font-weight:700;color:#4f46e5;">
-                {{ $ex['title'] ?? 'Exercici pràctic' }}
+                {{ $ex['title'] ?? __('Exercici pràctic') }}
             </p>
         </div>
         @if(!empty($ex['duration']))
@@ -250,7 +250,7 @@
     @if(!empty($ex['examples']))
         <div style="background:#f5f3ff;border-radius:0.5rem;padding:1rem;margin-bottom:1rem;">
             <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.08em;color:#6366f1;font-weight:600;margin-bottom:0.5rem;">
-                Opcions possibles
+                {{ __('Opcions possibles') }}
             </p>
             @foreach($ex['examples'] as $example)
                 <p style="font-size:0.875rem;color:#374151;padding:0.2rem 0;">
@@ -266,7 +266,7 @@
             @if(!empty($ex['demo_first_person']))
             <div style="background:#f9fafb;border-radius:0.5rem;padding:1rem;">
                 <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;font-weight:600;margin-bottom:0.5rem;">
-                    1a persona
+                    {{ __('1a persona') }}
                 </p>
                 <p style="font-style:italic;font-size:0.875rem;color:#4b5563;line-height:1.65;">
                     {{ $ex['demo_first_person'] }}
@@ -276,7 +276,7 @@
             @if(!empty($ex['demo_third_person']))
             <div style="background:#f9fafb;border-radius:0.5rem;padding:1rem;">
                 <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;font-weight:600;margin-bottom:0.5rem;">
-                    3a persona
+                    {{ __('3a persona') }}
                 </p>
                 <p style="font-style:italic;font-size:0.875rem;color:#4b5563;line-height:1.65;">
                     {{ $ex['demo_third_person'] }}
@@ -289,7 +289,7 @@
     @if(!empty($ex['tips']))
         <div style="border-top:1px solid #e0e7ff;padding-top:0.875rem;margin-top:0.25rem;">
             <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;font-weight:600;margin-bottom:0.5rem;">
-                Consells
+                {{ __('Consells') }}
             </p>
             @foreach($ex['tips'] as $tip)
                 <p style="font-size:0.875rem;color:#6b7280;padding:0.2rem 0;">
@@ -319,10 +319,10 @@
 @if(!($isPreview ?? false) && count($quizQuestions) > 0)
 <div style="border:1px solid #c7d2fe;border-radius:0.75rem;padding:1.5rem;margin-bottom:2rem;background:#f8f9ff;">
     <p style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:#4338ca;font-weight:600;margin-bottom:0.25rem;">
-        Qüestionari
+        {{ __('Qüestionari') }}
     </p>
     <p style="font-size:0.8125rem;color:#6b7280;margin-bottom:1.25rem;">
-        Comprova el que has après en aquesta sessió.
+        {{ __('Comprova el que has après en aquesta sessió.') }}
     </p>
     @foreach($quizQuestions as $q)
         @include('campus.lms.partials.question-form', [
@@ -343,7 +343,7 @@
     @if($prevLesson)
         <a href="{{ route('campus.lms.lesson', [$course->slug, $prevLesson->id]) }}"
            style="font-size:0.875rem;color:#4f46e5;text-decoration:none;display:flex;align-items:center;gap:0.25rem;">
-            ← <span>Sessió {{ $prevLesson->session_number }}</span>
+            ← <span>{{ __('Sessió :number', ['number' => $prevLesson->session_number]) }}</span>
         </a>
     @else
         <span></span>
@@ -353,26 +353,26 @@
     @if(!($isPreview ?? false))
         @if($isCompleted)
             <span style="font-size:0.875rem;color:#16a34a;font-weight:600;display:flex;align-items:center;gap:0.375rem;">
-                ✓ Completada
+                ✓ {{ __('Completada') }}
             </span>
         @else
             <form method="POST" action="{{ route('campus.lms.lesson.complete', $lesson->id) }}">
                 @csrf
                 <button type="submit"
                         style="background:#4f46e5;color:#fff;border:none;border-radius:0.5rem;padding:0.625rem 1.5rem;font-size:0.875rem;font-weight:600;cursor:pointer;">
-                    Marcar com a completada
+                    {{ __('Marcar com a completada') }}
                 </button>
             </form>
         @endif
     @else
-        <span style="font-size:0.8125rem;color:#9ca3af;font-style:italic;">Previsualització</span>
+        <span style="font-size:0.8125rem;color:#9ca3af;font-style:italic;">{{ __('Previsualització') }}</span>
     @endif
 
     {{-- Següent --}}
     @if($nextLesson)
         <a href="{{ route('campus.lms.lesson', [$course->slug, $nextLesson->id]) }}"
            style="font-size:0.875rem;color:#4f46e5;text-decoration:none;display:flex;align-items:center;gap:0.25rem;">
-            <span>Sessió {{ $nextLesson->session_number }}</span> →
+            <span>{{ __('Sessió :number', ['number' => $nextLesson->session_number]) }}</span> →
         </a>
     @else
         <span></span>

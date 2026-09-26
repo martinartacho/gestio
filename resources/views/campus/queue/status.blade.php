@@ -71,7 +71,7 @@
                 </button>
             </form>
             <p class="text-xs text-gray-400 mt-3">
-                Vàlid fins: {{ $entry->access_expires_at?->format('H:i') }} h
+                {{ __('Vàlid fins') }}: {{ $entry->access_expires_at?->format('H:i') }} h
             </p>
 
         @elseif ($entry->status === 'accessed')
@@ -81,7 +81,7 @@
                 </svg>
             </div>
             <h1 class="text-xl font-bold text-gray-900 mb-2">{{ __('Torn completat') }}</h1>
-            <p class="text-gray-500 text-sm">Heu accedit al catàleg el {{ $entry->accessed_at?->format('d/m/Y \a\l\e\s H:i') }} h.</p>
+            <p class="text-gray-500 text-sm">{{ __('Heu accedit al catàleg el :date a les :time h.', ['date' => $entry->accessed_at?->format('d/m/Y'), 'time' => $entry->accessed_at?->format('H:i')]) }}</p>
             <a href="{{ route('campus.catalog.index') }}"
                class="inline-block mt-4 bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition text-sm">
                 {{ __('Tornar al catàleg') }}

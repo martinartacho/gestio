@@ -111,7 +111,7 @@
             <div class="flex items-baseline justify-between mb-4">
                 <span class="text-sm text-gray-500">{{ __('Preu del curs') }}</span>
                 <span class="text-2xl font-bold text-indigo-700">
-                    {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
+                    {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : __('Gratuït') }}
                 </span>
             </div>
             @endif

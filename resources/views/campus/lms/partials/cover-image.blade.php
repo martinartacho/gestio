@@ -53,7 +53,7 @@
         <a href="{{ $url }}" target="_blank" rel="noopener"
            style="display:flex;align-items:center;gap:0.75rem;padding:1rem 1.25rem;background:#fef2f2;border:1px solid #fecaca;border-radius:0.75rem;text-decoration:none;color:#991b1b;">
             <span style="font-size:1.5rem;">📄</span>
-            <span style="font-size:0.9375rem;font-weight:500;">{{ $caption ?: 'Obrir document PDF' }}</span>
+            <span style="font-size:0.9375rem;font-weight:500;">{{ $caption ?: __('Obrir document PDF') }}</span>
         </a>
 
     @else

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificat · {{ $course->title }}</title>
+    <title>{{ __('Certificat') }} · {{ $course->title }}</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -189,8 +189,8 @@
 
     {{-- Botons (no imprimibles) --}}
     <div class="no-print">
-        <a href="{{ route('campus.lms.course', $course->slug) }}" class="btn-back">&larr; Tornar al curs</a>
-        <button onclick="window.print()" class="btn-print">🖨 Imprimir / Descarregar PDF</button>
+        <a href="{{ route('campus.lms.course', $course->slug) }}" class="btn-back">&larr; {{ __('Tornar al curs') }}</a>
+        <button onclick="window.print()" class="btn-print">{{ __('🖨 Imprimir / Descarregar PDF') }}</button>
     </div>
 
     {{-- Certificat --}}
@@ -198,27 +198,27 @@
 
         <div class="cert-header">
             <p class="org-name">{{ config('app.name', 'GestioAPP') }}</p>
-            <h1>Certificat d'Aprofitament</h1>
-            <p class="subtitle">Learning Management System</p>
+            <h1>{{ __('Certificat d\'Aprofitament') }}</h1>
+            <p class="subtitle">{{ __('Learning Management System') }}</p>
         </div>
 
         <div class="cert-body">
-            <p class="label">Certifiquem que</p>
+            <p class="label">{{ __('Certifiquem que') }}</p>
             <div class="student-name">{{ $student->full_name }}</div>
 
-            <p class="completion-text">ha completat satisfactòriament el curs</p>
+            <p class="completion-text">{{ __('ha completat satisfactòriament el curs') }}</p>
 
             <p class="course-title">{{ $course->title }}</p>
         </div>
 
         <div class="cert-footer">
             <div class="info-block">
-                <p class="info-label">Data d'emissió</p>
+                <p class="info-label">{{ __('Data d\'emissió') }}</p>
                 <p class="info-value">{{ $certificate->issued_at->format('d / m / Y') }}</p>
             </div>
             <div class="cert-seal">🎓</div>
             <div class="info-block" style="text-align:right;">
-                <p class="info-label">Número de certificat</p>
+                <p class="info-label">{{ __('Número de certificat') }}</p>
                 <p class="info-value" style="font-family:monospace;font-size:0.8125rem;">{{ $certificate->certificate_number }}</p>
             </div>
         </div>

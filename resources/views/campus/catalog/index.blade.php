@@ -129,7 +129,7 @@
                     <div class="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
                         <span class="text-indigo-700 font-bold text-base">
                             @if (setting('catalog_show_price', true))
-                                {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
+                                {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : __('Gratuït') }}
                             @endif
                         </span>
                         <div class="flex flex-col items-end gap-0.5">

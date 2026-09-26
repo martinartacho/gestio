@@ -35,7 +35,7 @@
         @endphp
         <div class="flex flex-wrap gap-2 mb-10">
             @php
-                $filtres = ['totes' => 'Totes'] + $categories;
+                $filtres = ['totes' => __('Totes')] + $categories;
                 $colors  = [
                     'totes'      => 'bg-gray-900 text-white',
                     'campus'     => 'bg-indigo-600 text-white',
@@ -86,12 +86,12 @@
                     'sistema'    => 'bg-gray-100 text-gray-600',
                 ];
                 $labelNames = [
-                    'campus'     => 'Campus',
-                    'associats'  => 'Associats',
-                    'tresoreria' => 'Tresoreria',
-                    'secretaria' => 'Secretaria',
-                    'admin'      => 'Administració',
-                    'sistema'    => 'Sistema',
+                    'campus'     => __('Campus'),
+                    'associats'  => __('Associats'),
+                    'tresoreria' => __('Tresoreria'),
+                    'secretaria' => __('Secretaria'),
+                    'admin'      => __('Administració'),
+                    'sistema'    => __('Sistema'),
                 ];
             @endphp
             <article class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">

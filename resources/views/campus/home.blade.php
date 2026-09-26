@@ -169,12 +169,12 @@
                         'sistema'    => 'bg-gray-100 text-gray-600',
                     ];
                     $labelNames = [
-                        'campus'     => 'Campus',
-                        'associats'  => 'Associats',
-                        'tresoreria' => 'Tresoreria',
-                        'secretaria' => 'Secretaria',
-                        'admin'      => 'Administració',
-                        'sistema'    => 'Sistema',
+                        'campus'     => __('Campus'),
+                        'associats'  => __('Associats'),
+                        'tresoreria' => __('Tresoreria'),
+                        'secretaria' => __('Secretaria'),
+                        'admin'      => __('Administració'),
+                        'sistema'    => __('Sistema'),
                     ];
                 @endphp
                 <a href="{{ route('campus.noticies') }}"
