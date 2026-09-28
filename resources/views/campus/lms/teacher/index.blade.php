@@ -1,17 +1,17 @@
 @extends('campus.teacher.layouts.app')
 
-@section('title', 'Lliçons · ' . $course->title)
+@section('title', __('Lliçons') . ' · ' . $course->title)
 
 @section('content')
 
 <div style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
     <a href="{{ route('teacher.portal.course', $course->slug) }}"
-       style="font-size:0.875rem;color:#4f46e5;text-decoration:none;">&larr; Tornar al curs</a>
+       style="font-size:0.875rem;color:#4f46e5;text-decoration:none;">&larr; {{ __('Tornar al curs') }}</a>
 
     <a href="{{ route('teacher.lms.lesson.create', $course->slug) }}"
        style="display:inline-flex;align-items:center;gap:0.4rem;background:#4f46e5;color:#fff;font-size:0.8125rem;font-weight:600;padding:0.45rem 1rem;border-radius:0.5rem;text-decoration:none;"
        onmouseover="this.style.background='#4338ca'" onmouseout="this.style.background='#4f46e5'">
-        + Nova sessió
+        {{ __('+ Nova sessió') }}
     </a>
 </div>
 
@@ -20,7 +20,7 @@
     <h1 style="font-size:1.5rem;font-weight:700;color:#111827;margin:0.25rem 0 0.5rem;">
         {{ $course->title }}
     </h1>
-    <p style="font-size:0.875rem;color:#6b7280;">Lliçons LMS — Vista del professorat</p>
+    <p style="font-size:0.875rem;color:#6b7280;">{{ __('Lliçons LMS — Vista del professorat') }}</p>
 </div>
 
 @if (session('success'))
@@ -32,7 +32,7 @@
 {{-- Llista --}}
 @if($lessons->isEmpty())
     <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:2rem;text-align:center;color:#6b7280;font-size:0.875rem;">
-        Encara no hi ha lliçons. Crea la primera sessió amb el botó de dalt.
+        {{ __('Encara no hi ha lliçons. Crea la primera sessió amb el botó de dalt.') }}
     </div>
 @else
     <div style="display:flex;flex-direction:column;gap:0.625rem;">
@@ -65,25 +65,25 @@
             {{-- Estat --}}
             <span style="flex-shrink:0;font-size:0.75rem;padding:0.2rem 0.625rem;border-radius:9999px;font-weight:500;
                 {{ $lesson->status === 'published' ? 'background:#dcfce7;color:#16a34a;' : 'background:#fef3c7;color:#d97706;' }}">
-                {{ $lesson->status === 'published' ? 'Publicada' : 'Esborrany' }}
+                {{ $lesson->status === 'published' ? __('Publicada') : __('Esborrany') }}
             </span>
 
             {{-- Botó editar --}}
             <a href="{{ route('teacher.lms.lesson.edit', [$course->slug, $lesson->id]) }}"
                style="flex-shrink:0;font-size:0.8rem;color:#4f46e5;border:1px solid #c7d2fe;border-radius:0.4rem;padding:0.25rem 0.625rem;text-decoration:none;font-weight:500;"
                onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='transparent'">
-                Editar
+                {{ __('Editar') }}
             </a>
 
             {{-- Botó eliminar --}}
             <form method="POST"
                   action="{{ route('teacher.lms.lesson.destroy', [$course->slug, $lesson->id]) }}"
-                  onsubmit="return confirm('Eliminar «{{ addslashes($lesson->title) }}»? Aquesta acció no es pot desfer.')">
+                  onsubmit="return confirm({{ Js::from(__('Eliminar «:title»? Aquesta acció no es pot desfer.', ['title' => $lesson->title])) }})">
                 @csrf @method('DELETE')
                 <button type="submit"
                         style="font-size:0.8rem;color:#dc2626;border:1px solid #fecaca;background:transparent;border-radius:0.4rem;padding:0.25rem 0.625rem;cursor:pointer;font-weight:500;"
                         onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
-                    Eliminar
+                    {{ __('Eliminar') }}
                 </button>
             </form>
         </div>

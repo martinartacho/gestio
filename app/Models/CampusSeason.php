@@ -53,8 +53,8 @@ class CampusSeason extends Model
     public function getQuadrimesterLabelAttribute(): string
     {
         return match($this->quadrimester) {
-            1 => 'Tardor (set–gen)',
-            2 => 'Primavera (feb–jun)',
+            1 => __('Tardor (set–gen)'),
+            2 => __('Primavera (feb–jun)'),
             default => "Q{$this->quadrimester}",
         };
     }

@@ -1,6 +1,6 @@
 @extends('campus.teacher.layouts.app')
 
-@section('title', 'Crear nou curs · Pas 2')
+@section('title', __('Crear nou curs · Pas 2'))
 
 @section('content')
 
@@ -12,11 +12,11 @@
     {{-- Recordatori del curs --}}
     <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:0.5rem;padding:0.625rem 1rem;margin-bottom:1.5rem;font-size:0.875rem;color:#5b21b6;">
         📘 {{ $draft['title'] }}
-        <span style="color:#7c3aed;margin-left:0.5rem;">· {{ $draft['sessions_count'] }} sessions</span>
+        <span style="color:#7c3aed;margin-left:0.5rem;">· {{ trans_choice(':count sessió|:count sessions', $draft['sessions_count']) }}</span>
     </div>
 
-    <h1 style="font-size:1.25rem;font-weight:700;color:#111827;margin-bottom:0.25rem;">Títols de les sessions</h1>
-    <p style="font-size:0.875rem;color:#6b7280;margin-bottom:1.75rem;">Posa un títol descriptiu a cada sessió. Podràs editar el contingut complet després.</p>
+    <h1 style="font-size:1.25rem;font-weight:700;color:#111827;margin-bottom:0.25rem;">{{ __('Títols de les sessions') }}</h1>
+    <p style="font-size:0.875rem;color:#6b7280;margin-bottom:1.75rem;">{{ __('Posa un títol descriptiu a cada sessió. Podràs editar el contingut complet després.') }}</p>
 
     @if ($errors->any())
         <div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:0.5rem;padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.875rem;">
@@ -38,7 +38,7 @@
                     <input type="text"
                            name="sessions[{{ $i }}][title]"
                            value="{{ old("sessions.{$i}.title", $sessionTitles[$i]['title'] ?? '') }}"
-                           placeholder="Títol de la sessió {{ $i }}"
+                           placeholder="{{ __('Títol de la sessió :number', ['number' => $i]) }}"
                            style="flex:1;border:1px solid #d1d5db;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.9375rem;color:#111827;"
                            required>
                 </div>
@@ -49,12 +49,12 @@
             <a href="{{ route('teacher.lms.wizard.step1') }}"
                style="font-size:0.9375rem;color:#6b7280;text-decoration:none;padding:0.6rem 1rem;border:1px solid #d1d5db;border-radius:0.5rem;"
                onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='transparent'">
-                ← Anterior
+                ← {{ __('Anterior') }}
             </a>
             <button type="submit"
                     style="background:#4f46e5;color:#fff;font-size:0.9375rem;font-weight:600;padding:0.6rem 1.5rem;border:none;border-radius:0.5rem;cursor:pointer;"
                     onmouseover="this.style.background='#4338ca'" onmouseout="this.style.background='#4f46e5'">
-                Revisar →
+                {{ __('Revisar') }} →
             </button>
         </div>
     </form>

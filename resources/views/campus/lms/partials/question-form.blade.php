@@ -29,13 +29,13 @@
         <div style="font-size:0.82rem;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:0.4rem;padding:0.5rem 0.75rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
             <span style="color:#10b981;font-weight:700;">✓</span>
             <span style="color:#065f46;">
-                Resposta desada: <em>{{ $response->getDisplayValue() }}</em>
+                {{ __('Resposta desada') }}: <em>{{ $response->getDisplayValue() }}</em>
             </span>
             @if($response->auto_graded && $response->score !== null)
                 @if($response->isCorrect())
-                    <span style="margin-left:auto;color:#059669;font-weight:600;font-size:0.8rem;">✓ Correcte</span>
+                    <span style="margin-left:auto;color:#059669;font-weight:600;font-size:0.8rem;">✓ {{ __('Correcte') }}</span>
                 @else
-                    <span style="margin-left:auto;color:#dc2626;font-weight:600;font-size:0.8rem;">✗ Incorrecte</span>
+                    <span style="margin-left:auto;color:#dc2626;font-weight:600;font-size:0.8rem;">{{ __('✗ Incorrecte') }}</span>
                 @endif
             @endif
         </div>
@@ -50,7 +50,7 @@
         @if($qType === 'open_text')
             <textarea name="answer"
                       rows="4"
-                      placeholder="Escriu la teva resposta..."
+                      placeholder="{{ __('Escriu la teva resposta...') }}"
                       style="width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:0.4rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#1e293b;resize:vertical;font-family:inherit;">{{ old('answer', $hasResp ? $response->response_text : '') }}</textarea>
 
         @elseif($qType === 'select_from_examples')
@@ -71,14 +71,14 @@
                                {{ ($hasResp && !in_array($response->response_text, $qOptions)) ? 'checked' : '' }}
                                onchange="document.getElementById('custom-text-{{ $qIndex }}').style.display='block';"
                                style="accent-color:#4f46e5;">
-                        Altra opció (escriu la teva)
+                        {{ __('Altra opció (escriu la teva)') }}
                     </label>
                     <div id="custom-text-{{ $qIndex }}"
                          style="display:{{ ($hasResp && !in_array($response->response_text, $qOptions)) ? 'block' : 'none' }};margin-left:1.5rem;">
                         <input type="text"
                                name="answer_custom"
                                value="{{ ($hasResp && !in_array($response->response_text, $qOptions)) ? $response->response_text : '' }}"
-                               placeholder="Escriu la teva opció..."
+                               placeholder="{{ __('Escriu la teva opció...') }}"
                                style="width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:0.4rem;padding:0.4rem 0.6rem;font-size:0.875rem;color:#1e293b;">
                     </div>
                 @endif
@@ -114,13 +114,13 @@
                     <input type="radio" name="answer" value="1"
                            {{ ($hasResp && $response->response_bool === true) ? 'checked' : '' }}
                            style="accent-color:#4f46e5;">
-                    Sí
+                    {{ __('Sí') }}
                 </label>
                 <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.875rem;font-weight:500;color:#334155;cursor:pointer;background:#fff;border:1px solid #cbd5e1;border-radius:0.4rem;padding:0.4rem 1rem;">
                     <input type="radio" name="answer" value="0"
                            {{ ($hasResp && $response->response_bool === false) ? 'checked' : '' }}
                            style="accent-color:#4f46e5;">
-                    No
+                    {{ __('No') }}
                 </label>
             </div>
         @endif
@@ -133,7 +133,7 @@
         <button type="submit"
                 style="background:#4f46e5;color:#fff;font-size:0.8rem;font-weight:600;padding:0.4rem 1rem;border:none;border-radius:0.4rem;cursor:pointer;margin-top:0.5rem;"
                 onmouseover="this.style.background='#4338ca'" onmouseout="this.style.background='#4f46e5'">
-            {{ $hasResp ? 'Actualitzar resposta' : 'Desar resposta' }}
+            {{ $hasResp ? __('Actualitzar resposta') : __('Desar resposta') }}
         </button>
     </form>
 </div>

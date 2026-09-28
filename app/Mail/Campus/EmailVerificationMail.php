@@ -2,6 +2,7 @@
 
 namespace App\Mail\Campus;
 
+use App\Support\Locales;
 use App\Models\CampusStudent;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -17,12 +18,13 @@ class EmailVerificationMail extends Mailable
     public function __construct(public readonly CampusStudent $student)
     {
         $this->otp = $student->generateOtp();
+        $this->locale(Locales::resolve($student));
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'El teu codi de verificació — ' . config('app.name'),
+            subject: __('El teu codi de verificació') . ' — ' . config('app.name'),
         );
     }
 

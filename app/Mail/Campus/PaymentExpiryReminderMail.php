@@ -2,6 +2,7 @@
 
 namespace App\Mail\Campus;
 
+use App\Support\Locales;
 use App\Models\CampusEnrollment;
 use App\Settings\SettingStore;
 use Illuminate\Mail\Mailable;
@@ -13,12 +14,15 @@ class PaymentExpiryReminderMail extends Mailable
 {
     use SerializesModels;
 
-    public function __construct(public readonly CampusEnrollment $enrollment) {}
+    public function __construct(public readonly CampusEnrollment $enrollment)
+    {
+        $this->locale(Locales::resolve($enrollment->student, $enrollment->course?->tenant));
+    }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '⏰ Recordatori: pagament pendent — ' . $this->enrollment->course->title,
+            subject: '⏰ ' . __('Recordatori: pagament pendent') . ' — ' . $this->enrollment->course->title,
         );
     }
 

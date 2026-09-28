@@ -25,18 +25,18 @@ class CampusStudentsTable
         return $table
             ->columns([
                 TextColumn::make('full_name')
-                    ->label('Alumne')
+                    ->label(__('Alumne'))
                     ->searchable(['first_name', 'last_name'])
                     ->sortable('last_name')
                     ->weight('bold'),
 
                 TextColumn::make('email')
-                    ->label('Correu')
+                    ->label(__('Correu'))
                     ->searchable()
                     ->copyable(),
 
                 IconColumn::make('email_verified_at')
-                    ->label('Verificat')
+                    ->label(__('Verificat'))
                     ->boolean()
                     ->trueIcon('heroicon-o-check-badge')
                     ->falseIcon('heroicon-o-x-circle')
@@ -45,7 +45,7 @@ class CampusStudentsTable
                     ->getStateUsing(fn($record) => $record->hasVerifiedEmail()),
 
                 IconColumn::make('suspended_at')
-                    ->label('Suspès')
+                    ->label(__('Suspès'))
                     ->boolean()
                     ->trueIcon('heroicon-o-no-symbol')
                     ->falseIcon('heroicon-o-check-circle')
@@ -54,13 +54,13 @@ class CampusStudentsTable
                     ->getStateUsing(fn($record) => $record->isSuspended()),
 
                 TextColumn::make('enrollments_count')
-                    ->label('Matrícules')
+                    ->label(__('Matrícules'))
                     ->counts('enrollments')
                     ->badge()->color('primary'),
 
                 // Indicador de sospita: cancel·lacions recents
                 TextColumn::make('recent_cancellations')
-                    ->label('⚠ Cancel·lac. 24h')
+                    ->label(__('⚠ Cancel·lac. 24h'))
                     ->getStateUsing(fn($record) => $record->enrollments()
                         ->where('status', 'cancelled')
                         ->where('updated_at', '>=', now()->subHours(24))
@@ -73,25 +73,25 @@ class CampusStudentsTable
                         default     => 'gray',
                     }),
 
-                TextColumn::make('phone')->label('Telèfon')->searchable()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('created_at')->label('Registrat')->date('d/m/Y')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('phone')->label(__('Telèfon'))->searchable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')->label(__('Registrat'))->date('d/m/Y')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 TernaryFilter::make('email_verified_at')
-                    ->label('Verificació email')
+                    ->label(__('Verificació email'))
                     ->nullable()
-                    ->trueLabel('Verificats')
-                    ->falseLabel('Sense verificar'),
+                    ->trueLabel(__('Verificats'))
+                    ->falseLabel(__('Sense verificar')),
 
                 TernaryFilter::make('suspended_at')
-                    ->label('Suspensió')
+                    ->label(__('Suspensió'))
                     ->nullable()
-                    ->trueLabel('Suspesos')
-                    ->falseLabel('Actius'),
+                    ->trueLabel(__('Suspesos'))
+                    ->falseLabel(__('Actius')),
 
                 Filter::make('suspicious')
-                    ->label('Sospitosos (≥3 cancel·lacions en 24h)')
+                    ->label(__('Sospitosos (≥3 cancel·lacions en 24h)'))
                     ->query(fn(Builder $q) => $q->whereHas('enrollments', fn($sub) =>
                         $sub->where('status', 'cancelled')
                             ->where('updated_at', '>=', now()->subHours(24)),
@@ -100,36 +100,36 @@ class CampusStudentsTable
             ])
             ->recordActions([
                 Action::make('verify_email')
-                    ->label('✓ Verificar email')
+                    ->label(__('✓ Verificar email'))
                     ->icon('heroicon-o-check-badge')
                     ->color('success')
                     ->visible(fn($record) => ! $record->hasVerifiedEmail())
                     ->requiresConfirmation()
-                    ->modalHeading('Verificar email manualment')
-                    ->modalDescription(fn($record) => "Confirmar email de {$record->full_name} ({$record->email}) sense que l'alumne faci clic a l'enllaç?")
+                    ->modalHeading(__('Verificar email manualment'))
+                    ->modalDescription(fn($record) => __('Confirmar email de :name (:email) sense que l\'alumne faci clic a l\'enllaç?', ['name' => $record->full_name, 'email' => $record->email]))
                     ->action(function ($record) {
                         $record->update(['email_verified_at' => now()]);
-                        Notification::make()->title('Email verificat manualment')->success()->send();
+                        Notification::make()->title(__('Email verificat manualment'))->success()->send();
                     }),
 
                 Action::make('resend_verification')
-                    ->label('Reenviar verificació')
+                    ->label(__('Reenviar verificació'))
                     ->icon('heroicon-o-envelope')
                     ->color('info')
                     ->visible(fn($record) => ! $record->hasVerifiedEmail())
                     ->action(function ($record) {
                         Mail::to($record->email)->send(new EmailVerificationMail($record));
-                        Notification::make()->title('Correu reenviat a ' . $record->email)->success()->send();
+                        Notification::make()->title(__('Correu reenviat a :email', ['email' => $record->email]))->success()->send();
                     }),
 
                 Action::make('suspend')
-                    ->label('Suspendre')
+                    ->label(__('Suspendre'))
                     ->icon('heroicon-o-no-symbol')
                     ->color('danger')
                     ->visible(fn($record) => ! $record->isSuspended())
                     ->form([
                         Textarea::make('suspension_reason')
-                            ->label('Motiu de la suspensió')
+                            ->label(__('Motiu de la suspensió'))
                             ->required()
                             ->rows(2)
                             ->maxLength(300),
@@ -139,21 +139,21 @@ class CampusStudentsTable
                             'suspended_at'       => now(),
                             'suspension_reason'  => $data['suspension_reason'],
                         ]);
-                        Notification::make()->title('Alumne suspès')->warning()->send();
+                        Notification::make()->title(__('Alumne suspès'))->warning()->send();
                     }),
 
                 Action::make('unsuspend')
-                    ->label('Aixecar suspensió')
+                    ->label(__('Aixecar suspensió'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn($record) => $record->isSuspended())
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->update(['suspended_at' => null, 'suspension_reason' => null]);
-                        Notification::make()->title('Suspensió aixecada')->success()->send();
+                        Notification::make()->title(__('Suspensió aixecada'))->success()->send();
                     }),
 
-                EditAction::make()->label('Editar'),
+                EditAction::make()->label(__('Editar')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

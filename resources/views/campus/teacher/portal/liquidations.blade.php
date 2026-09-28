@@ -1,27 +1,27 @@
 @extends('campus.teacher.layouts.app')
 
-@section('title', 'Liquidacions')
+@section('title', __('Liquidacions'))
 
 @section('content')
-<h1 class="text-2xl font-bold text-gray-900 mb-6">Liquidacions</h1>
+<h1 class="text-2xl font-bold text-gray-900 mb-6">{{ __('Liquidacions') }}</h1>
 
 @if ($payments->isEmpty())
     <div class="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500 text-sm">
-        No hi ha liquidacions registrades.
+        {{ __('No hi ha liquidacions registrades.') }}
     </div>
 @else
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
-                    <th class="text-left px-4 py-3 font-medium text-gray-500">Curs</th>
-                    <th class="text-left px-4 py-3 font-medium text-gray-500">Temporada</th>
-                    <th class="text-right px-4 py-3 font-medium text-gray-500">Sessions</th>
-                    <th class="text-right px-4 py-3 font-medium text-gray-500">Import brut</th>
-                    <th class="text-right px-4 py-3 font-medium text-gray-500">Retenció</th>
-                    <th class="text-right px-4 py-3 font-medium text-gray-500">Net</th>
-                    <th class="text-left px-4 py-3 font-medium text-gray-500">Estat</th>
-                    <th class="text-left px-4 py-3 font-medium text-gray-500">Pagat</th>
+                    <th class="text-left px-4 py-3 font-medium text-gray-500">{{ __('Curs') }}</th>
+                    <th class="text-left px-4 py-3 font-medium text-gray-500">{{ __('Temporada') }}</th>
+                    <th class="text-right px-4 py-3 font-medium text-gray-500">{{ __('Sessions') }}</th>
+                    <th class="text-right px-4 py-3 font-medium text-gray-500">{{ __('Import brut') }}</th>
+                    <th class="text-right px-4 py-3 font-medium text-gray-500">{{ __('Retenció') }}</th>
+                    <th class="text-right px-4 py-3 font-medium text-gray-500">{{ __('Net') }}</th>
+                    <th class="text-left px-4 py-3 font-medium text-gray-500">{{ __('Estat') }}</th>
+                    <th class="text-left px-4 py-3 font-medium text-gray-500">{{ __('Pagat') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -60,7 +60,7 @@
                         @php $color = \App\Models\CampusTeacherPayment::STATUS_COLORS[$payment->status] ?? 'gray'; @endphp
                         <span class="px-2 py-0.5 rounded-full text-xs font-medium
                             {{ $color === 'success' ? 'bg-green-100 text-green-700' : ($color === 'info' ? 'bg-blue-100 text-blue-700' : ($color === 'danger' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500')) }}">
-                            {{ \App\Models\CampusTeacherPayment::STATUSES[$payment->status] ?? $payment->status }}
+                            {{ __(\App\Models\CampusTeacherPayment::STATUSES[$payment->status] ?? $payment->status) }}
                         </span>
                     </td>
                     <td class="px-4 py-3 text-gray-500">
@@ -71,7 +71,7 @@
             </tbody>
             <tfoot class="bg-gray-50 border-t border-gray-200 font-semibold text-sm">
                 <tr>
-                    <td colspan="5" class="px-4 py-3 text-right text-gray-700">Total net:</td>
+                    <td colspan="5" class="px-4 py-3 text-right text-gray-700">{{ __('Total net') }}:</td>
                     <td class="px-4 py-3 text-right text-gray-900">
                         {{ number_format($payments->sum('net_amount'), 2, ',', '.') }} €
                     </td>

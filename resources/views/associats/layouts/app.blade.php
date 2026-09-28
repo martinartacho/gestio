@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Portal Socis') — {{ setting('associats_org_name', 'Entitat') }}</title>
+    <title>@yield('title', __('Portal Socis')) — {{ setting('associats_org_name', __('Entitat')) }}</title>
     @if(setting('campus_favicon_url'))
         <link rel="icon" href="{{ setting('campus_favicon_url') }}">
     @endif
@@ -13,20 +13,20 @@
 
     <nav class="bg-white border-b border-gray-200 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="{{ url('/') }}" class="text-xl font-bold text-indigo-700 hover:text-indigo-900">
+            <a href="{{ route('home') }}" class="text-xl font-bold text-indigo-700 hover:text-indigo-900">
                 {{ setting('campus_name', 'Campus') }}
             </a>
             <div class="flex items-center gap-4 text-sm">
                 @auth('member')
-                    <a href="{{ route('member.card') }}" class="text-gray-600 hover:text-indigo-700">Carnet</a>
-                    <a href="{{ route('member.profile') }}" class="text-gray-600 hover:text-indigo-700">Perfil</a>
+                    <a href="{{ route('member.card') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Carnet') }}</a>
+                    <a href="{{ route('member.profile') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Perfil') }}</a>
                     <form method="POST" action="{{ route('member.logout') }}" class="inline">
                         @csrf
-                        <button type="submit" class="text-gray-600 hover:text-red-600">Sortir</button>
+                        <button type="submit" class="text-gray-600 hover:text-red-600">{{ __('Sortir') }}</button>
                     </form>
                     <span class="text-indigo-700 font-medium">{{ auth('member')->user()->first_name }}</span>
                 @else
-                    <a href="{{ route('member.login') }}" class="bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700">Accedir</a>
+                    <a href="{{ route('member.login') }}" class="bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700">{{ __('Accedir') }}</a>
                 @endauth
             </div>
         </div>

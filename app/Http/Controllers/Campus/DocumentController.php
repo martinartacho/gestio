@@ -44,7 +44,7 @@ class DocumentController extends Controller
         // ── Disponibilitat temporal (OR: data O sessió) ────────────────────
         // Professors bypassen la restricció temporal (veuen tots els seus docs)
         if (! $teacher && ! $this->isAvailable($document)) {
-            abort(403, 'El document encara no és accessible.');
+            abort(403, __('El document encara no és accessible.'));
         }
 
         // ── Visibilitat ────────────────────────────────────────────────────

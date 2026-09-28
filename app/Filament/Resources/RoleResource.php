@@ -120,14 +120,14 @@ class RoleResource extends Resource
                     ->counts('permissions')
                     ->badge()
                     ->color('warning')
-                    ->suffix(' permisos'),
+                    ->suffix(' ' . __('permisos')),
 
                 Tables\Columns\TextColumn::make('users_count')
                     ->label(__('site.users'))
                     ->counts('users')
                     ->badge()
                     ->color(fn($state) => $state > 0 ? 'primary' : 'gray')
-                    ->suffix(' usuaris'),
+                    ->suffix(' ' . __('usuaris')),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('site.created_at'))

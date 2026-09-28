@@ -1,6 +1,6 @@
 @extends('campus.layouts.app')
 
-@section('title', 'Cursos disponibles')
+@section('title', __('Cursos disponibles'))
 
 @section('content')
 
@@ -10,21 +10,21 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.641 0-8.573-3.007-9.964-7.178Z" />
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
     </svg>
-    <span><strong>Mode previsualització</strong> — Estàs veient cursos i temporades no publicats. Els alumnes no veuen aquesta vista.</span>
+    <span><strong>{{ __('Mode previsualització') }}</strong> — {{ __('Estàs veient cursos i temporades no publicats. Els alumnes no veuen aquesta vista.') }}</span>
     <a href="{{ route('campus.catalog.index', ['season' => request('season')]) }}"
-       class="ml-auto shrink-0 underline hover:no-underline">Sortir del preview</a>
+       class="ml-auto shrink-0 underline hover:no-underline">{{ __('Sortir del preview') }}</a>
 </div>
 @endif
 
 <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
     <div>
-        <h1 class="text-3xl font-bold text-gray-900">Cursos disponibles</h1>
+        <h1 class="text-3xl font-bold text-gray-900">{{ __('Cursos disponibles') }}</h1>
         @if ($selectedSeason)
             <p class="text-gray-500 mt-1 flex items-center gap-2">
                 {{ $selectedSeason->name }}
                 @php
                     $color = \App\Models\CampusSeason::STATUS_COLORS[$selectedSeason->status] ?? 'gray';
-                    $label = \App\Models\CampusSeason::STATUSES[$selectedSeason->status] ?? $selectedSeason->status;
+                    $label = __(\App\Models\CampusSeason::STATUSES[$selectedSeason->status] ?? $selectedSeason->status);
                     $bgMap = ['success' => 'bg-green-100 text-green-700', 'danger' => 'bg-red-100 text-red-600', 'gray' => 'bg-gray-100 text-gray-500'];
                 @endphp
                 @if ($isPreview)
@@ -35,13 +35,13 @@
             </p>
             @if ($selectedSeason->start_date_enrollment && $selectedSeason->end_date_enrollment)
                 <p class="text-xs text-indigo-600 mt-0.5">
-                    Inscripcions: {{ $selectedSeason->start_date_enrollment->format('d/m/Y') }} – {{ $selectedSeason->end_date_enrollment->format('d/m/Y') }}
+                    {{ __('Inscripcions') }}: {{ $selectedSeason->start_date_enrollment->format('d/m/Y') }} – {{ $selectedSeason->end_date_enrollment->format('d/m/Y') }}
                     @if ($selectedSeason->enrollmentIsOpen())
-                        <span class="ml-1 bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-semibold">Obertes</span>
+                        <span class="ml-1 bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-semibold">{{ __('Obertes') }}</span>
                     @elseif ($selectedSeason->isClosed() || now() > $selectedSeason->end_date_enrollment)
-                        <span class="ml-1 bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">Tancades</span>
+                        <span class="ml-1 bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{{ __('Tancades') }}</span>
                     @else
-                        <span class="ml-1 bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Properament</span>
+                        <span class="ml-1 bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">{{ __('Properament') }}</span>
                     @endif
                 </p>
             @endif
@@ -59,7 +59,7 @@
                 {{ $s->name }}
                 @if ($s->isActive()) <span class="ml-0.5 text-xs">★</span> @endif
                 @if ($isPreview && ! $s->isActive())
-                    <span class="ml-1 text-xs opacity-60">({{ \App\Models\CampusSeason::STATUSES[$s->status] ?? '' }})</span>
+                    <span class="ml-1 text-xs opacity-60">({{ __(\App\Models\CampusSeason::STATUSES[$s->status] ?? '') }})</span>
                 @endif
             </a>
         @endforeach
@@ -69,9 +69,9 @@
 
 @if ($courses->isEmpty())
     <div class="text-center py-16 text-gray-400">
-        <p class="text-lg">No hi ha cursos disponibles en aquest moment.</p>
+        <p class="text-lg">{{ __('No hi ha cursos disponibles en aquest moment.') }}</p>
         @if ($isPreview)
-            <p class="text-sm mt-2">En mode preview es mostren tots els cursos (actius, esborranys i no públics).</p>
+            <p class="text-sm mt-2">{{ __('En mode preview es mostren tots els cursos (actius, esborranys i no públics).') }}</p>
         @endif
     </div>
 @else
@@ -83,8 +83,8 @@
 
                 @if ($isPreview && (! $course->is_public || $course->status !== 'active'))
                     <div class="text-xs text-amber-600 font-semibold mb-2 flex gap-2">
-                        @if (! $course->is_public) <span>No públic</span> @endif
-                        @if ($course->status !== 'active') <span>{{ \App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status }}</span> @endif
+                        @if (! $course->is_public) <span>{{ __('No públic') }}</span> @endif
+                        @if ($course->status !== 'active') <span>{{ __(\App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status) }}</span> @endif
                     </div>
                 @endif
 
@@ -119,7 +119,7 @@
                             @if ($course->format && setting('catalog_show_format', true)) · @endif
                         @endif
                         @if ($course->format && setting('catalog_show_format', true))
-                            {{ \App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format }}
+                            {{ __(\App\Models\CampusCourse::FORMATS[$course->format] ?? $course->format) }}
                         @endif
                     </div>
                     @php
@@ -129,12 +129,12 @@
                     <div class="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
                         <span class="text-indigo-700 font-bold text-base">
                             @if (setting('catalog_show_price', true))
-                                {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : 'Gratuït' }}
+                                {{ $course->price > 0 ? number_format($course->price, 2, ',', '.') . ' €' : __('Gratuït') }}
                             @endif
                         </span>
                         <div class="flex flex-col items-end gap-0.5">
                             @if ($course->sessions && setting('catalog_show_sessions', true))
-                                <span class="text-xs text-gray-400">{{ $course->sessions }} sessions</span>
+                                <span class="text-xs text-gray-400">{{ trans_choice(':count sessió|:count sessions', $course->sessions) }}</span>
                             @endif
 
                             @if ($myEnrollment)
@@ -153,19 +153,19 @@
                                         'refunded'          => '↩',
                                         default             => '•',
                                     };
-                                    $eLabel = \App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus;
+                                    $eLabel = __(\App\Models\CampusEnrollment::STATUSES[$eStatus] ?? $eStatus);
                                 @endphp
                                 <span class="text-xs font-semibold px-2 py-0.5 rounded border {{ $ePill }}">
                                     {{ $eIcon }} {{ $eLabel }}
                                 </span>
                             @elseif ($course->isFull())
-                                <span class="text-xs font-semibold text-red-600">Complet</span>
+                                <span class="text-xs font-semibold text-red-600">{{ __('Complet') }}</span>
                             @elseif ($course->open_enrollment)
-                                <span class="text-xs font-semibold text-emerald-600">∞ Inscripció oberta</span>
+                                <span class="text-xs font-semibold text-emerald-600">{{ __('∞ Inscripció oberta') }}</span>
                             @elseif ($courseEnrollOpen)
-                                <span class="text-xs font-medium text-green-600">Inscripcions obertes</span>
+                                <span class="text-xs font-medium text-green-600">{{ __('Inscripcions obertes') }}</span>
                             @else
-                                <span class="text-xs text-gray-400">Inscripcions tancades</span>
+                                <span class="text-xs text-gray-400">{{ __('Inscripcions tancades') }}</span>
                             @endif
                         </div>
                     </div>

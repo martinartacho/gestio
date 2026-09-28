@@ -2,6 +2,9 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import caLocale from '@fullcalendar/core/locales/ca';
+import esLocale from '@fullcalendar/core/locales/es';
+
+const LOCALES = { ca: caLocale, es: esLocale };
 
 window.initCalendar = function (config) {
     const el = document.getElementById('campus-calendar');
@@ -15,7 +18,7 @@ window.initCalendar = function (config) {
     const calendar = new Calendar(el, {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
-        locale:      caLocale,
+        locale:      LOCALES[config.locale] ?? caLocale,
         firstDay:    1,
         headerToolbar: {
             left:   'prev,next today',
@@ -40,7 +43,7 @@ window.initCalendar = function (config) {
         eventDrop: function (info) {
             if (!config.editable) { info.revert(); return; }
             const title = info.event.title;
-            if (!confirm(`Voleu moure el curs "${title}"?`)) {
+            if (!confirm((config.texts?.moveConfirm ?? 'Voleu moure el curs ":title"?').replace(':title', title))) {
                 info.revert();
                 return;
             }

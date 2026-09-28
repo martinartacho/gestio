@@ -56,6 +56,13 @@ return [
     'activate'           => 'Activar',
     'deactivate'         => 'Desactivar',
     'user_activated'     => 'Usuari activat',
+    'my_profile'              => 'El meu perfil',
+    'change_password'         => 'Canviar contrasenya',
+    'optional'                => '(opcional)',
+    'profile_updated'         => 'Perfil actualitzat correctament.',
+    'language'                => 'Idioma',
+    'language_tenant_default' => "Per defecte de l'entitat",
+    'language_saved'          => 'Idioma desat.',
     'user_deactivated'   => 'Usuari desactivat',
 
     // ── Rols ─────────────────────────────────────────────────────────────

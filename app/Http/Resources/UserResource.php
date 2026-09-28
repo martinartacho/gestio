@@ -18,6 +18,9 @@ class UserResource extends JsonResource
             'last_name'  => $this->last_name,
             'email'      => $this->email,
             'phone'      => $this->phone,
+            // locale = triat per l'usuari (null = el de l'entitat); effective_locale = el que s'aplica.
+            'locale'           => $this->locale,
+            'effective_locale' => $this->preferredLocale() ?? config('app.locale'),
             'role'       => match (true) {
                 $this->resource instanceof CampusTeacher   => 'teacher',
                 $this->resource instanceof AssociatMember  => 'member',

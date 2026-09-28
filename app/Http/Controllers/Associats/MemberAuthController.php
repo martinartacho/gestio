@@ -32,7 +32,7 @@ class MemberAuthController extends Controller
 
         if ($member->status === 'cancelled') {
             return back()->withErrors([
-                'email' => 'El compte de soci ha estat donat de baixa. Contacteu amb l\'entitat.',
+                'email' => __('El compte de soci ha estat donat de baixa. Contacteu amb l\'entitat.'),
             ])->onlyInput('email');
         }
 
@@ -76,7 +76,7 @@ class MemberAuthController extends Controller
 
         if (! $member || ! $member->belongsToTenant(current_tenant()?->id)) {
             return redirect()->route('member.login')
-                ->withErrors(['email' => 'No tens accés a aquesta institució.']);
+                ->withErrors(['email' => __('No tens accés a aquesta institució.')]);
         }
 
         $request->session()->forget('pending_member_id');

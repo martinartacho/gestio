@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->profile(\App\Filament\Auth\EditProfile::class)
             ->revealablePasswords()
             ->tenant(Tenant::class, slugAttribute: 'slug')
 
@@ -64,7 +65,10 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            // Pàgines sense tenant a la URL (perfil): idioma de l'usuari o del seu tenant.
+            ->middleware([\App\Http\Middleware\SetLocale::class], isPersistent: true)
             ->authMiddleware([Authenticate::class])
+            ->tenantMiddleware([\App\Http\Middleware\SetLocale::class], isPersistent: true)
             ->renderHook(
                 'panels::body.start',
                 fn () => request()->routeIs('filament.admin.auth.login')

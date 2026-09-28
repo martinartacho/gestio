@@ -72,7 +72,7 @@ class TeacherAuthController extends Controller
 
         if (! $teacher || ! $teacher->belongsToTenant(current_tenant()?->id)) {
             return redirect()->route('teacher.login')
-                ->withErrors(['email' => 'No tens accés a aquesta institució.']);
+                ->withErrors(['email' => __('No tens accés a aquesta institució.')]);
         }
 
         $request->session()->forget('pending_teacher_id');
@@ -106,7 +106,7 @@ class TeacherAuthController extends Controller
         $teacher = CampusTeacher::where('email', $email)->first();
 
         if (! $teacher) {
-            return back()->withErrors(['email' => 'No existeix cap compte amb ' . $email . '.'])->onlyInput('email');
+            return back()->withErrors(['email' => __('No existeix cap compte amb :email.', ['email' => $email])])->onlyInput('email');
         }
 
         Mail::to($teacher->email)->send(new TeacherPasswordResetMail($teacher));
@@ -114,7 +114,7 @@ class TeacherAuthController extends Controller
         $request->session()->put('teacher_password_reset_email', $email);
 
         return redirect()->route('teacher.password.code')
-            ->with('info', 'Hem enviat un codi de recuperació a ' . $email . '.');
+            ->with('info', __('Hem enviat un codi de recuperació a :email.', ['email' => $email]));
     }
 
     public function showPasswordResetCode(Request $request): View|RedirectResponse
@@ -140,7 +140,7 @@ class TeacherAuthController extends Controller
         $teacher = CampusTeacher::where('email', $email)->first();
 
         if (! $teacher) {
-            return back()->withErrors(['code' => 'No s\'ha trobat el compte.']);
+            return back()->withErrors(['code' => __('No s\'ha trobat el compte.')]);
         }
 
         $teacher->increment('verification_attempts');
@@ -150,13 +150,12 @@ class TeacherAuthController extends Controller
 
             if ($attemptsLeft === 0) {
                 return back()->withErrors(['code' =>
-                    'Massa intents incorrectes. Sol·liciteu un nou codi.'
+                    __('Massa intents incorrectes. Sol·liciteu un nou codi.')
                 ]);
             }
 
             return back()->withErrors(['code' =>
-                'Codi incorrecte o caducat. Us queden ' . $attemptsLeft . ' ' .
-                ($attemptsLeft === 1 ? 'intent' : 'intents') . '.'
+                trans_choice('Codi incorrecte o caducat. Us queda :count intent.|Codi incorrecte o caducat. Us queden :count intents.', $attemptsLeft)
             ]);
         }
 

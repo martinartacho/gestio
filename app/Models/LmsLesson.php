@@ -115,7 +115,7 @@ class LmsLesson extends Model
 
     public function getSessionLabelAttribute(): string
     {
-        return 'Sessió ' . $this->session_number;
+        return __('Sessió :number', ['number' => $this->session_number]);
     }
 
     public function isPublished(): bool

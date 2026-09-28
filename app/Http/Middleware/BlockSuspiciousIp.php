@@ -18,7 +18,7 @@ class BlockSuspiciousIp
         }
 
         if (BlockedIp::isBlocked($request->ip())) {
-            abort(403, 'Accés denegat.');
+            abort(403, __('Accés denegat.'));
         }
 
         return $next($request);

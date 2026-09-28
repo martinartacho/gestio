@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', setting('campus_name', 'Campus de Formació')) — {{ setting('campus_name', 'Campus') }}</title>
+    <title>@yield('title', setting('campus_name', __('Campus de Formació'))) — {{ setting('campus_name', 'Campus') }}</title>
     @if(setting('campus_favicon_url'))
         <link rel="icon" href="{{ setting('campus_favicon_url') }}">
     @endif
@@ -13,11 +13,11 @@
 
     <nav class="bg-white border-b border-gray-200 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="{{ url('/') }}" class="text-xl font-bold text-indigo-700 hover:text-indigo-900">
+            <a href="{{ route('home') }}" class="text-xl font-bold text-indigo-700 hover:text-indigo-900">
                 {{ setting('campus_name', 'Campus') }}
             </a>
             <div class="flex items-center gap-4 text-sm">
-                <a href="{{ route('campus.catalog.index') }}" class="text-gray-600 hover:text-indigo-700">Catàleg</a>
+                <a href="{{ route('campus.catalog.index') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Catàleg') }}</a>
                 @auth('student')
                     @php
                         $cartItemCount = \App\Models\CampusCart::where('student_id', auth('student')->id())
@@ -26,7 +26,7 @@
                             ->latest()->first()?->items_count ?? 0;
                     @endphp
                     <a href="{{ route('campus.cart.show') }}"
-                       class="relative flex items-center text-gray-600 hover:text-indigo-700" title="Carret">
+                       class="relative flex items-center text-gray-600 hover:text-indigo-700" title="{{ __('Carret') }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/>
                         </svg>
@@ -36,15 +36,15 @@
                             </span>
                         @endif
                     </a>
-                    <a href="{{ route('campus.portal.courses') }}" class="text-gray-600 hover:text-indigo-700">Els meus cursos</a>
+                    <a href="{{ route('campus.portal.courses') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Els meus cursos') }}</a>
                     <form method="POST" action="{{ route('campus.logout') }}" class="inline">
                         @csrf
-                        <button type="submit" class="text-gray-600 hover:text-red-600">Sortir</button>
+                        <button type="submit" class="text-gray-600 hover:text-red-600">{{ __('Sortir') }}</button>
                     </form>
-                    <span class="text-indigo-700 font-medium">{{ auth('student')->user()->first_name }}</span>
+                    <a href="{{ route('campus.portal.profile') }}" class="text-indigo-700 font-medium hover:underline" title="{{ __('site.my_profile') }}">{{ auth('student')->user()->first_name }}</a>
                 @else
-                    <a href="{{ route('campus.login') }}" class="text-gray-600 hover:text-indigo-700">Accedir</a>
-                    <a href="{{ route('campus.register') }}" class="bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700">Registrar-se</a>
+                    <a href="{{ route('campus.login') }}" class="text-gray-600 hover:text-indigo-700">{{ __('Accedir') }}</a>
+                    <a href="{{ route('campus.register') }}" class="bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700">{{ __('Registrar-se') }}</a>
                 @endauth
             </div>
         </div>
@@ -59,17 +59,17 @@
                     <svg style="width:1rem;height:1rem;flex-shrink:0;color:#d97706;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
                     </svg>
-                    Compte pendent de verificació — introduïu el codi que heu rebut per correu.
+                    {{ __('Compte pendent de verificació — introduïu el codi que heu rebut per correu.') }}
                 </span>
                 <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
                     <a href="{{ route('campus.verification.notice') }}"
                        style="background:#f59e0b;color:#fff;font-size:0.75rem;font-weight:600;padding:0.375rem 0.75rem;border-radius:0.5rem;text-decoration:none;"
                        onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">
-                        Introduir codi →
+                        {{ __('Introduir codi') }} →
                     </a>
                     <form method="POST" action="{{ route('campus.verification.resend') }}" style="display:inline;">
                         @csrf
-                        <button type="submit" style="background:none;border:none;font-size:0.75rem;color:#92400e;cursor:pointer;text-decoration:underline;">Reenviar</button>
+                        <button type="submit" style="background:none;border:none;font-size:0.75rem;color:#92400e;cursor:pointer;text-decoration:underline;">{{ __('Reenviar') }}</button>
                     </form>
                 </div>
             </div>

@@ -11,7 +11,7 @@ class AuthenticateTeacher
     {
         if (! auth('teacher')->check()) {
             return redirect()->route('teacher.login')
-                ->with('info', 'Cal identificar-se per accedir al portal de professorat.');
+                ->with('info', __('Cal identificar-se per accedir al portal de professorat.'));
         }
 
         return $next($request);

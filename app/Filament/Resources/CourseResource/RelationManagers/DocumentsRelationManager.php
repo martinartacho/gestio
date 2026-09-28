@@ -20,39 +20,43 @@ use Illuminate\Support\Facades\Storage;
 
 class DocumentsRelationManager extends RelationManager
 {
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('Documents');
+    }
+
     protected static string $relationship = 'documents';
-    protected static ?string $title = 'Documents';
     protected static \BackedEnum|string|null $icon = 'heroicon-o-paper-clip';
 
     public function form(Schema $schema): Schema
     {
         return $schema->components([
             TextInput::make('title')
-                ->label('Títol')
+                ->label(__('Títol'))
                 ->required()
                 ->maxLength(255)
                 ->columnSpanFull(),
 
             Textarea::make('description')
-                ->label('Descripció')
+                ->label(__('Descripció'))
                 ->rows(2)
                 ->columnSpanFull(),
 
             Select::make('type')
-                ->label('Tipus')
-                ->options(CampusDocument::TYPES)
+                ->label(__('Tipus'))
+                ->options(translated_labels(CampusDocument::TYPES))
                 ->required()
                 ->live()
                 ->default('file'),
 
             Select::make('status')
-                ->label('Estat')
-                ->options(CampusDocument::STATUSES)
+                ->label(__('Estat'))
+                ->options(translated_labels(CampusDocument::STATUSES))
                 ->default('active')
                 ->required(),
 
             FileUpload::make('file_path')
-                ->label('Fitxer')
+                ->label(__('Fitxer'))
                 ->disk('local')
                 ->directory('campus/documents')
                 ->acceptedFileTypes(CampusDocument::ACCEPTED_MIMES)
@@ -71,7 +75,7 @@ class DocumentsRelationManager extends RelationManager
                 ->required(fn($get) => $get('type') === 'url'),
 
             Select::make('teacher_id')
-                ->label('Professor/a')
+                ->label(__('Professor/a'))
                 ->options(
                     CampusTeacher::where('status', 'active')
                         ->get()
@@ -81,17 +85,17 @@ class DocumentsRelationManager extends RelationManager
                 ->nullable(),
 
             Select::make('visibility')
-                ->label('Visibilitat')
-                ->options(CampusDocument::VISIBILITIES)
+                ->label(__('Visibilitat'))
+                ->options(translated_labels(CampusDocument::VISIBILITIES))
                 ->default('enrolled')
                 ->required(),
 
             Toggle::make('inherit_to_editions')
-                ->label('Heretar als cursos fills')
+                ->label(__('Heretar als cursos fills'))
                 ->default(false),
 
             TextInput::make('sort_order')
-                ->label('Ordre')
+                ->label(__('Ordre'))
                 ->numeric()
                 ->default(0),
         ]);
@@ -103,20 +107,20 @@ class DocumentsRelationManager extends RelationManager
             ->recordTitleAttribute('title')
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Títol')
+                    ->label(__('Títol'))
                     ->searchable()
                     ->limit(40),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Tipus')
+                    ->label(__('Tipus'))
                     ->badge()
-                    ->formatStateUsing(fn($state) => CampusDocument::TYPES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusDocument::TYPES[$state] ?? $state))
                     ->color(fn($state) => $state === 'file' ? 'gray' : 'info'),
 
                 Tables\Columns\TextColumn::make('visibility')
-                    ->label('Visibilitat')
+                    ->label(__('Visibilitat'))
                     ->badge()
-                    ->formatStateUsing(fn($state) => CampusDocument::VISIBILITIES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusDocument::VISIBILITIES[$state] ?? $state))
                     ->color(fn($state) => match($state) {
                         'public'   => 'success',
                         'enrolled' => 'info',
@@ -125,17 +129,17 @@ class DocumentsRelationManager extends RelationManager
                     }),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Estat')
+                    ->label(__('Estat'))
                     ->badge()
-                    ->formatStateUsing(fn($state) => CampusDocument::STATUSES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusDocument::STATUSES[$state] ?? $state))
                     ->color(fn($state) => $state === 'active' ? 'success' : 'gray'),
 
                 Tables\Columns\TextColumn::make('file_size_formatted')
-                    ->label('Mida')
+                    ->label(__('Mida'))
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('not_available_reason')
-                    ->label('Accés alumnes')
+                    ->label(__('Accés alumnes'))
                     ->getStateUsing(function (CampusDocument $r): string {
                         $r->loadMissing('course');
                         return $r->not_available_reason ?? '✓ Accessible';
@@ -144,19 +148,19 @@ class DocumentsRelationManager extends RelationManager
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('sort_order')
-                    ->label('Ordre')
+                    ->label(__('Ordre'))
                     ->sortable(),
             ])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Tipus')
-                    ->options(CampusDocument::TYPES),
+                    ->label(__('Tipus'))
+                    ->options(translated_labels(CampusDocument::TYPES)),
 
                 Tables\Filters\SelectFilter::make('visibility')
-                    ->label('Visibilitat')
-                    ->options(CampusDocument::VISIBILITIES),
+                    ->label(__('Visibilitat'))
+                    ->options(translated_labels(CampusDocument::VISIBILITIES)),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
@@ -167,7 +171,7 @@ class DocumentsRelationManager extends RelationManager
             ])
             ->actions([
                 Action::make('download')
-                    ->label('Descarregar')
+                    ->label(__('Descarregar'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->url(fn(CampusDocument $r) => $r->download_url)
                     ->openUrlInNewTab()

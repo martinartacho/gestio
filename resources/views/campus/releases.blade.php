@@ -17,12 +17,47 @@
         </p>
     </div>
 
+    {{-- ── v1.8.0 ── --}}
+    <div style="margin-bottom:3rem;">
+        <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+            <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.8.0</span>
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
+                Nou
+            </span>
+            <span style="font-size:0.65rem; color:#9ca3af;">Setembre 2026</span>
+        </div>
+
+        <div style="border-left:2px solid #6366f1; padding-left:1.5rem;">
+            <p style="color:#6b7280; font-size:0.9rem; line-height:1.8; margin-bottom:1.5rem;">
+                La plataforma es pot fer servir en <strong>català</strong> o en <strong>castellà</strong>: pàgines, portals, correus i app del mòbil.
+            </p>
+
+            <div style="margin-bottom:1rem;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Idioma per entitat
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    Cada entitat tria el seu idioma des de Configuració → Avançat. Si no es toca res, tot continua en català.
+                </p>
+            </div>
+
+            <div style="margin-bottom:0;">
+                <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#6366f1; margin-bottom:0.4rem; font-weight:600;">
+                    ✦ &nbsp;Idioma personal al perfil
+                </div>
+                <p style="color:#6b7280; font-size:0.875rem; line-height:1.75;">
+                    Alumnes, professorat, socis i administradors poden triar el seu idioma al perfil. La tria es recorda, també a l'app.
+                </p>
+            </div>
+        </div>
+    </div>
+
     {{-- ── v1.7.0 ── --}}
     <div style="margin-bottom:3rem;">
         <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             <span style="font-size:1.35rem; font-weight:700; color:#111827;">v1.7.0</span>
-            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#6366f1; padding:0.2rem 0.6rem; border-radius:3px;">
-                Nou
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:#374151; background:#e5e7eb; padding:0.2rem 0.6rem; border-radius:3px;">
+                Millores
             </span>
             <span style="font-size:0.65rem; color:#9ca3af;">Juny 2026</span>
         </div>

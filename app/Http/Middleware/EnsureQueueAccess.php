@@ -41,6 +41,6 @@ class EnsureQueueAccess
 
         // Sense token vàlid → redirigir a la cua
         return redirect()->route('campus.queue.join')
-            ->with('info', 'Cal registrar-se a la cua d\'inscripcions per accedir al catàleg.');
+            ->with('info', __('Cal registrar-se a la cua d\'inscripcions per accedir al catàleg.'));
     }
 }

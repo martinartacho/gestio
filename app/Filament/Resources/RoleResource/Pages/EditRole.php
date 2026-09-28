@@ -13,7 +13,7 @@ class EditRole extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()->label('Eliminar rol'),
+            Actions\DeleteAction::make()->label(__('Eliminar rol')),
         ];
     }
 
@@ -24,6 +24,6 @@ class EditRole extends EditRecord
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'Rol actualizado correctamente';
+        return __('Rol actualitzat correctament');
     }
 }

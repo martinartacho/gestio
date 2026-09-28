@@ -14,7 +14,7 @@ class EditUser extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-                ->label('Eliminar usuario'),
+                ->label(__('Eliminar usuari')),
         ];
     }
 
@@ -25,6 +25,6 @@ class EditUser extends EditRecord
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'Usuario actualizado correctamente';
+        return __('Usuari actualitzat correctament');
     }
 }

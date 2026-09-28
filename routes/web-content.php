@@ -32,18 +32,11 @@ Route::get('/delete-account', fn () => view('delete_account'))->name('delete.acc
 Route::get('/noticies', function () {
     $noticies   = CampusNews::where('tenant_id', current_tenant()?->id)
         ->published()->visibleForCurrentUser()->orderByDesc('published_at')->get();
-    $categories = [
-        'campus'     => 'Campus',
-        'associats'  => 'Associats',
-        'tresoreria' => 'Tresoreria',
-        'secretaria' => 'Secretaria',
-        'admin'      => 'Administració',
-        'sistema'    => 'Sistema',
-    ];
+    $categories = array_map('__', CampusNews::LABELS);
     return view('campus.noticies', compact('noticies', 'categories'));
 })->name('campus.noticies');
 
-Route::get('/novetats', fn() => view('campus.releases'))->name('campus.releases');
+Route::get('/novetats', fn () => view()->first(['campus.releases_'.app()->getLocale(), 'campus.releases']))->name('campus.releases');
 
 // ── Cua d'inscripcions (definida ABANS del wildcard /{slug}) ──────────────────
 Route::prefix('cursos/cua')->name('campus.queue.')->middleware('campus.enabled')->group(function () {
@@ -103,6 +96,8 @@ Route::prefix('portal')->name('campus.')->middleware('campus.enabled')->group(fu
     // ── Portal alumne (requereix auth) ────────────────────────────────────────
     Route::middleware(\App\Http\Middleware\AuthenticateStudent::class)->group(function () {
         Route::get('/meus-cursos', [PortalController::class, 'courses'])->name('portal.courses');
+        Route::get('/perfil', [PortalController::class, 'editProfile'])->name('portal.profile');
+        Route::post('/perfil', [PortalController::class, 'updateProfile'])->name('portal.profile.update');
 
         // ── Carret de compra ──────────────────────────────────────────────────────
         Route::get('/carret', [CartController::class, 'show'])->name('cart.show');
@@ -217,5 +212,6 @@ Route::prefix('socis')->name('member.')->middleware('associats.enabled')->group(
     Route::middleware(\App\Http\Middleware\AuthenticateMember::class)->group(function () {
         Route::get('/carnet', [MemberPortalController::class, 'card'])->name('card');
         Route::get('/perfil', [MemberPortalController::class, 'profile'])->name('profile');
+        Route::post('/perfil/idioma', [MemberPortalController::class, 'updateLocale'])->name('profile.locale');
     });
 });

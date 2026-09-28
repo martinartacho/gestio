@@ -159,20 +159,20 @@ class CampusDocument extends Model
         $parts = [];
 
         if ($this->available_from && now()->lt($this->available_from)) {
-            $parts[] = 'des del ' . $this->available_from->format('d/m/Y H:i');
+            $parts[] = __('des del :date', ['date' => $this->available_from->format('d/m/Y H:i')]);
         }
 
         if ($this->session_number) {
             $course = $this->relationLoaded('course') ? $this->course : null;
             $done   = $course?->sessionsPast() ?? 0;
             if ($done < $this->session_number) {
-                $parts[] = 'sessió ' . $this->session_number . ' (fetes: ' . $done . ')';
+                $parts[] = __('sessió :number (fetes: :done)', ['number' => $this->session_number, 'done' => $done]);
             }
         }
 
         if (empty($parts)) return null;
 
-        return '⏰ ' . implode(' o ', $parts);
+        return '⏰ ' . implode(' ' . __('o') . ' ', $parts);
     }
 
     /** @deprecated Usar isAvailableForStudents() */

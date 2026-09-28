@@ -1,8 +1,8 @@
 @php
     $steps = [
-        1 => 'Bàsic',
-        2 => 'Sessions',
-        3 => 'Revisió',
+        1 => __('Bàsic'),
+        2 => __('Sessions'),
+        3 => __('Revisió'),
     ];
 @endphp
 

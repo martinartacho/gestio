@@ -21,6 +21,7 @@ class ProfileController extends Controller
 
         $rules = [
             'phone'    => ['nullable', 'string', 'max:20'],
+            'locale'   => \App\Support\Locales::rule(),
             'password' => ['nullable', 'confirmed', Password::min(8)],
         ];
 

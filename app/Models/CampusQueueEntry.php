@@ -72,14 +72,14 @@ class CampusQueueEntry extends Model
     {
         // Slot ja obert → notificació imminent quan s'executi el scheduler
         if ($this->slot_starts_at->isPast()) {
-            return 'Molt aviat';
+            return __('Molt aviat');
         }
         if ($this->slot_starts_at->isToday()) {
-            return 'avui a les ' . $this->slot_starts_at->format('H:i') . ' h';
+            return __('avui a les :time h', ['time' => $this->slot_starts_at->format('H:i')]);
         }
         if ($this->slot_starts_at->isTomorrow()) {
-            return 'demà a les ' . $this->slot_starts_at->format('H:i') . ' h';
+            return __('demà a les :time h', ['time' => $this->slot_starts_at->format('H:i')]);
         }
-        return $this->slot_starts_at->format('d/m/Y') . ' a les ' . $this->slot_starts_at->format('H:i') . ' h';
+        return __(':date a les :time h', ['date' => $this->slot_starts_at->format('d/m/Y'), 'time' => $this->slot_starts_at->format('H:i')]);
     }
 }

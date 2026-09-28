@@ -2,6 +2,7 @@
 
 namespace App\Mail\Campus;
 
+use App\Support\Locales;
 use App\Models\CampusStudent;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -18,12 +19,13 @@ class PasswordResetMail extends Mailable
     {
         // Reutilitzem els camps verification_code per al reset de contrasenya
         $this->otp = $student->generateOtp();
+        $this->locale(Locales::resolve($student));
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Recuperar contrasenya — ' . config('app.name'),
+            subject: __('Recuperar contrasenya') . ' — ' . config('app.name'),
         );
     }
 

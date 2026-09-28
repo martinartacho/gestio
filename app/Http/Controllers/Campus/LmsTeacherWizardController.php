@@ -82,7 +82,7 @@ class LmsTeacherWizardController extends Controller
         }
 
         $season  = CampusSeason::find($draft['season_id']);
-        $formats = CampusCourse::FORMATS;
+        $formats = translated_labels(CampusCourse::FORMATS);
 
         return view('campus.lms.teacher.wizard.step3', compact('draft', 'sessionTitles', 'season', 'formats'));
     }
@@ -138,6 +138,6 @@ class LmsTeacherWizardController extends Controller
 
         return redirect()
             ->route('teacher.lms.course', $course->slug)
-            ->with('success', '✓ Curs creat correctament. En espera d\'aprovació de l\'administrador.');
+            ->with('success', __('✓ Curs creat correctament. En espera d\'aprovació de l\'administrador.'));
     }
 }

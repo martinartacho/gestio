@@ -42,7 +42,7 @@ class StatsOverview extends BaseWidget
             Stat::make(__('site.teachers'), $totalTeachers)
                 ->description($activeSeason
                     ? $activeSeason->name
-                    : 'Cap període actiu')
+                    : __('Cap període actiu'))
                 ->descriptionIcon('heroicon-m-academic-cap')
                 ->color('success'),
 
@@ -64,7 +64,7 @@ class StatsOverview extends BaseWidget
             $totalSessions     = (clone $lmsQuery)->count();
             $publishedSessions = (clone $lmsQuery)->where('status', 'published')->count();
 
-            $stats[] = Stat::make('Sessions LMS', $totalSessions)
+            $stats[] = Stat::make(__('Sessions LMS'), $totalSessions)
                 ->description($publishedSessions . ' publicades')
                 ->descriptionIcon('heroicon-m-play-circle')
                 ->color('indigo');
@@ -87,7 +87,7 @@ class StatsOverview extends BaseWidget
             $totalEnrollments   = CampusEnrollment::where('tenant_id', $tenantId)->count();
             $pendingEnrollments = CampusEnrollment::where('tenant_id', $tenantId)->where('status', 'pending')->count();
 
-            $stats[] = Stat::make('Inscripcions', $totalEnrollments)
+            $stats[] = Stat::make(__('Inscripcions'), $totalEnrollments)
                 ->description($pendingEnrollments . ' pendents')
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
                 ->color('amber');

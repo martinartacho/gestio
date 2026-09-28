@@ -16,6 +16,6 @@ class CreateRole extends CreateRecord
 
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Rol creado correctamente';
+        return __('Rol creat correctament');
     }
 }

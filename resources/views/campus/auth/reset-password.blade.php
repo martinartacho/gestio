@@ -1,6 +1,6 @@
 @extends('campus.layouts.app')
 
-@section('title', 'Nova contrasenya')
+@section('title', __('Nova contrasenya'))
 
 @section('content')
 <div class="max-w-md mx-auto">
@@ -12,9 +12,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
             </div>
-            <h1 class="text-xl font-bold text-gray-900">Introduïu el codi i la nova contrasenya</h1>
+            <h1 class="text-xl font-bold text-gray-900">{{ __('Introduïu el codi i la nova contrasenya') }}</h1>
             <p class="text-gray-500 text-sm mt-1">
-                Hem enviat un codi de 6 caràcters a<br>
+                {{ __('Hem enviat un codi de 6 caràcters a') }}<br>
                 <strong>{{ session('password_reset_email') }}</strong>
             </p>
         </div>
@@ -33,7 +33,7 @@
         <form method="POST" action="{{ route('campus.password.reset') }}" class="space-y-4">
             @csrf
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2 text-center">Codi de verificació</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2 text-center">{{ __('Codi de verificació') }}</label>
                 <input type="text"
                        name="code"
                        maxlength="7"
@@ -44,28 +44,28 @@
                               rounded-lg px-4 py-3 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500
                               @error('code') border-red-400 @enderror"
                        value="{{ old('code') }}">
-                <p class="text-xs text-gray-400 text-center mt-1">3 números + 3 lletres</p>
+                <p class="text-xs text-gray-400 text-center mt-1">{{ __('3 números + 3 lletres') }}</p>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nova contrasenya</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Nova contrasenya') }}</label>
                 <input type="password" name="password" required
-                       placeholder="Mínim 8 caràcters"
+                       placeholder="{{ __('Mínim 8 caràcters') }}"
                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none
                               focus:ring-2 focus:ring-indigo-500 @error('password') border-red-400 @enderror">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar contrasenya</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Confirmar contrasenya') }}</label>
                 <input type="password" name="password_confirmation" required
-                       placeholder="Repetiu la contrasenya"
+                       placeholder="{{ __('Repetiu la contrasenya') }}"
                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none
                               focus:ring-2 focus:ring-indigo-500">
             </div>
 
             <button type="submit"
                     class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                Restablir contrasenya
+                {{ __('Restablir contrasenya') }}
             </button>
         </form>
 
@@ -74,7 +74,7 @@
                 @csrf
                 <input type="hidden" name="email" value="{{ session('password_reset_email') }}">
                 <button type="submit" class="text-sm text-indigo-600 hover:underline">
-                    No heu rebut el codi? Reenviar
+                    {{ __('No heu rebut el codi? Reenviar') }}
                 </button>
             </form>
         </div>

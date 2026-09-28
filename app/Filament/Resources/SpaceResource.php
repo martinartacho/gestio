@@ -48,7 +48,7 @@ class SpaceResource extends Resource
                     ->label(__('site.space_code'))
                     ->required()->maxLength(20)
                     ->unique(ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->where('tenant_id', current_tenant()?->id))
-                    ->helperText('Ex: SA, AM1, ONLINE'),
+                    ->helperText(__('Ex: SA, AM1, ONLINE')),
 
                 Select::make('type')
                     ->label(__('site.space_type'))
@@ -58,7 +58,7 @@ class SpaceResource extends Resource
                 TextInput::make('capacity')
                     ->label(__('site.space_capacity'))
                     ->numeric()->default(0)
-                    ->helperText('0 = sense límit (ex: espais virtuals)'),
+                    ->helperText(__('0 = sense límit (ex: espais virtuals)')),
 
                 Textarea::make('description')
                     ->label(__('site.description'))

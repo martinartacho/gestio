@@ -56,7 +56,7 @@ class TeacherResource extends Resource
 
                 TextInput::make('degree')
                     ->label(__('site.teacher_degree'))
-                    ->maxLength(20)->placeholder('Dr., Dra., Prof.'),
+                    ->maxLength(20)->placeholder(__('Dr., Dra., Prof.')),
 
                 TextInput::make('first_name')
                     ->label(__('site.teacher_firstname'))
@@ -95,7 +95,7 @@ class TeacherResource extends Resource
 
                 Select::make('status')
                     ->label(__('site.teacher_status'))
-                    ->options(CampusTeacher::STATUSES)
+                    ->options(translated_labels(CampusTeacher::STATUSES))
                     ->default('active')->required()->native(false),
 
                 DatePicker::make('hiring_date')
@@ -134,12 +134,12 @@ class TeacherResource extends Resource
                 ->schema([
                     Select::make('fiscal_situation')
                         ->label(__('site.fiscal_situation'))
-                        ->options(CampusTeacher::FISCAL_SITUATIONS)
+                        ->options(translated_labels(CampusTeacher::FISCAL_SITUATIONS))
                         ->nullable()->native(false),
 
                     Select::make('payment_type')
                         ->label(__('site.payment_type'))
-                        ->options(CampusTeacher::PAYMENT_TYPES)
+                        ->options(translated_labels(CampusTeacher::PAYMENT_TYPES))
                         ->nullable()->native(false),
 
                     Toggle::make('needs_payment')
@@ -186,7 +186,7 @@ class TeacherResource extends Resource
 
                     Select::make('beneficiary_fiscal_situation')
                         ->label(__('site.beneficiary_fiscal_situation'))
-                        ->options(CampusTeacher::FISCAL_SITUATIONS)
+                        ->options(translated_labels(CampusTeacher::FISCAL_SITUATIONS))
                         ->nullable()->native(false),
 
                     TextInput::make('beneficiary_city')
@@ -225,7 +225,7 @@ class TeacherResource extends Resource
                 ->schema([
                     Select::make('payment_status')
                         ->label(__('site.teacher_payment_status'))
-                        ->options(CampusTeacher::PAYMENT_STATUSES)
+                        ->options(translated_labels(CampusTeacher::PAYMENT_STATUSES))
                         ->default('pending')->required()->native(false),
 
                     DateTimePicker::make('payment_confirmed_at')
@@ -271,14 +271,14 @@ class TeacherResource extends Resource
 
                 Tables\Columns\TextColumn::make('payment_status')
                     ->label(__('site.teacher_payment_status'))
-                    ->formatStateUsing(fn($state) => CampusTeacher::PAYMENT_STATUSES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusTeacher::PAYMENT_STATUSES[$state] ?? $state))
                     ->badge()
                     ->color(fn($state) => CampusTeacher::PAYMENT_STATUS_COLORS[$state] ?? 'gray')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('site.status'))
-                    ->formatStateUsing(fn($state) => CampusTeacher::STATUSES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusTeacher::STATUSES[$state] ?? $state))
                     ->badge()
                     ->color(fn($state) => $state === 'active' ? 'success' : 'gray'),
             ])
@@ -287,12 +287,12 @@ class TeacherResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
-                    ->options(CampusTeacher::STATUSES)
+                    ->options(translated_labels(CampusTeacher::STATUSES))
                     ->native(false),
 
                 Tables\Filters\SelectFilter::make('payment_status')
                     ->label(__('site.teacher_payment_status'))
-                    ->options(CampusTeacher::PAYMENT_STATUSES)
+                    ->options(translated_labels(CampusTeacher::PAYMENT_STATUSES))
                     ->native(false),
             ])
             ->actions([

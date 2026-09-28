@@ -67,7 +67,7 @@ class SeasonResource extends Resource
 
                 Select::make('status')
                     ->label(__('site.status'))
-                    ->options(\App\Models\CampusSeason::STATUSES)
+                    ->options(translated_labels(\App\Models\CampusSeason::STATUSES))
                     ->required()->native(false)->default('draft'),
             ]),
 
@@ -82,17 +82,17 @@ class SeasonResource extends Resource
                     ->afterOrEqual('start_date'),
             ]),
 
-            Section::make('Període d\'inscripcions')
-                ->description('Finestra de dates en què els alumnes poden inscriure\'s. Si es deixa en blanc, les inscripcions estan sempre obertes mentre la temporada sigui activa.')
+            Section::make(__('Període d\'inscripcions'))
+                ->description(__('Finestra de dates en què els alumnes poden inscriure\'s. Si es deixa en blanc, les inscripcions estan sempre obertes mentre la temporada sigui activa.'))
                 ->columns(2)
                 ->schema([
                     DatePicker::make('start_date_enrollment')
-                        ->label('Inici inscripcions')
+                        ->label(__('Inici inscripcions'))
                         ->native(false)
                         ->nullable(),
 
                     DatePicker::make('end_date_enrollment')
-                        ->label('Fi inscripcions')
+                        ->label(__('Fi inscripcions'))
                         ->native(false)
                         ->nullable()
                         ->afterOrEqual('start_date_enrollment'),
@@ -127,7 +127,7 @@ class SeasonResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('site.status'))
-                    ->formatStateUsing(fn($state) => \App\Models\CampusSeason::STATUSES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(\App\Models\CampusSeason::STATUSES[$state] ?? $state))
                     ->badge()
                     ->color(fn($state) => \App\Models\CampusSeason::STATUS_COLORS[$state] ?? 'gray'),
             ])
@@ -136,7 +136,7 @@ class SeasonResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
-                    ->options(\App\Models\CampusSeason::STATUSES)
+                    ->options(translated_labels(\App\Models\CampusSeason::STATUSES))
                     ->native(false),
             ])
             ->actions([

@@ -18,18 +18,18 @@ class ListCampusStudents extends ListRecords
     {
         return [
             Action::make('attachExistingStudent')
-                ->label('Afegir alumne existent')
+                ->label(__('Afegir alumne existent'))
                 ->icon('heroicon-o-user-plus')
                 ->color('gray')
                 // Només super-admin: la cerca és global (nom/email de totes
                 // les institucions) — un admin d'un sol tenant no hauria de
                 // poder veure ni buscar alumnes d'altres entitats.
                 ->visible(fn () => auth()->user()?->hasRole('super-admin') ?? false)
-                ->modalHeading('Afegir un alumne d\'una altra institució')
-                ->modalDescription('Cerca per nom o email un alumne que ja té compte (a qualsevol institució) i afegeix-lo a aquesta.')
+                ->modalHeading(__('Afegir un alumne d\'una altra institució'))
+                ->modalDescription(__('Cerca per nom o email un alumne que ja té compte (a qualsevol institució) i afegeix-lo a aquesta.'))
                 ->form([
                     Select::make('student_id')
-                        ->label('Alumne')
+                        ->label(__('Alumne'))
                         ->searchable()
                         ->getSearchResultsUsing(function (string $search) {
                             // El desplegable de cerca és un endpoint Livewire a
@@ -61,7 +61,7 @@ class ListCampusStudents extends ListRecords
 
                     if ($student->belongsToTenant($tenant?->id)) {
                         Notification::make()
-                            ->title('Aquest alumne ja pertany a aquesta institució')
+                            ->title(__('Aquest alumne ja pertany a aquesta institució'))
                             ->warning()
                             ->send();
                         return;

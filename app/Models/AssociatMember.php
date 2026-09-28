@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasPreferredLocale;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,14 +12,15 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
-class AssociatMember extends Authenticatable
+class AssociatMember extends Authenticatable implements HasLocalePreference
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasPreferredLocale;
 
     protected $table = 'associat_members';
     protected $guard = 'member';
 
     protected $fillable = [
+        'locale',
         'member_number', 'first_name', 'last_name', 'email', 'password',
         'phone', 'dni', 'address', 'postal_code', 'city',
         'status', 'joined_at', 'cancelled_at', 'data_consent',

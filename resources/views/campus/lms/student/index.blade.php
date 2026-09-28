@@ -1,30 +1,30 @@
 @extends('campus.layouts.app')
 
-@section('title', 'Lliçons · ' . $course->title)
+@section('title', __('Lliçons') . ' · ' . $course->title)
 
 @section('content')
 
 {{-- Capçalera del curs --}}
 <div style="margin-bottom:2rem;">
     <a href="{{ route('campus.portal.courses') }}"
-       style="font-size:0.875rem;color:#4f46e5;text-decoration:none;">&larr; Els meus cursos</a>
+       style="font-size:0.875rem;color:#4f46e5;text-decoration:none;">&larr; {{ __('Els meus cursos') }}</a>
     <h1 style="font-size:1.75rem;font-weight:700;color:#111827;margin:0.75rem 0 0.25rem;">
         {{ $course->title }}
     </h1>
-    <p style="font-size:0.875rem;color:#6b7280;">Lliçons del curs</p>
+    <p style="font-size:0.875rem;color:#6b7280;">{{ __('Lliçons del curs') }}</p>
 </div>
 
 {{-- Barra de progrés --}}
 <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-        <span style="font-size:0.875rem;font-weight:500;color:#374151;">Progrés del curs</span>
-        <span style="font-size:0.875rem;color:#6b7280;">{{ $done }} de {{ $total }} lliçons completades</span>
+        <span style="font-size:0.875rem;font-weight:500;color:#374151;">{{ __('Progrés del curs') }}</span>
+        <span style="font-size:0.875rem;color:#6b7280;">{{ __(':done de :total lliçons completades', ['done' => $done, 'total' => $total]) }}</span>
     </div>
     <div style="background:#f3f4f6;border-radius:9999px;height:0.625rem;overflow:hidden;">
         <div style="background:#4f46e5;height:100%;border-radius:9999px;width:{{ $progress }}%;transition:width 0.3s ease;"></div>
     </div>
     @if($progress === 100)
-        <p style="font-size:0.8125rem;color:#16a34a;font-weight:500;margin-top:0.5rem;">🎉 Curs completat!</p>
+        <p style="font-size:0.8125rem;color:#16a34a;font-weight:500;margin-top:0.5rem;">{{ __('🎉 Curs completat!') }}</p>
     @endif
 </div>
 
@@ -34,16 +34,16 @@
     <div style="display:flex;align-items:center;gap:0.75rem;">
         <span style="font-size:1.5rem;">🎓</span>
         <div>
-            <p style="font-size:0.9375rem;font-weight:600;color:#065f46;margin:0;">Certificat d'aprofitament</p>
+            <p style="font-size:0.9375rem;font-weight:600;color:#065f46;margin:0;">{{ __('Certificat d\'aprofitament') }}</p>
             <p style="font-size:0.8125rem;color:#6b7280;margin:0.125rem 0 0;">
-                Emès el {{ $certificate->issued_at->format('d/m/Y') }} · Núm. {{ $certificate->certificate_number }}
+                {{ __('Emès el :date', ['date' => $certificate->issued_at->format('d/m/Y')]) }} · {{ __('Núm.') }} {{ $certificate->certificate_number }}
             </p>
         </div>
     </div>
     <a href="{{ route('campus.lms.course.certificate', $course->slug) }}"
        style="display:inline-flex;align-items:center;gap:0.4rem;background:#059669;color:#fff;font-size:0.8125rem;font-weight:600;padding:0.5rem 1.125rem;border-radius:0.5rem;text-decoration:none;"
        onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
-        ↓ Veure el certificat
+        {{ __('↓ Veure el certificat') }}
     </a>
 </div>
 @endif
@@ -51,7 +51,7 @@
 {{-- Llista de lliçons --}}
 @if($lessons->isEmpty())
     <div style="background:#fff;border:1px solid #e5e7eb;border-radius:0.75rem;padding:2rem;text-align:center;color:#6b7280;">
-        Encara no hi ha lliçons publicades per a aquest curs.
+        {{ __('Encara no hi ha lliçons publicades per a aquest curs.') }}
     </div>
 @else
     <div style="display:flex;flex-direction:column;gap:0.75rem;">
@@ -75,11 +75,11 @@
             <div style="flex:1;min-width:0;">
                 <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.125rem;">
                     <span style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;">
-                        Sessió {{ $lesson->session_number }}
+                        {{ __('Sessió :number', ['number' => $lesson->session_number]) }}
                     </span>
                     @if($completed)
                         <span style="font-size:0.6875rem;background:#dcfce7;color:#16a34a;padding:0.125rem 0.5rem;border-radius:9999px;font-weight:500;">
-                            Completada
+                            {{ __('Completada') }}
                         </span>
                     @endif
                 </div>

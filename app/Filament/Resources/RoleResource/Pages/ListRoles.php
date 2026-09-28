@@ -13,7 +13,7 @@ class ListRoles extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label('Nuevo rol'),
+            Actions\CreateAction::make()->label(__('Nou rol')),
         ];
     }
 }

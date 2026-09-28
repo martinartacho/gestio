@@ -74,6 +74,15 @@ class CampusNewsSeeder extends Seeder
                 'published_at' => '2026-06-19 09:00:00',
             ],
 
+            [
+                'title'        => 'La plataforma ja parla castellà',
+                'summary'      => 'Cada entitat tria l\'idioma de la plataforma i cada persona el pot canviar des del seu perfil.',
+                'body'         => '<p>A partir d\'ara la plataforma es pot fer servir en <strong>català</strong> o en <strong>castellà</strong>. Canvia tot: les pàgines del campus, els portals d\'alumnes, professorat i socis, els correus que rebeu i també l\'app del mòbil.</p><p><strong>Com funciona?</strong> Cada entitat tria el seu idioma des de <em>Configuració → Avançat</em>. Si no es toca res, tot continua en català com fins ara.</p><p><strong>I si prefereixo l\'altre idioma?</strong> Entreu al vostre perfil i trieu-lo al desplegable <em>Idioma</em>. És una tria personal: només us afecta a vosaltres i la plataforma se\'n recorda la propera vegada, també a l\'app.</p><p>Els textos que escriu cada entitat (notícies, descripcions de cursos, lliçons…) es mostren tal com s\'han escrit.</p>',
+                'labels'       => ['sistema', 'campus', 'associats'],
+                'version'      => 'v1.8.0',
+                'published_at' => '2026-09-26 09:00:00',
+            ],
+
         ];
 
         foreach ($news as $item) {

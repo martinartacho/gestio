@@ -24,9 +24,9 @@ class TenantResource extends Resource
     protected static ?int    $navigationSort = 0;
 
     public static function getNavigationIcon(): string   { return 'heroicon-o-building-office-2'; }
-    public static function getNavigationLabel(): string  { return 'Entitats'; }
-    public static function getModelLabel(): string       { return 'Entitat'; }
-    public static function getPluralModelLabel(): string { return 'Entitats'; }
+    public static function getNavigationLabel(): string  { return __('Entitats'); }
+    public static function getModelLabel(): string       { return __('Entitat'); }
+    public static function getPluralModelLabel(): string { return __('Entitats'); }
 
     // Nomes el super-admin gestiona les entitats/tenants.
     public static function canAccess(): bool                              { return auth()->user()?->hasRole('super-admin') ?? false; }
@@ -38,9 +38,9 @@ class TenantResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Entitat')->columns(2)->schema([
+            Section::make(__('Entitat'))->columns(2)->schema([
                 TextInput::make('name')
-                    ->label('Nom')
+                    ->label(__('Nom'))
                     ->required()->maxLength(100)
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (string $state, callable $set, string $operation) =>
@@ -48,49 +48,49 @@ class TenantResource extends Resource
                     ->columnSpanFull(),
 
                 TextInput::make('slug')
-                    ->label('Slug (identifica la URL, p. ex. /admin/{slug})')
+                    ->label(__('Slug (identifica la URL, p. ex. /admin/{slug})'))
                     ->required()->maxLength(50)
                     ->alphaDash()->unique(ignoreRecord: true)
                     ->columnSpanFull(),
 
                 Toggle::make('is_active')
-                    ->label('Activa')
+                    ->label(__('Activa'))
                     ->default(true)->inline(false),
             ]),
 
-            Section::make('Administrador de l\'entitat')
-                ->description('Opcional, només en crear. Crea un usuari amb rol \'admin\' per a aquesta institució.')
+            Section::make(__('Administrador de l\'entitat'))
+                ->description(__('Opcional, només en crear. Crea un usuari amb rol \'admin\' per a aquesta institució.'))
                 ->visibleOn('create')
                 ->columns(3)
                 ->schema([
                     TextInput::make('admin_name')
-                        ->label('Nom')
+                        ->label(__('Nom'))
                         ->maxLength(255),
 
                     TextInput::make('admin_email')
-                        ->label('Email')
+                        ->label(__('Email'))
                         ->email()
                         ->unique(table: 'users', column: 'email')
                         ->requiredWith('admin_name')
                         ->maxLength(255),
 
                     TextInput::make('admin_password')
-                        ->label('Contrasenya')
+                        ->label(__('Contrasenya'))
                         ->password()->revealable()
                         ->requiredWith('admin_email')
                         ->minLength(8),
                 ]),
 
-            Section::make('Dades d\'exemple')
-                ->description('Opcional, només en crear. Genera contingut fictici perquè l\'entitat no comenci buida.')
+            Section::make(__('Dades d\'exemple'))
+                ->description(__('Opcional, només en crear. Genera contingut fictici perquè l\'entitat no comenci buida.'))
                 ->visibleOn('create')
                 ->schema([
                     Grid::make(5)->schema([
-                        TextInput::make('sample_news')->label('Notícies')->numeric()->default(0)->minValue(0)->maxValue(50),
-                        TextInput::make('sample_teachers')->label('Professorat')->numeric()->default(0)->minValue(0)->maxValue(50),
-                        TextInput::make('sample_courses')->label('Cursos')->numeric()->default(0)->minValue(0)->maxValue(50),
-                        TextInput::make('sample_students')->label('Alumnes')->numeric()->default(0)->minValue(0)->maxValue(200),
-                        TextInput::make('sample_members')->label('Socis')->numeric()->default(0)->minValue(0)->maxValue(200),
+                        TextInput::make('sample_news')->label(__('Notícies'))->numeric()->default(0)->minValue(0)->maxValue(50),
+                        TextInput::make('sample_teachers')->label(__('Professorat'))->numeric()->default(0)->minValue(0)->maxValue(50),
+                        TextInput::make('sample_courses')->label(__('Cursos'))->numeric()->default(0)->minValue(0)->maxValue(50),
+                        TextInput::make('sample_students')->label(__('Alumnes'))->numeric()->default(0)->minValue(0)->maxValue(200),
+                        TextInput::make('sample_members')->label(__('Socis'))->numeric()->default(0)->minValue(0)->maxValue(200),
                     ]),
                 ]),
         ]);
@@ -101,32 +101,32 @@ class TenantResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nom')
+                    ->label(__('Nom'))
                     ->searchable()->sortable(),
 
                 Tables\Columns\TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label(__('Slug'))
                     ->badge()->color('gray'),
 
                 Tables\Columns\TextColumn::make('users_count')
-                    ->label('Usuaris')
+                    ->label(__('Usuaris'))
                     ->counts('users')->badge()->color('primary'),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Activa')->boolean(),
+                    ->label(__('Activa'))->boolean(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Creada')->dateTime('d/m/Y')->sortable(),
+                    ->label(__('Creada'))->dateTime('d/m/Y')->sortable(),
             ])
             ->defaultSort('name')
             ->recordAction(null)
             ->actions([
-                EditAction::make()->label('Editar'),
-                DeleteAction::make()->label('Eliminar'),
+                EditAction::make()->label(__('Editar')),
+                DeleteAction::make()->label(__('Eliminar')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Eliminar seleccionades'),
+                    DeleteBulkAction::make()->label(__('Eliminar seleccionades')),
                 ]),
             ]);
     }

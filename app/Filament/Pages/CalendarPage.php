@@ -126,7 +126,7 @@ class CalendarPage extends Page
 
     public function getDayNames(): array
     {
-        return self::DAY_NAMES;
+        return translated_labels(self::DAY_NAMES);
     }
 
     public function colorHex(?string $color): string

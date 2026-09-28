@@ -23,7 +23,7 @@ class CourseExportService
         $handle = fopen('php://memory', 'w');
 
         fwrite($handle, "\xEF\xBB\xBF"); // BOM per Excel
-        fputcsv($handle, self::HEADERS);
+        fputcsv($handle, translated_labels(self::HEADERS));
 
         foreach ($courses as $course) {
             fputcsv($handle, [

@@ -34,7 +34,7 @@ class CheckoutController extends Controller
         // ── Compte suspès ────────────────────────────────────────────────────────
         if ($student->isSuspended()) {
             return redirect()->route('campus.catalog.show', $slug)
-                ->with('error', 'El compte ha estat suspès. Contacteu amb l\'administració.');
+                ->with('error', __('El compte ha estat suspès. Contacteu amb l\'administració.'));
         }
 
         // ── Evitar doble inscripció (cancel·lades/retornades permeten re-inscripció) ─
@@ -43,15 +43,14 @@ class CheckoutController extends Controller
                     ->whereNotIn('status', ['cancelled', 'refunded'])
                     ->exists()) {
             return redirect()->route('campus.catalog.show', $slug)
-                ->with('info', 'Ja estàs inscrit/a a aquest curs.');
+                ->with('info', __('Ja estàs inscrit/a a aquest curs.'));
         }
 
         // ── A2: Límit de pendents per alumne (anti seat-squatting) ───────────────
         $pendingCount = $student->enrollments()->where('status', 'pending')->count();
         if ($pendingCount >= self::MAX_PENDING) {
             return redirect()->route('campus.catalog.show', $slug)
-                ->with('error', 'Tens ' . self::MAX_PENDING . ' inscripcions pendents de pagament. '
-                    . 'Completa-les o cancel·la-les abans d\'inscriure\'t a un nou curs.');
+                ->with('error', __('Tens :count inscripcions pendents de pagament. Completa-les o cancel·la-les abans d\'inscriure\'t a un nou curs.', ['count' => self::MAX_PENDING]));
         }
 
         // Verificar que les inscripcions estan obertes (tret que el curs ho permeti sempre o sigui preview)
@@ -59,7 +58,7 @@ class CheckoutController extends Controller
             $season = $course->season;
             if (! $season || ! $season->isActive() || ! $season->enrollmentIsOpen()) {
                 return redirect()->route('campus.catalog.show', $slug)
-                    ->with('error', 'Les inscripcions per a aquest curs no estan obertes.');
+                    ->with('error', __('Les inscripcions per a aquest curs no estan obertes.'));
             }
         }
 
@@ -78,7 +77,7 @@ class CheckoutController extends Controller
                 $locked = CampusCourse::where('id', $course->id)->lockForUpdate()->first();
                 if ($locked->isFull()) {
                     $redirect = redirect()->route('campus.catalog.show', $slug)
-                        ->with('error', 'Ho sentim, el curs ja no té places disponibles.');
+                        ->with('error', __('Ho sentim, el curs ja no té places disponibles.'));
                     return;
                 }
                 CampusEnrollment::updateOrCreate(
@@ -93,7 +92,7 @@ class CheckoutController extends Controller
             });
 
             return $redirect ?? redirect()->route('campus.portal.courses')
-                ->with('success', '✓ Inscripció completada. El curs és gratuït!');
+                ->with('success', __('✓ Inscripció completada. El curs és gratuït!'));
         }
 
         $method = $request->input('payment_method', 'stripe');
@@ -109,7 +108,7 @@ class CheckoutController extends Controller
 
             if (! isset($allowedMethods[$method])) {
                 return redirect()->route('campus.catalog.show', $slug)
-                    ->with('error', 'El mètode de pagament seleccionat no està disponible.');
+                    ->with('error', __('El mètode de pagament seleccionat no està disponible.'));
             }
 
             $settings    = app(SettingStore::class);
@@ -147,7 +146,7 @@ class CheckoutController extends Controller
 
             if ($isFull) {
                 return redirect()->route('campus.catalog.show', $slug)
-                    ->with('error', 'Ho sentim, el curs ja no té places disponibles.');
+                    ->with('error', __('Ho sentim, el curs ja no té places disponibles.'));
             }
 
             Mail::to($student->email)
@@ -166,7 +165,7 @@ class CheckoutController extends Controller
 
         if ($isFull) {
             return redirect()->route('campus.catalog.show', $slug)
-                ->with('error', 'Ho sentim, el curs ja no té places disponibles.');
+                ->with('error', __('Ho sentim, el curs ja no té places disponibles.'));
         }
 
         Stripe::setApiKey(config('services.stripe.secret'));
@@ -223,13 +222,13 @@ class CheckoutController extends Controller
 
         if (! $enrollment) {
             return redirect()->route('campus.catalog.show', $slug)
-                ->with('error', 'No s\'ha trobat cap inscripció pendent per cancel·lar.');
+                ->with('error', __('No s\'ha trobat cap inscripció pendent per cancel·lar.'));
         }
 
         $enrollment->update(['status' => 'cancelled']);
 
         return redirect()->route('campus.catalog.show', $slug)
-            ->with('success', 'Inscripció cancel·lada. Ara pots tornar a inscriure\'t amb el mètode que prefereixis.');
+            ->with('success', __('Inscripció cancel·lada. Ara pots tornar a inscriure\'t amb el mètode que prefereixis.'));
     }
 
     public function success(Request $request): View
@@ -240,6 +239,6 @@ class CheckoutController extends Controller
     public function cancel(): RedirectResponse
     {
         return redirect()->route('campus.catalog.index')
-            ->with('info', 'Pagament cancel·lat.');
+            ->with('info', __('Pagament cancel·lat.'));
     }
 }

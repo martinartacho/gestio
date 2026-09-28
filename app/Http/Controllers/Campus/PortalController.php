@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
 use App\Models\CampusDocument;
+use App\Support\Locales;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\View\View;
 
 class PortalController extends Controller
 {
@@ -59,5 +64,31 @@ class PortalController extends Controller
         $showInstitution = $student->tenants()->count() > 1;
 
         return view('campus.portal.courses', compact('enrollments', 'documentsByCourse', 'showInstitution'));
+    }
+
+    public function editProfile(): View
+    {
+        return view('campus.portal.profile', ['student' => auth('student')->user()]);
+    }
+
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'phone'    => ['nullable', 'string', 'max:20'],
+            'locale'   => Locales::rule(),
+            'password' => ['nullable', 'confirmed', Password::min(8)],
+        ]);
+
+        if (empty($data['password'])) {
+            unset($data['password']);
+        }
+
+        $student = auth('student')->user();
+        $student->update($data);
+
+        // El missatge de confirmació ja en el nou idioma.
+        app()->setLocale($student->locale ?? app()->getLocale());
+
+        return back()->with('success', __('site.profile_updated'));
     }
 }

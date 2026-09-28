@@ -35,13 +35,13 @@ class MemberPasswordController extends Controller
 
         if (! $member) {
             return back()->withErrors([
-                'identifier' => 'No hem trobat cap soci amb aquestes dades.',
+                'identifier' => __('No hem trobat cap soci amb aquestes dades.'),
             ])->onlyInput('identifier');
         }
 
         if (! $member->email) {
             return back()->with('info',
-                'El vostre compte no té una adreça de correu associada. Contacteu amb la secretaria per recuperar l\'accés.'
+                __('El vostre compte no té una adreça de correu associada. Contacteu amb la secretaria per recuperar l\'accés.')
             );
         }
 
@@ -49,7 +49,7 @@ class MemberPasswordController extends Controller
         Mail::to($member->email)->send(new MemberPasswordResetMail($member, $token));
 
         return back()->with('success',
-            'Hem enviat un correu a ' . $member->email . ' amb les instruccions per restablir la contrasenya.'
+            __('Hem enviat un correu a :email amb les instruccions per restablir la contrasenya.', ['email' => $member->email])
         );
     }
 
@@ -59,7 +59,7 @@ class MemberPasswordController extends Controller
 
         if (! $member || ! $member->isValidResetToken($token)) {
             return redirect()->route('member.password.request')
-                ->withErrors(['identifier' => 'L\'enllaç no és vàlid o ha caducat. Sol·liciteu-ne un de nou.']);
+                ->withErrors(['identifier' => __('L\'enllaç no és vàlid o ha caducat. Sol·liciteu-ne un de nou.')]);
         }
 
         return view('associats.auth.reset-password', compact('token'));
@@ -71,7 +71,7 @@ class MemberPasswordController extends Controller
 
         if (! $member || ! $member->isValidResetToken($token)) {
             return redirect()->route('member.password.request')
-                ->withErrors(['identifier' => 'L\'enllaç no és vàlid o ha caducat.']);
+                ->withErrors(['identifier' => __('L\'enllaç no és vàlid o ha caducat.')]);
         }
 
         $request->validate([
@@ -82,6 +82,6 @@ class MemberPasswordController extends Controller
         $member->clearResetToken();
 
         return redirect()->route('member.login')
-            ->with('success', 'Contrasenya actualitzada correctament. Ja podeu accedir.');
+            ->with('success', __('Contrasenya actualitzada correctament. Ja podeu accedir.'));
     }
 }

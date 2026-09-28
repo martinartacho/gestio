@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="mb-4">
-    <a href="{{ route('teacher.portal.courses') }}" class="text-sm text-indigo-600 hover:underline">&larr; Tornar als cursos</a>
+    <a href="{{ route('teacher.portal.courses') }}" class="text-sm text-indigo-600 hover:underline">&larr; {{ __('Tornar als cursos') }}</a>
 </div>
 
 <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
@@ -24,26 +24,26 @@
         </div>
         <span class="text-xs px-2 py-1 rounded-full font-medium shrink-0
             {{ $course->status === 'active' ? 'bg-green-100 text-green-700' : ($course->status === 'closed' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500') }}">
-            {{ \App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status }}
+            {{ __(\App\Models\CampusCourse::STATUSES[$course->status] ?? $course->status) }}
         </span>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
         <div>
-            <p class="text-gray-400 text-xs mb-0.5">Espai</p>
+            <p class="text-gray-400 text-xs mb-0.5">{{ __('Espai') }}</p>
             <p class="font-medium">{{ $course->space?->name ?? '—' }}</p>
         </div>
         <div>
-            <p class="text-gray-400 text-xs mb-0.5">Horari</p>
+            <p class="text-gray-400 text-xs mb-0.5">{{ __('Horari') }}</p>
             <p class="font-medium">{{ $course->timeSlot?->description ?? '—' }}</p>
         </div>
         <div>
-            <p class="text-gray-400 text-xs mb-0.5">Sessions</p>
+            <p class="text-gray-400 text-xs mb-0.5">{{ __('Sessions') }}</p>
             <p class="font-medium">{{ $course->sessions ?? '—' }}</p>
         </div>
         @if($course->hours !=null )
         <div>
-            <p class="text-gray-400 text-xs mb-0.5">Hores</p>
+            <p class="text-gray-400 text-xs mb-0.5">{{ __('Hores') }}</p>
             <p class="font-medium">{{ $course->hours ?? ' ' }}</p>
         </div>
         @endif
@@ -54,18 +54,18 @@
 <div class="mb-6">
     <div class="flex items-center justify-between mb-3">
         <h2 class="text-lg font-semibold text-gray-900">
-            Sessions LMS
+            {{ __('Sessions LMS') }}
             <span class="ml-2 text-sm font-normal text-gray-400">({{ $lessons->count() }})</span>
         </h2>
         <a href="{{ route('teacher.lms.lesson.create', $course->slug) }}"
            class="inline-flex items-center gap-1.5 text-sm font-medium bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition">
-            + Nova sessió
+            {{ __('+ Nova sessió') }}
         </a>
     </div>
 
     @if ($lessons->isEmpty())
         <div class="bg-white border border-gray-200 rounded-xl p-6 text-center text-sm text-gray-500">
-            Aquest curs encara no té sessions LMS.
+            {{ __('Aquest curs encara no té sessions LMS.') }}
         </div>
     @else
         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
@@ -80,11 +80,11 @@
                     </div>
                     <span class="text-xs px-2 py-0.5 rounded-full shrink-0
                         {{ $lesson->status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
-                        {{ $lesson->status === 'published' ? 'Publicada' : 'Esborrany' }}
+                        {{ $lesson->status === 'published' ? __('Publicada') : __('Esborrany') }}
                     </span>
                     <a href="{{ route('teacher.lms.lesson.edit', [$course->slug, $lesson->id]) }}"
                        class="text-xs text-indigo-600 hover:underline shrink-0">
-                        Editar
+                        {{ __('Editar') }}
                     </a>
                 </div>
             @endforeach
@@ -103,14 +103,14 @@
 <div style="margin-bottom:1.5rem;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
         <h2 style="font-size:1.125rem;font-weight:600;color:#111827;">
-            Documents
+            {{ __('Documents') }}
             <span style="margin-left:0.5rem;font-size:0.875rem;font-weight:400;color:#6b7280;">({{ $documents->count() }})</span>
         </h2>
     </div>
 
     {{-- Formulari de pujada --}}
     <div style="background-color:#ffffff;border-radius:0.75rem;border:1px solid #e5e7eb;padding:1.25rem;margin-bottom:1rem;" x-data="{ type: 'file' }">
-        <p style="font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:0.75rem;">Pujar nou document</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:0.75rem;">{{ __('Pujar nou document') }}</p>
 
         <form action="{{ route('teacher.portal.course.documents.upload', $course->slug) }}"
               method="POST" enctype="multipart/form-data">
@@ -128,36 +128,36 @@
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
                 <div style="grid-column:span 2;">
-                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Títol *</label>
+                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">{{ __('Títol *') }}</label>
                     <input type="text" name="title" value="{{ old('title') }}" required
                            style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;box-sizing:border-box;">
                 </div>
 
                 <div>
-                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Tipus *</label>
+                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">{{ __('Tipus *') }}</label>
                     <select name="type" x-model="type"
                             style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;">
-                        <option value="file">Fitxer</option>
-                        <option value="url">Enllaç extern</option>
+                        <option value="file">{{ __('Fitxer') }}</option>
+                        <option value="url">{{ __('Enllaç extern') }}</option>
                     </select>
                 </div>
 
                 <div>
-                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Visibilitat *</label>
+                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">{{ __('Visibilitat *') }}</label>
                     <select name="visibility"
                             style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;">
-                        <option value="enrolled" {{ old('visibility','enrolled')==='enrolled'?'selected':'' }}>Alumnes matriculats</option>
-                        <option value="public" {{ old('visibility')==='public'?'selected':'' }}>Públic</option>
-                        <option value="private" {{ old('visibility')==='private'?'selected':'' }}>Privat (sol professor/a)</option>
+                        <option value="enrolled" {{ old('visibility','enrolled')==='enrolled'?'selected':'' }}>{{ __('Alumnes matriculats') }}</option>
+                        <option value="public" {{ old('visibility')==='public'?'selected':'' }}>{{ __('Públic') }}</option>
+                        <option value="private" {{ old('visibility')==='private'?'selected':'' }}>{{ __('Privat (sol professor/a)') }}</option>
                     </select>
                 </div>
 
                 <div style="grid-column:span 2;" x-show="type === 'file'">
-                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Fitxer *</label>
+                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">{{ __('Fitxer *') }}</label>
                     <input type="file" name="file"
                            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.mp4,.mp3,.zip"
                            style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;background:#fff;box-sizing:border-box;">
-                    <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">PDF, Office, imatges, ZIP · màx. 10 MB</p>
+                    <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.25rem;">{{ __('PDF, Office, imatges, ZIP · màx. 10 MB') }}</p>
                 </div>
 
                 <div style="grid-column:span 2;" x-show="type === 'url'">
@@ -167,7 +167,7 @@
                 </div>
 
                 <div style="grid-column:span 2;">
-                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">Descripció</label>
+                    <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem;">{{ __('Descripció') }}</label>
                     <textarea name="description" rows="2"
                               style="width:100%;border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem;color:#111827;box-sizing:border-box;resize:vertical;">{{ old('description') }}</textarea>
                 </div>
@@ -175,7 +175,7 @@
 
             <button type="submit"
                     style="background-color:#4f46e5;color:#ffffff;border:none;border-radius:0.375rem;padding:0.5rem 1.25rem;font-size:0.875rem;font-weight:500;cursor:pointer;">
-                Pujar document
+                {{ __('Pujar document') }}
             </button>
         </form>
     </div>
@@ -183,7 +183,7 @@
     {{-- Llista de documents --}}
     @if ($documents->isEmpty())
         <div style="background-color:#ffffff;border-radius:0.75rem;border:1px solid #e5e7eb;padding:1.5rem;text-align:center;color:#6b7280;font-size:0.875rem;">
-            Encara no hi ha documents per a aquest curs.
+            {{ __('Encara no hi ha documents per a aquest curs.') }}
         </div>
     @else
         <div style="background-color:#ffffff;border-radius:0.75rem;border:1px solid #e5e7eb;overflow:hidden;">
@@ -212,19 +212,19 @@
                                 {{ $doc->file_name ?? basename($doc->file_path ?? '') }}
                                 @if ($doc->file_size_formatted) · {{ $doc->file_size_formatted }} @endif
                             @else
-                                Enllaç extern
+                                {{ __('Enllaç extern') }}
                             @endif
                             ·
                             @if ($doc->visibility === 'public')
-                                <span style="color:#15803d;">Públic</span>
+                                <span style="color:#15803d;">{{ __('Públic') }}</span>
                             @elseif ($doc->visibility === 'enrolled')
-                                <span style="color:#1d4ed8;">Matriculats</span>
+                                <span style="color:#1d4ed8;">{{ __('Matriculats') }}</span>
                             @else
-                                <span style="color:#6b7280;">Privat</span>
+                                <span style="color:#6b7280;">{{ __('Privat') }}</span>
                             @endif
                             @if ($doc->not_available_reason)
                                 · <span style="color:#d97706;font-style:italic;"
-                                        title="Els alumnes no hi tindran accés fins que es compleixi alguna condició">
+                                        title="{{ __('Els alumnes no hi tindran accés fins que es compleixi alguna condició') }}">
                                     {{ $doc->not_available_reason }}
                                 </span>
                             @endif
@@ -236,18 +236,18 @@
                         @if ($doc->download_url)
                             <a href="{{ $doc->download_url }}" target="_blank"
                                style="font-size:0.75rem;color:#4f46e5;text-decoration:none;padding:0.25rem 0.5rem;border:1px solid #e0e7ff;border-radius:0.25rem;background:#eef2ff;">
-                                Obrir
+                                {{ __('Obrir') }}
                             </a>
                         @endif
 
                         <form action="{{ route('teacher.portal.course.documents.delete', [$course->slug, $doc->id]) }}"
                               method="POST"
-                              onsubmit="return confirm('Eliminar el document \'{{ addslashes($doc->title) }}\'?')">
+                              onsubmit="return confirm({{ Js::from(__('Eliminar «:title»?', ['title' => $doc->title])) }})">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
                                     style="font-size:0.75rem;color:#dc2626;padding:0.25rem 0.5rem;border:1px solid #fee2e2;border-radius:0.25rem;background:#fef2f2;cursor:pointer;">
-                                Eliminar
+                                {{ __('Eliminar') }}
                             </button>
                         </form>
                     </div>
@@ -259,23 +259,23 @@
 
 {{-- ── Alumnes matriculats ───────────────────────────────────────────────────── --}}
 <h2 style="font-size:1.125rem;font-weight:600;color:#111827;margin-bottom:0.75rem;">
-    Alumnes matriculats
+    {{ __('Alumnes matriculats') }}
     <span style="margin-left:0.5rem;font-size:0.875rem;font-weight:400;color:#6b7280;">({{ $enrollments->count() }})</span>
 </h2>
 
 @if ($enrollments->isEmpty())
     <div style="background-color:#ffffff;border-radius:0.75rem;border:1px solid #e5e7eb;padding:1.5rem;text-align:center;color:#6b7280;font-size:0.875rem;">
-        Encara no hi ha alumnes matriculats en aquest curs.
+        {{ __('Encara no hi ha alumnes matriculats en aquest curs.') }}
     </div>
 @else
     <div style="background-color:#ffffff;border-radius:0.75rem;border:1px solid #e5e7eb;box-shadow:0 1px 2px rgba(0,0,0,0.05);overflow:hidden;">
         <table style="width:100%;font-size:0.875rem;border-collapse:collapse;">
             <thead style="background-color:#f9fafb;border-bottom:1px solid #e5e7eb;">
                 <tr>
-                    <th style="text-align:left;padding:0.75rem 1rem;font-weight:500;color:#6b7280;">Alumne/a</th>
-                    <th style="text-align:left;padding:0.75rem 1rem;font-weight:500;color:#6b7280;">Correu</th>
-                    <th style="text-align:left;padding:0.75rem 1rem;font-weight:500;color:#6b7280;">Telèfon</th>
-                    <th style="text-align:left;padding:0.75rem 1rem;font-weight:500;color:#6b7280;">Matrícula</th>
+                    <th style="text-align:left;padding:0.75rem 1rem;font-weight:500;color:#6b7280;">{{ __('Alumne/a') }}</th>
+                    <th style="text-align:left;padding:0.75rem 1rem;font-weight:500;color:#6b7280;">{{ __('Correu') }}</th>
+                    <th style="text-align:left;padding:0.75rem 1rem;font-weight:500;color:#6b7280;">{{ __('Telèfon') }}</th>
+                    <th style="text-align:left;padding:0.75rem 1rem;font-weight:500;color:#6b7280;">{{ __('Matrícula') }}</th>
                 </tr>
             </thead>
             <tbody>

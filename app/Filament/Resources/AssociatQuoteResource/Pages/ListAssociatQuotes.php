@@ -23,19 +23,19 @@ class ListAssociatQuotes extends ListRecords
     {
         return [
             Action::make('generate_quotes')
-                ->label('Generar quotes')
+                ->label(__('Generar quotes'))
                 ->icon('heroicon-o-bolt')
                 ->color('primary')
-                ->modalHeading('Generar quotes per als socis actius')
-                ->modalDescription('Es crearan quotes per a tots els socis actius que no en tinguin per al període seleccionat.')
+                ->modalHeading(__('Generar quotes per als socis actius'))
+                ->modalDescription(__('Es crearan quotes per a tots els socis actius que no en tinguin per al període seleccionat.'))
                 ->form([
                     Select::make('period')
-                        ->label('Periodicitat')
+                        ->label(__('Periodicitat'))
                         ->options([
-                            'annual'      => 'Anual (1 quota / any)',
-                            'semi-annual' => 'Semestral (2 quotes / any)',
-                            'quarterly'   => 'Trimestral (4 quotes / any)',
-                            'monthly'     => 'Mensual (12 quotes / any)',
+                            'annual'      => __('Anual (1 quota / any)'),
+                            'semi-annual' => __('Semestral (2 quotes / any)'),
+                            'quarterly'   => __('Trimestral (4 quotes / any)'),
+                            'monthly'     => __('Mensual (12 quotes / any)'),
                         ])
                         ->default('annual')
                         ->live()
@@ -51,7 +51,7 @@ class ListAssociatQuotes extends ListRecords
                         ->required(),
 
                     TextInput::make('year')
-                        ->label('Any')
+                        ->label(__('Any'))
                         ->numeric()
                         ->minValue(2020)
                         ->maxValue(2099)
@@ -59,14 +59,14 @@ class ListAssociatQuotes extends ListRecords
                         ->required(),
 
                     TextInput::make('amount')
-                        ->label('Import per quota (€)')
+                        ->label(__('Import per quota (€)'))
                         ->numeric()
                         ->default(fn () => (float) app(SettingStore::class)->get('associat_quota_amount', 0))
                         ->required(),
 
                     DatePicker::make('first_due_date')
-                        ->label('Data de venciment (primera quota)')
-                        ->helperText('Les quotes següents es calculen automàticament a partir d\'aquesta data.')
+                        ->label(__('Data de venciment (primera quota)'))
+                        ->helperText(__('Les quotes següents es calculen automàticament a partir d\'aquesta data.'))
                         ->displayFormat('d/m/Y'),
                 ])
                 ->action(function (array $data): void {
@@ -102,8 +102,8 @@ class ListAssociatQuotes extends ListRecords
 
                     if ($members->isEmpty()) {
                         Notification::make()
-                            ->title('Sense socis pendents')
-                            ->body("Tots els socis actius ja tenen quotes {$period} per a l'any {$year}.")
+                            ->title(__('Sense socis pendents'))
+                            ->body(__('Tots els socis actius ja tenen quotes :period per a l\'any :year.', ['period' => $period, 'year' => $year]))
                             ->warning()
                             ->send();
                         return;
@@ -131,7 +131,7 @@ class ListAssociatQuotes extends ListRecords
                     }
 
                     Notification::make()
-                        ->title('Quotes generades')
+                        ->title(__('Quotes generades'))
                         ->body("{$created} quotes creades per a {$members->count()} socis (any {$year}).")
                         ->success()
                         ->send();

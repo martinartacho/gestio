@@ -11,7 +11,7 @@ class AuthenticateMember
     {
         if (! auth('member')->check()) {
             return redirect()->route('member.login')
-                ->with('info', 'Cal identificar-se per accedir al portal de socis.');
+                ->with('info', __('Cal identificar-se per accedir al portal de socis.'));
         }
 
         return $next($request);

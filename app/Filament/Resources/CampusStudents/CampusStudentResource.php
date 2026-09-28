@@ -23,10 +23,10 @@ class CampusStudentResource extends Resource
     protected static ?string $recordTitleAttribute = 'full_name';
 
     public static function getNavigationIcon(): string   { return 'heroicon-o-academic-cap'; }
-    public static function getNavigationLabel(): string  { return 'Alumnes'; }
+    public static function getNavigationLabel(): string  { return __('Alumnes'); }
     public static function getNavigationGroup(): string  { return __('site.treasury_group'); }
-    public static function getModelLabel(): string       { return 'Alumne'; }
-    public static function getPluralModelLabel(): string { return 'Alumnes'; }
+    public static function getModelLabel(): string       { return __('Alumne'); }
+    public static function getPluralModelLabel(): string { return __('Alumnes'); }
     public static function getNavigationSort(): int      { return 5; }
 
     public static function canAccess(): bool

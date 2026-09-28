@@ -13,8 +13,8 @@ class SettingsPage extends Page
     protected string $view = 'filament.pages.settings-page';
 
     public static function getNavigationIcon(): string  { return 'heroicon-o-cog-6-tooth'; }
-    public static function getNavigationLabel(): string { return 'Configuració'; }
-    public static function getNavigationGroup(): string { return 'Sistema'; }
+    public static function getNavigationLabel(): string { return __('Configuració'); }
+    public static function getNavigationGroup(): string { return __('Sistema'); }
     public static function getNavigationSort(): int     { return 100; }
 
     public static function canAccess(): bool
@@ -22,7 +22,7 @@ class SettingsPage extends Page
         return Auth::user()?->hasAnyRole(['super-admin', 'admin']) ?? false;
     }
 
-    public function getTitle(): string { return 'Configuració del lloc'; }
+    public function getTitle(): string { return __('Configuració del lloc'); }
 
     // ─── Propietats del formulari ─────────────────────────────────────────
 
@@ -165,19 +165,19 @@ class SettingsPage extends Page
         $this->hero_text_color = (string) $store->get('hero_text_color', '#ffffff');
 
         $this->hero_btn_catalog_enabled  = (bool)   $store->getRaw('hero_btn_catalog_enabled', true);
-        $this->hero_btn_catalog_text     = (string) $store->get('hero_btn_catalog_text', 'Veure el catàleg de cursos');
+        $this->hero_btn_catalog_text     = (string) $store->get('hero_btn_catalog_text', __('Veure el catàleg de cursos'));
         $this->hero_btn_register_enabled = (bool)   $store->getRaw('hero_btn_register_enabled', true);
         $this->hero_btn_register_text    = (string) $store->get('hero_btn_register_text', "Inscriure's");
 
-        $this->home_access_header        = (string) $store->get('home_access_header', 'Accés per perfil');
+        $this->home_access_header        = (string) $store->get('home_access_header', __('Accés per perfil'));
         $this->home_alumnat_enabled      = (bool)   $store->getRaw('home_alumnat_enabled', true);
-        $this->home_alumnat_title        = (string) $store->get('home_alumnat_title', 'Alumnat');
-        $this->home_alumnat_subtitle     = (string) $store->get('home_alumnat_subtitle', 'Inscripcions i pagaments de cursos');
+        $this->home_alumnat_title        = (string) $store->get('home_alumnat_title', __('Alumnat'));
+        $this->home_alumnat_subtitle     = (string) $store->get('home_alumnat_subtitle', __('Inscripcions i pagaments de cursos'));
         $this->home_professorat_enabled  = (bool)   $store->getRaw('home_professorat_enabled', true);
-        $this->home_professorat_title    = (string) $store->get('home_professorat_title', 'Professorat');
-        $this->home_professorat_subtitle = (string) $store->get('home_professorat_subtitle', 'Cursos, sessions i liquidacions');
-        $this->home_gestio_title         = (string) $store->get('home_gestio_title', 'Gestió');
-        $this->home_gestio_subtitle      = (string) $store->get('home_gestio_subtitle', 'Cursos, alumnes, pagaments i socis');
+        $this->home_professorat_title    = (string) $store->get('home_professorat_title', __('Professorat'));
+        $this->home_professorat_subtitle = (string) $store->get('home_professorat_subtitle', __('Cursos, sessions i liquidacions'));
+        $this->home_gestio_title         = (string) $store->get('home_gestio_title', __('Gestió'));
+        $this->home_gestio_subtitle      = (string) $store->get('home_gestio_subtitle', __('Cursos, alumnes, pagaments i socis'));
 
         $this->mail_from_name    = (string) $store->get('mail_from_name', '');
         $this->mail_from_address = (string) $store->get('mail_from_address', '');
@@ -211,7 +211,7 @@ class SettingsPage extends Page
         $this->associats_socis_enabled  = (bool) $store->getRaw('associats_socis_enabled', true);
         $this->associats_quotes_enabled = (bool) $store->getRaw('associats_quotes_enabled', true);
         $this->associats_sepa_enabled   = (bool) $store->getRaw('associats_sepa_enabled', true);
-        $this->associats_org_name       = (string) $store->get('associats_org_name', 'Entitat');
+        $this->associats_org_name       = (string) $store->get('associats_org_name', __('Entitat'));
         $this->associats_member_prefix  = (string) $store->get('associats_member_prefix', '');
 
         $this->sepa_creditor_id = (string) $store->get('sepa_creditor_id', '');
@@ -277,19 +277,19 @@ class SettingsPage extends Page
             'hero_text_color' => $this->hero_text_color,
 
             'hero_btn_catalog_enabled'  => $this->hero_btn_catalog_enabled,
-            'hero_btn_catalog_text'     => $this->hero_btn_catalog_text ?: 'Veure el catàleg de cursos',
+            'hero_btn_catalog_text'     => $this->hero_btn_catalog_text ?: __('Veure el catàleg de cursos'),
             'hero_btn_register_enabled' => $this->hero_btn_register_enabled,
             'hero_btn_register_text'    => $this->hero_btn_register_text ?: "Inscriure's",
 
-            'home_access_header'        => $this->home_access_header ?: 'Accés per perfil',
+            'home_access_header'        => $this->home_access_header ?: __('Accés per perfil'),
             'home_alumnat_enabled'      => $this->home_alumnat_enabled,
-            'home_alumnat_title'        => $this->home_alumnat_title ?: 'Alumnat',
-            'home_alumnat_subtitle'     => $this->home_alumnat_subtitle ?: 'Inscripcions i pagaments de cursos',
+            'home_alumnat_title'        => $this->home_alumnat_title ?: __('Alumnat'),
+            'home_alumnat_subtitle'     => $this->home_alumnat_subtitle ?: __('Inscripcions i pagaments de cursos'),
             'home_professorat_enabled'  => $this->home_professorat_enabled,
-            'home_professorat_title'    => $this->home_professorat_title ?: 'Professorat',
-            'home_professorat_subtitle' => $this->home_professorat_subtitle ?: 'Cursos, sessions i liquidacions',
-            'home_gestio_title'         => $this->home_gestio_title ?: 'Gestió',
-            'home_gestio_subtitle'      => $this->home_gestio_subtitle ?: 'Cursos, alumnes, pagaments i socis',
+            'home_professorat_title'    => $this->home_professorat_title ?: __('Professorat'),
+            'home_professorat_subtitle' => $this->home_professorat_subtitle ?: __('Cursos, sessions i liquidacions'),
+            'home_gestio_title'         => $this->home_gestio_title ?: __('Gestió'),
+            'home_gestio_subtitle'      => $this->home_gestio_subtitle ?: __('Cursos, alumnes, pagaments i socis'),
 
             'mail_from_name'    => $this->mail_from_name,
             'mail_from_address' => $this->mail_from_address ?: null,
@@ -323,7 +323,7 @@ class SettingsPage extends Page
             'associats_socis_enabled'  => $this->associats_socis_enabled,
             'associats_quotes_enabled' => $this->associats_quotes_enabled,
             'associats_sepa_enabled'   => $this->associats_sepa_enabled,
-            'associats_org_name'       => $this->associats_org_name ?: 'Entitat',
+            'associats_org_name'       => $this->associats_org_name ?: __('Entitat'),
             'associats_member_prefix'  => $this->associats_member_prefix,
 
             'sepa_creditor_id' => $this->sepa_creditor_id,
@@ -373,7 +373,7 @@ class SettingsPage extends Page
         \Illuminate\Support\Facades\Cache::forget('site_settings.all');
 
         Notification::make()
-            ->title('Configuració desada correctament')
+            ->title(__('Configuració desada correctament'))
             ->success()
             ->send();
 
@@ -391,10 +391,6 @@ class SettingsPage extends Page
 
     public function getLocaleOptions(): array
     {
-        return [
-            'ca' => 'Català',
-            'es' => 'Castellà',
-            'en' => 'Anglès',
-        ];
+        return \App\Support\Locales::SUPPORTED;
     }
 }

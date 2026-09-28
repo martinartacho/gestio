@@ -29,8 +29,8 @@ class DocumentResource extends Resource
     protected static ?int    $navigationSort  = 10;
 
     public static function getNavigationIcon(): string   { return 'heroicon-o-paper-clip'; }
-    public static function getNavigationGroup(): string  { return 'Campus'; }
-    public static function getNavigationLabel(): string  { return 'Documents'; }
+    public static function getNavigationGroup(): string  { return __('Campus'); }
+    public static function getNavigationLabel(): string  { return __('Documents'); }
     public static function getModelLabel(): string       { return 'document'; }
     public static function getPluralModelLabel(): string { return 'documents'; }
 
@@ -45,36 +45,36 @@ class DocumentResource extends Resource
     {
         return $schema->components([
 
-            Section::make('Informació bàsica')->schema([
+            Section::make(__('Informació bàsica'))->schema([
                 TextInput::make('title')
-                    ->label('Títol')
+                    ->label(__('Títol'))
                     ->required()
                     ->maxLength(255)
                     ->columnSpanFull(),
 
                 Textarea::make('description')
-                    ->label('Descripció')
+                    ->label(__('Descripció'))
                     ->rows(2)
                     ->columnSpanFull(),
 
                 Select::make('type')
-                    ->label('Tipus')
-                    ->options(CampusDocument::TYPES)
+                    ->label(__('Tipus'))
+                    ->options(translated_labels(CampusDocument::TYPES))
                     ->required()
                     ->live()
                     ->default('file'),
 
                 Select::make('status')
-                    ->label('Estat')
-                    ->options(CampusDocument::STATUSES)
+                    ->label(__('Estat'))
+                    ->options(translated_labels(CampusDocument::STATUSES))
                     ->default('active')
                     ->required(),
             ])->columns(2),
 
-            Section::make('Fitxer')
+            Section::make(__('Fitxer'))
                 ->schema([
                     FileUpload::make('file_path')
-                        ->label('Fitxer')
+                        ->label(__('Fitxer'))
                         ->disk('local')
                         ->directory('campus/documents')
                         ->acceptedFileTypes(CampusDocument::ACCEPTED_MIMES)
@@ -85,7 +85,7 @@ class DocumentResource extends Resource
                 ])
                 ->visible(fn($get) => $get('type') === 'file'),
 
-            Section::make('Enllaç extern')
+            Section::make(__('Enllaç extern'))
                 ->schema([
                     TextInput::make('url')
                         ->label('URL')
@@ -96,9 +96,9 @@ class DocumentResource extends Resource
                 ])
                 ->visible(fn($get) => $get('type') === 'url'),
 
-            Section::make('Assignació')->schema([
+            Section::make(__('Assignació'))->schema([
                 Select::make('course_id')
-                    ->label('Curs')
+                    ->label(__('Curs'))
                     ->options(
                         CampusCourse::orderByDesc('start_date')
                             ->get()
@@ -109,7 +109,7 @@ class DocumentResource extends Resource
                     ->live(),
 
                 Select::make('teacher_id')
-                    ->label('Professor/a')
+                    ->label(__('Professor/a'))
                     ->options(
                         CampusTeacher::where('status', 'active')
                             ->get()
@@ -119,32 +119,32 @@ class DocumentResource extends Resource
                     ->nullable(),
 
                 Select::make('visibility')
-                    ->label('Visibilitat')
-                    ->options(CampusDocument::VISIBILITIES)
+                    ->label(__('Visibilitat'))
+                    ->options(translated_labels(CampusDocument::VISIBILITIES))
                     ->default('enrolled')
                     ->required(),
 
                 Toggle::make('inherit_to_editions')
-                    ->label('Heretar als cursos fills')
-                    ->helperText('Si el curs és template, els fills també veuran aquest document.')
+                    ->label(__('Heretar als cursos fills'))
+                    ->helperText(__('Si el curs és template, els fills també veuran aquest document.'))
                     ->default(false),
             ])->columns(2),
 
-            Section::make('Condicions d\'accés')->schema([
+            Section::make(__('Condicions d\'accés'))->schema([
                 DateTimePicker::make('available_from')
-                    ->label('Disponible a partir de')
+                    ->label(__('Disponible a partir de'))
                     ->nullable()
                     ->native(false),
 
                 TextInput::make('session_number')
-                    ->label('A partir de la sessió #')
+                    ->label(__('A partir de la sessió #'))
                     ->numeric()
                     ->minValue(1)
                     ->nullable()
-                    ->helperText('Deixar buit per a accés immediat.'),
+                    ->helperText(__('Deixar buit per a accés immediat.')),
 
                 TextInput::make('sort_order')
-                    ->label('Ordre')
+                    ->label(__('Ordre'))
                     ->numeric()
                     ->default(0),
             ])->columns(3)->collapsed(),
@@ -157,25 +157,25 @@ class DocumentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Títol')
+                    ->label(__('Títol'))
                     ->searchable()
                     ->limit(40),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Tipus')
+                    ->label(__('Tipus'))
                     ->badge()
-                    ->formatStateUsing(fn($state) => CampusDocument::TYPES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusDocument::TYPES[$state] ?? $state))
                     ->color(fn($state) => $state === 'file' ? 'gray' : 'info'),
 
                 Tables\Columns\TextColumn::make('course.title')
-                    ->label('Curs')
+                    ->label(__('Curs'))
                     ->limit(30)
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('visibility')
-                    ->label('Visibilitat')
+                    ->label(__('Visibilitat'))
                     ->badge()
-                    ->formatStateUsing(fn($state) => CampusDocument::VISIBILITIES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusDocument::VISIBILITIES[$state] ?? $state))
                     ->color(fn($state) => match($state) {
                         'public'   => 'success',
                         'enrolled' => 'info',
@@ -184,17 +184,17 @@ class DocumentResource extends Resource
                     }),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Estat')
+                    ->label(__('Estat'))
                     ->badge()
-                    ->formatStateUsing(fn($state) => CampusDocument::STATUSES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusDocument::STATUSES[$state] ?? $state))
                     ->color(fn($state) => $state === 'active' ? 'success' : 'gray'),
 
                 Tables\Columns\TextColumn::make('file_size_formatted')
-                    ->label('Mida')
+                    ->label(__('Mida'))
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('not_available_reason')
-                    ->label('Accés alumnes')
+                    ->label(__('Accés alumnes'))
                     ->getStateUsing(function (CampusDocument $r): string {
                         $r->loadMissing('course');
                         return $r->not_available_reason ?? '✓ Accessible';
@@ -204,26 +204,26 @@ class DocumentResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Creat')
+                    ->label(__('Creat'))
                     ->date('d/m/Y')
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Tipus')
-                    ->options(CampusDocument::TYPES),
+                    ->label(__('Tipus'))
+                    ->options(translated_labels(CampusDocument::TYPES)),
 
                 Tables\Filters\SelectFilter::make('visibility')
-                    ->label('Visibilitat')
-                    ->options(CampusDocument::VISIBILITIES),
+                    ->label(__('Visibilitat'))
+                    ->options(translated_labels(CampusDocument::VISIBILITIES)),
 
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Estat')
-                    ->options(CampusDocument::STATUSES),
+                    ->label(__('Estat'))
+                    ->options(translated_labels(CampusDocument::STATUSES)),
             ])
             ->actions([
                 Action::make('download')
-                    ->label('Descarregar')
+                    ->label(__('Descarregar'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->url(fn(CampusDocument $r) => $r->download_url)
                     ->openUrlInNewTab()

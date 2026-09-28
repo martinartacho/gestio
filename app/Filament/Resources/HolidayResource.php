@@ -51,11 +51,11 @@ class HolidayResource extends Resource
                 TextInput::make('label')
                     ->label(__('site.holiday_label'))
                     ->required()->maxLength(100)
-                    ->helperText('Ex: Nadal, Festa Major de Granollers'),
+                    ->helperText(__('Ex: Nadal, Festa Major de Granollers')),
 
                 Select::make('type')
                     ->label(__('site.holiday_type'))
-                    ->options(CampusHoliday::TYPES)
+                    ->options(translated_labels(CampusHoliday::TYPES))
                     ->required()->native(false)->default('festiu'),
 
                 Toggle::make('recurring_yearly')
@@ -83,7 +83,7 @@ class HolidayResource extends Resource
 
                 Tables\Columns\TextColumn::make('type')
                     ->label(__('site.holiday_type'))
-                    ->formatStateUsing(fn($state) => CampusHoliday::TYPES[$state] ?? $state)
+                    ->formatStateUsing(fn($state) => __(CampusHoliday::TYPES[$state] ?? $state))
                     ->badge()
                     ->color(fn($state) => $state === 'festiu' ? 'danger' : 'warning'),
 

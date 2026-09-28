@@ -39,7 +39,7 @@ class AuthController extends Controller
 
         if (! $tenant) {
             throw ValidationException::withMessages([
-                'tenant' => 'Entitat no reconeguda.',
+                'tenant' => __('Entitat no reconeguda.'),
             ]);
         }
 
@@ -92,7 +92,7 @@ class AuthController extends Controller
     {
         if ($user instanceof CampusStudent && $user->isSuspended()) {
             throw ValidationException::withMessages([
-                'email' => 'El compte ha estat suspès. Contacteu amb l\'administració.',
+                'email' => __('El compte ha estat suspès. Contacteu amb l\'administració.'),
             ]);
         }
 
@@ -134,7 +134,7 @@ class AuthController extends Controller
         $tenant  = $this->currentTenant($request);
         $matches = $this->matchingAccounts($request->user()->email, $tenant);
 
-        abort_unless(isset($matches[$data['role']]), 404, 'No tens cap compte amb aquest rol en aquesta entitat.');
+        abort_unless(isset($matches[$data['role']]), 404, __('No tens cap compte amb aquest rol en aquesta entitat.'));
 
         $request->user()->currentAccessToken()->delete();
 
@@ -178,14 +178,14 @@ class AuthController extends Controller
             }
         }
 
-        abort(500, 'El token no té cap entitat associada.');
+        abort(500, __('El token no té cap entitat associada.'));
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Sessió tancada correctament.']);
+        return response()->json(['message' => __('Sessió tancada correctament.')]);
     }
 
     private function respondWithToken(CampusStudent|CampusTeacher|AssociatMember $user, string $role, Tenant $tenant)

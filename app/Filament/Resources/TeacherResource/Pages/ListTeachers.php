@@ -18,18 +18,18 @@ class ListTeachers extends ListRecords
     {
         return [
             Action::make('attachExistingTeacher')
-                ->label('Afegir professor existent')
+                ->label(__('Afegir professor existent'))
                 ->icon('heroicon-o-user-plus')
                 ->color('gray')
                 // Només super-admin: la cerca és global (nom/email de totes
                 // les institucions) — un admin d'un sol tenant no hauria de
                 // poder veure ni buscar professorat d'altres entitats.
                 ->visible(fn () => auth()->user()?->hasRole('super-admin') ?? false)
-                ->modalHeading('Afegir un professor d\'una altra institució')
-                ->modalDescription('Cerca per nom o email un professor que ja té compte (a qualsevol institució) i afegeix-lo a aquesta.')
+                ->modalHeading(__('Afegir un professor d\'una altra institució'))
+                ->modalDescription(__('Cerca per nom o email un professor que ja té compte (a qualsevol institució) i afegeix-lo a aquesta.'))
                 ->form([
                     Select::make('teacher_id')
-                        ->label('Professor')
+                        ->label(__('Professor'))
                         ->searchable()
                         ->getSearchResultsUsing(function (string $search) {
                             abort_unless(auth()->user()?->hasRole('super-admin'), 403);
@@ -57,7 +57,7 @@ class ListTeachers extends ListRecords
 
                     if ($teacher->belongsToTenant($tenant?->id)) {
                         Notification::make()
-                            ->title('Aquest professor ja pertany a aquesta institució')
+                            ->title(__('Aquest professor ja pertany a aquesta institució'))
                             ->warning()
                             ->send();
                         return;

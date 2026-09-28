@@ -1,6 +1,6 @@
 @extends('campus.layouts.app')
 
-@section('title', 'Sol·licituds enviades — pendent de pagament')
+@section('title', __('Sol·licituds enviades — pendent de pagament'))
 
 @section('content')
 <div class="max-w-2xl mx-auto">
@@ -12,9 +12,9 @@
             </svg>
         </div>
         <h1 class="text-2xl font-bold text-gray-900 mb-1">
-            Sol·licituds enviades — <span class="text-amber-600">pendent de pagament</span>
+            {{ __('Sol·licituds enviades') }} — <span class="text-amber-600">{{ __('pendent de pagament') }}</span>
         </h1>
-        <p class="text-gray-500 text-sm">Has sol·licitat inscripció a {{ $enrollments->count() }} {{ Str::plural('curs', $enrollments->count()) }}.</p>
+        <p class="text-gray-500 text-sm">{{ trans_choice('Has sol·licitat inscripció a :count curs.|Has sol·licitat inscripció a :count cursos.', $enrollments->count()) }}</p>
     </div>
 
     {{-- Cursos inscrits --}}
@@ -26,45 +26,51 @@
         </div>
         @endforeach
         <div class="flex justify-between items-center px-4 py-3 bg-gray-50 rounded-b-xl">
-            <span class="text-sm font-bold text-gray-900">Total</span>
+            <span class="text-sm font-bold text-gray-900">{{ __('Total') }}</span>
             <span class="text-sm font-bold text-indigo-700">{{ number_format($enrollments->sum('amount'), 2, ',', '.') }} €</span>
         </div>
     </div>
 
     {{-- Instruccions de pagament --}}
     <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
-        <p class="text-sm font-semibold text-amber-900 mb-3">Referència de pagament única:</p>
+        <p class="text-sm font-semibold text-amber-900 mb-3">{{ __('Referència de pagament única') }}:</p>
         <p class="font-mono text-lg font-bold text-amber-700 tracking-widest mb-4">{{ $reference }}</p>
 
         @if ($method === 'transfer')
             <div class="space-y-1 text-sm text-amber-800">
                 <p><strong>IBAN:</strong> {{ setting('payment_iban') }}</p>
-                <p><strong>Titular:</strong> {{ setting('payment_bank_holder') }}</p>
-                <p><strong>Concepte:</strong> {{ $reference }} – {{ $student->first_name }} {{ $student->last_name }}</p>
-                <p><strong>Import:</strong> {{ number_format($enrollments->sum('amount'), 2, ',', '.') }} €</p>
+                <p><strong>{{ __('Titular') }}:</strong> {{ setting('payment_bank_holder') }}</p>
+                <p><strong>{{ __('Concepte') }}:</strong> {{ $reference }} – {{ $student->first_name }} {{ $student->last_name }}</p>
+                <p><strong>{{ __('Import') }}:</strong> {{ number_format($enrollments->sum('amount'), 2, ',', '.') }} €</p>
             </div>
         @elseif ($method === 'bizum')
             <p class="text-sm text-amber-800">
-                Envia <strong>{{ number_format($enrollments->sum('amount'), 2, ',', '.') }} €</strong>
-                al número <strong>{{ setting('payment_bizum_number') }}</strong>
-                amb la referència <strong>{{ $reference }}</strong>.
+                {!! __('Envia <strong>:amount €</strong> al número <strong>:number</strong> amb la referència <strong>:reference</strong>.', [
+                    'amount' => e(number_format($enrollments->sum('amount'), 2, ',', '.')),
+                    'number' => e(setting('payment_bizum_number')),
+                    'reference' => e($reference),
+                ]) !!}
             </p>
         @elseif ($method === 'cash')
             <p class="text-sm text-amber-800">
-                Porta <strong>{{ number_format($enrollments->sum('amount'), 2, ',', '.') }} €</strong>
-                en efectiu a l'administració i indica la referència <strong>{{ $reference }}</strong>.
+                {!! __('Porta <strong>:amount €</strong> en efectiu a l\'administració i indica la referència <strong>:reference</strong>.', [
+                    'amount' => e(number_format($enrollments->sum('amount'), 2, ',', '.')),
+                    'reference' => e($reference),
+                ]) !!}
             </p>
         @elseif ($method === 'paypal')
             <p class="text-sm text-amber-800">
-                Envia <strong>{{ number_format($enrollments->sum('amount'), 2, ',', '.') }} €</strong>
-                a <strong>{{ setting('payment_paypal_email') }}</strong>
-                indicant la referència <strong>{{ $reference }}</strong>.
+                {!! __('Envia <strong>:amount €</strong> a <strong>:email</strong> indicant la referència <strong>:reference</strong>.', [
+                    'amount' => e(number_format($enrollments->sum('amount'), 2, ',', '.')),
+                    'email' => e(setting('payment_paypal_email')),
+                    'reference' => e($reference),
+                ]) !!}
             </p>
         @endif
 
         @if ($enrollments->first()?->payment_expires_at)
             <p class="text-xs text-amber-700 mt-3">
-                ⏰ Tens fins al <strong>{{ $enrollments->first()->payment_expires_at->format('d/m/Y H:i') }}</strong> per efectuar el pagament.
+                ⏰ {!! __('Tens fins al <strong>:date</strong> per efectuar el pagament.', ['date' => $enrollments->first()->payment_expires_at->format('d/m/Y H:i')]) !!}
             </p>
         @endif
     </div>
@@ -72,7 +78,7 @@
     <div class="text-center">
         <a href="{{ route('campus.portal.courses') }}"
            class="inline-block bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition">
-            Veure les meves inscripcions
+            {{ __('Veure les meves inscripcions') }}
         </a>
     </div>
 
