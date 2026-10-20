@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeacherResource\Pages;
+use App\Filament\Support\PasswordField;
 use App\Models\CampusTeacher;
 use Filament\Actions\{BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction};
 use Filament\Forms\Components\{DatePicker, DateTimePicker, Select, TagsInput, Textarea, TextInput, Toggle};
@@ -106,6 +107,13 @@ class TeacherResource extends Resource
                     ->label(__('site.teacher_observacions'))
                     ->rows(2)->columnSpanFull(),
             ]),
+
+            // ── Accés ─────────────────────────────────────────────────────
+            Section::make(__('Accés'))->columns(2)
+                ->visible(fn () => auth()->user()?->hasAnyRole(['admin', 'manager']))
+                ->schema([
+                    PasswordField::make('teacher_password'),
+                ]),
 
             // ── Adreça i identificació ────────────────────────────────────
             Section::make(__('site.teacher_address_section'))->columns(2)

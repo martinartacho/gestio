@@ -42,20 +42,49 @@ class EnrollmentResource extends Resource
     public static function canDelete(\Illuminate\Database\Eloquent\Model $r): bool    { return auth()->user()?->hasPermissionTo('enrollments.delete') ?? false; }
     public static function canDeleteAny(): bool                                       { return auth()->user()?->hasPermissionTo('enrollments.delete') ?? false; }
 
+    /** «[Temporada] CODI · Títol» (sense el codi si el curs no en té). */
+    public static function courseLabel(CampusCourse $course): string
+    {
+        $code = filled($course->code) ? $course->code . ' · ' : '';
+
+        return "[{$course->season?->name}] {$code}{$course->title}";
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
 
             Section::make(__('site.enrollment_course'))->schema([
+                // Es pot cercar pel títol, pel codi o per la temporada; el camp ocupa dues columnes perquè el títol no es talli.
                 Select::make('course_id')
                     ->label(__('site.course'))
+                    ->columnSpan(2)
                     ->options(fn() => CampusCourse::where('status', '!=', 'draft')
                         ->with('season')
                         ->orderBy('title')
+                        ->limit(50)
                         ->get()
-                        ->mapWithKeys(fn($c) => [$c->id => "[{$c->season?->name}] {$c->title}"])
+                        ->mapWithKeys(fn($c) => [$c->id => static::courseLabel($c)])
                     )
-                    ->searchable()->required()->native(false),
+                    ->getSearchResultsUsing(function (string $search): array {
+                        $like = '%' . str_replace(['%', '_'], ['\%', '\_'], trim($search)) . '%';
+
+                        return CampusCourse::where('status', '!=', 'draft')
+                            ->with('season')
+                            ->where(fn($q) => $q->where('title', 'like', $like)
+                                ->orWhere('code', 'like', $like)
+                                ->orWhereHas('season', fn($season) => $season->where('name', 'like', $like)))
+                            ->orderBy('title')
+                            ->limit(50)
+                            ->get()
+                            ->mapWithKeys(fn($c) => [$c->id => static::courseLabel($c)])
+                            ->all();
+                    })
+                    ->getOptionLabelUsing(fn($value): ?string => ($course = CampusCourse::with('season')->find($value))
+                        ? static::courseLabel($course)
+                        : null)
+                    ->searchable()->required()->native(false)
+                    ->placeholder(__('Cerca per títol o codi…')),
 
                 Select::make('status')
                     ->label(__('site.status'))
@@ -65,7 +94,7 @@ class EnrollmentResource extends Resource
                 DatePicker::make('enrollment_date')
                     ->label(__('site.enrollment_date'))
                     ->default(now())->required()->native(false),
-            ])->columns(3),
+            ])->columns(4),
 
             Section::make(__('site.enrollment_student'))->columns(2)->schema([
                 TextInput::make('first_name')
