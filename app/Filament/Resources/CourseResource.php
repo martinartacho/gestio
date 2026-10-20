@@ -3,9 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CourseResource\Pages;
+use App\Filament\Forms\Components\SessionDatesPicker;
 use App\Models\CampusCategory;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
+use App\Support\SessionDates;
 use Filament\Actions\{ActionGroup, BulkAction, BulkActionGroup, DeleteAction, DeleteBulkAction, EditAction, Action};
 use Filament\Forms\Components\{DatePicker, Select, Textarea, TextInput, Toggle};
 use Filament\Schemas\Components\Utilities\Get;
@@ -159,48 +161,50 @@ class CourseResource extends Resource
                         ->disabled($lockAll),
                 ]),
 
-                Textarea::make('calendar_notes')
+                SessionDatesPicker::make('calendar_notes')
                     ->label(__('site.course_calendar'))
-                    ->helperText(__('site.course_calendar_hint'))
-                    ->rows(2)->columnSpanFull()
-                    ->live(onBlur: true)
+                    ->helperText(__('Marca al calendari el dia de cada sessió. Si el curs no és setmanal, clica només els dies reals.'))
+                    ->columnSpanFull()
+                    ->live()
                     ->disabled($lockAll)
-                    ->hint(function (Get $get): ?string {
-                        $notes  = $get('calendar_notes');
-                        $endRaw = $get('end_date');
-                        if (! $notes || ! $endRaw) return null;
-
-                        // Suport tant Carbon com string Y-m-d
-                        $endCarbon = ($endRaw instanceof \Carbon\CarbonInterface)
-                            ? \Carbon\Carbon::instance($endRaw)
-                            : \Carbon\Carbon::createFromFormat('Y-m-d', substr((string) $endRaw, 0, 10));
-
-                        $startRaw  = $get('start_date');
-                        $startYear = ($startRaw instanceof \Carbon\CarbonInterface)
-                            ? $startRaw->year
-                            : (is_string($startRaw) ? (int) substr($startRaw, 0, 4) : now()->year);
-
-                        $late = [];
-                        foreach (preg_split('/[\s,;]+/', trim($notes)) as $token) {
-                            $token = trim($token);
-                            if (! preg_match('#^(\d{1,2})/(\d{1,2})(?:/(\d{4}))?$#', $token, $m)) continue;
-                            $day   = (int) $m[1];
-                            $month = (int) $m[2];
-                            $y     = isset($m[3]) ? (int) $m[3] : $startYear;
-                            try {
-                                $date = \Carbon\Carbon::createFromDate($y, $month, $day);
-                                if ($date->gt($endCarbon)) $late[] = $date->format('d/m');
-                            } catch (\Throwable) {}
+                    ->afterStateHydrated(function (SessionDatesPicker $component, ?CampusCourse $record): void {
+                        $component->state(SessionDates::parse($record?->calendar_notes, $record?->start_date));
+                    })
+                    ->afterStateUpdated(function (?array $state, Set $set): void {
+                        if (count($state ?? []) > 0) {
+                            $set('sessions', count($state));
                         }
-                        return empty($late)
+                    })
+                    ->dehydrateStateUsing(function (?array $state, Get $get, ?CampusCourse $record): ?string {
+                        if (blank($state)) {
+                            $original = $record?->calendar_notes;
+
+                            return $original !== null && SessionDates::parse($original, $record->start_date) === [] ? $original : null;
+                        }
+
+                        $start = $get('start_date');
+
+                        return SessionDates::serialize($state, $start ? \Carbon\Carbon::parse($start) : null);
+                    })
+                    ->hint(function (Get $get): ?string {
+                        $dates  = $get('calendar_notes');
+                        $endRaw = $get('end_date');
+                        if (blank($dates) || ! $endRaw) return null;
+
+                        $end  = \Carbon\Carbon::parse($endRaw)->endOfDay();
+                        $late = collect($dates)->filter(fn ($d) => \Carbon\Carbon::parse($d)->gt($end))
+                            ->map(fn ($d) => \Carbon\Carbon::parse($d)->format('d/m'));
+
+                        return $late->isEmpty()
                             ? null
-                            : __('Sessions fora del període: :dates (data final: :end).', ['dates' => implode(', ', $late), 'end' => $endCarbon->format('d/m/Y')]);
+                            : __('Sessions fora del període: :dates (data final: :end).', ['dates' => $late->implode(', '), 'end' => $end->format('d/m/Y')]);
                     })
                     ->hintColor('warning')
                     ->hintAction(
                         Action::make('generateSessionDates')
                             ->label(__('Auto-generar'))
                             ->icon('heroicon-m-calendar-days')
+                            ->tooltip(__('Una sessió per setmana des de la data d\'inici'))
                             ->action(function (Get $get, Set $set): void {
                                 $startDate = $get('start_date');
                                 $sessions  = (int) $get('sessions');
@@ -211,10 +215,10 @@ class CourseResource extends Resource
                                     while (\App\Models\CampusHoliday::fallsOn($date)) {
                                         $date->addWeek();
                                     }
-                                    $dates[] = $date->day . '/' . $date->month;
+                                    $dates[] = $date->format('Y-m-d');
                                     $date->addWeek();
                                 }
-                                $set('calendar_notes', implode(', ', $dates));
+                                $set('calendar_notes', $dates);
                             })
                     ),
 
