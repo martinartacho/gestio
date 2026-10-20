@@ -3,6 +3,23 @@
 @endphp
 
 <x-dynamic-component :component="$getFieldWrapperView()" :field="$field">
+    <style>
+        .sdp { display: flex; flex-direction: column; gap: .75rem; }
+        .sdp-box { max-width: 20rem; border: 1px solid rgba(128,128,128,.35); border-radius: .5rem; padding: .75rem; }
+        .sdp-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+        .sdp-nav b { text-transform: capitalize; font-size: .875rem; font-weight: 500; }
+        .sdp-nav button { padding: .1rem .6rem; border-radius: .25rem; font-size: 1.1rem; line-height: 1.4; cursor: pointer; background: none; border: 0; color: inherit; }
+        .sdp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: .25rem; text-align: center; }
+        .sdp-dow { font-size: .75rem; opacity: .6; }
+        .sdp-day { padding: .3rem 0; border-radius: .25rem; font-size: .875rem; cursor: pointer; background: none; border: 0; color: inherit; }
+        .sdp-day:hover { background: rgba(128,128,128,.2); }
+        .sdp-day.on, .sdp-day.on:hover { background: rgb(var(--primary-600, 217 119 6)); color: #fff; font-weight: 600; }
+        .sdp-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+        .sdp-chip { display: inline-flex; align-items: center; gap: .3rem; padding: .15rem .6rem; border-radius: 999px; font-size: .75rem; background: rgba(128,128,128,.18); }
+        .sdp-chip button { cursor: pointer; background: none; border: 0; color: inherit; padding: 0; font-size: .9rem; line-height: 1; }
+        .sdp-count { font-size: .75rem; opacity: .7; margin: 0; }
+    </style>
+
     <div
         x-data="{
             dates: {{ $applyStateBindingModifiers("\$wire.\$entangle('{$statePath}')") }},
@@ -47,44 +64,38 @@
                 return new Date(v + 'T00:00:00').toLocaleDateString('ca', { weekday: 'short', day: 'numeric', month: 'short' });
             },
         }"
-        class="space-y-3"
+        class="sdp"
     >
-        <div class="max-w-xs rounded-lg border border-gray-200 p-3 dark:border-white/10">
-            <div class="mb-2 flex items-center justify-between">
-                <button type="button" class="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-white/10" x-on:click="move(-1)" aria-label="{{ __('Mes anterior') }}">‹</button>
-                <span class="text-sm font-medium capitalize" x-text="title()"></span>
-                <button type="button" class="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-white/10" x-on:click="move(1)" aria-label="{{ __('Mes següent') }}">›</button>
+        <div class="sdp-box">
+            <div class="sdp-nav">
+                <button type="button" x-on:click="move(-1)" aria-label="{{ __('Mes anterior') }}">‹</button>
+                <b x-text="title()"></b>
+                <button type="button" x-on:click="move(1)" aria-label="{{ __('Mes següent') }}">›</button>
             </div>
 
-            <div class="grid grid-cols-7 gap-1 text-center text-xs text-gray-500">
+            <div class="sdp-grid sdp-dow">
                 @foreach (['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'] as $dow)
                     <span>{{ $dow }}</span>
                 @endforeach
             </div>
 
-            <div class="mt-1 grid grid-cols-7 gap-1 text-center text-sm">
+            <div class="sdp-grid" style="margin-top: .25rem">
                 <template x-for="n in blanks()" :key="'b' + n"><span></span></template>
                 <template x-for="d in days()" :key="d">
-                    <button
-                        type="button"
-                        x-on:click="toggle(d)"
-                        x-text="d"
-                        class="rounded py-1"
-                        :class="has(d) ? 'bg-primary-600 font-semibold text-white' : 'hover:bg-gray-100 dark:hover:bg-white/10'"
-                    ></button>
+                    <button type="button" x-on:click="toggle(d)" x-text="d" :class="has(d) ? 'sdp-day on' : 'sdp-day'"></button>
                 </template>
             </div>
         </div>
 
-        <div class="flex flex-wrap gap-2">
+        <div class="sdp-chips">
             <template x-for="v in (dates || [])" :key="v">
-                <span class="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-1 text-xs text-primary-700 dark:bg-primary-500/20 dark:text-primary-300">
+                <span class="sdp-chip">
                     <span x-text="label(v)"></span>
                     <button type="button" x-on:click="remove(v)" aria-label="{{ __('Treure') }}">×</button>
                 </span>
             </template>
         </div>
 
-        <p class="text-xs text-gray-500" x-text="(dates || []).length + ' {{ __('sessions marcades') }}'"></p>
+        <p class="sdp-count" x-text="(dates || []).length + ' {{ __('sessions marcades') }}'"></p>
     </div>
 </x-dynamic-component>
